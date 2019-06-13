@@ -20,4 +20,5 @@ Improved:
 fixed:
 1. Cause of unstoppable reasons, the feedback address had been changed
 2. Program author info changed
+3. Cap title and site title changed
 '_'
