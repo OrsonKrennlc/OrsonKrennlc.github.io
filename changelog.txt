@@ -4,6 +4,7 @@ added:
 1. name
 2. notice
 3. url link
+^_^
 
 5.27
 added:
@@ -14,3 +15,9 @@ Improved:
 2. Improved UI design
 3. Simplified notices, made it more readable
 =_=
+
+6.13
+fixed:
+1. Cause of unstoppable reasons, the feedback address had been changed
+2. Program author info changed
+'_'
