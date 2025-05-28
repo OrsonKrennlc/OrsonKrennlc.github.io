@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+    <div class="login-container">
+        <form id="login-form">
+            <h2>Admin Login</h2>
+            <input type="text" id="username" placeholder="User" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const user = { username: 'admin', password: '123456' };
+            if (user.username === document.getElementById('username').value &&
+                user.password === document.getElementById('password').value) {
+                window.location.href = 'admin-dashboard.html';
+            } else {
+                alert('Failure');
+            }
+        });
+    </script>
+</body>
+</html>

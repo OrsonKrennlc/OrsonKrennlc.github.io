@@ -1,182 +1,51 @@
 <!DOCTYPE html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>orsonkrennlc的主页</title>
-<style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  font-family: Arial;
-  padding: 10px;
-  background: #f1f1f1;
-}
-
-/* 页眉/Blog 标题 */
-.header {
-  padding: 30px;
-  text-align: center;
-  background: white;
-}
-
-.header h1 {
-  font-size: 50px;
-}
-
-/* 设置上导航栏的样式 */
-.topnav {
-  overflow: hidden;
-  background-color: #333;
-}
-
-/* 设置 topnav 链接的样式 */
-.topnav a {
-  float: left;
-  display: block;
-  color: #f2f2f2;
-  text-align: center;
-  padding: 14px 16px;
-  text-decoration: none;
-}
-
-/* 改变鼠标悬停时的颜色 */
-.topnav a:hover {
-  background-color: #ddd;
-  color: black;
-}
-
-/* 创建两个不相等的彼此并排的浮动列 */
-/* 左列 */
-.leftcolumn {
-  float: left;
-  width: 75%;
-}
-
-/* 右列 */
-.rightcolumn {
-  float: left;
-  width: 25%;
-  background-color: #f1f1f1;
-  padding-left: 20px;
-}
-
-/* 为文章添加卡片效果 */
-.card {
-  background-color: white;
-  padding: 20px;
-  margin-top: 20px;
-}
-
-/* 清除列之后的浮动 */
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-/* 页脚 */
-.footer {
-  padding: 20px;
-  text-align: center;
-  background: #ddd;
-  margin-top: 20px;
-}
-
-/* 响应式布局 - 当屏幕的宽度小于 800 像素时，使两列堆叠而不是并排 */
-@media screen and (max-width: 800px) {
-  .leftcolumn, .rightcolumn {
-    width: 100%;
-    padding: 0;
-  }
-}
-
-/* 响应式布局 - 当屏幕的宽度小于 400 像素时，使导航链接堆叠而不是并排 */
-@media screen and (max-width: 400px) {
-  .topnav a {
-    float: none;
-    width: 100%;
-  }
-}
-</style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>技术漫游指南</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<div class="header">
-  <h1>orsonkrennlc的空间</h1>
-  <p>May the Force be with you.</p>
-</div>
+    <header>
+        <nav>
+            <div class="logo">
+                <i class="fas fa-laptop-code"></i>
+                <span>DevNotes</span>
+            </div>
+            <ul>
+                <li><a href="/">首页</a></li>
+                <li><a href="/archive">归档</a></li>
+                <li><a href="/about">关于</a></li>
+                <li><a href="/admin" class="admin-btn">管理</a></li>
+            </ul>
+        </nav>
+    </header>
 
-<div class="topnav">
-	<a href="https://orsonkrennlc.github.io/Daily-Poem/">每日一首诗</a>
-	<a href="https://orsonkrennlc.github.io/films/">片库</a>
-	<a href="https://orsonkrennlc.github.io/LivePanel">直播源</a>
-	<a href="#" style="float:right">关于</a>
-</div>
-
-<div class="card">
-    <h2>万叶集 雷神短歌</h2>
-    <h5>2021/7/19</h5>
-    <p>隐约雷鸣，阴霾天空。</p>
-	<p>但盼风雨来，能留你在此。</p>
-	<p>隐约雷鸣，阴霾天空。</p>
-	<p>即使天无雨，我亦留此地。</p>
-</div>
-
-<div class="card">
-	<h2>别友人</h2>
-	<h5>忘了猫叔 2021/8/27</h5>
-	<p>日暮西山，镜壁映红，灯红酒绿与我又何关？</p>
-	<p>失意而返，旧日同窗，飘飖西游不知何时归。</p>
-</div>
-
-<div class="card">
-	<h2>打完实况的小小吐槽</h2>
-	<h5>2022/1/16</h5>
-	<p>刚刚打实况，势力赛，遇到了一个挂小国际队壳拿日本队套的人。也不知道是不是真内拉，是的话，真是有点丢人了。</p>
-	<p>自己昵称打着什么卡勾**，主场起名叫做 强打弱好意思庆祝吗，自己却当了一波小小的卡🐶，不知道是不是失去初心了。明明是势力赛为什么不拿全直上国米队套，拿状态不齐的日本暂且不说，您被我进了一球，我点跳过，您就卡退了几个意思？</p>
-	<p>以前丢版权之前，实况里内拉们的质量都挺高的，不管是阵容，技术还是王。天梯遇到国米队壳的都挺开心的，首先不管输赢，起码不会顶着黄网折磨十分钟。丢版权之后大概是大家陆陆续续换其他队壳了，战队里国际队壳的也越来越少，自己也换上了别家队壳，天梯遇到的内拉也少了很多。但这不代表你就能顶着国米队壳干这恶心人的事吧？自己恶心人就算了，能别顶着国米队标不？丢不丢人啊？毛豆不管平时吵成什么样，但不得不说人家游戏里素质还真都不低。d站打嘴炮不能输，游戏里也不能输。这个输赢不只是竞技上，也是素质上的啊，你卡赢了，上分了，以后别人遇到国米队套都要退避三分，好么？</p>
-	<p>虽然是游戏，网络世界，但你顶着个国米队标，就代表了内拉的形象。希望大伙都有则改之，无则加勉吧</p>
-	<p>FORZA INTER🔵⚫️</p>
-</div>
-
-<div class="card">
-	<h2>诺丁汉森林0-2拜仁慕尼黑</h2>
-	<h5>2022/2/13</h5>
-	<iframe src="//player.bilibili.com/player.html?aid=466538591&bvid=BV115411o79n&cid=507672748&page=1" scrolling="no" width="960px" height="540px" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
-</div>
-
-<div class="card">
-	<h2>诺丁汉森林3-0曼联</h2>
-	<h5>2022/2/13</h5>
-	<iframe src="//player.bilibili.com/player.html?aid=509085921&bvid=BV1yu411Q7HG&cid=507732675&page=1" scrolling="no" width="960px" height="540px" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
-</div>
-
-<div class="card">
-	<h2>诺丁汉森林2-0北京人和</h2>
-	<h5>2022/2/14</h5>
-	<iframe src="//player.bilibili.com/player.html?aid=254020327&bvid=BV1jY411V7HQ&cid=508822156&page=1" scrolling="no" width="960px" height="540px" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
-</div>
-
-<div class="card">
-	<h2>诺丁汉森林0-1巴黎圣日耳曼</h2>
-	<h5>2022/2/14</h5>
-	<iframe src="//player.bilibili.com/player.html?aid=381574833&bvid=BV1DZ4y1R7Wr&cid=508830707&page=1" scrolling="no" width="960px" height="540px" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
-</div>
-
-<div class="card">
-	<h2>诺丁汉森林6-0巴塞尔</h2>
-	<h5>2022/2/15</h5>
-	<iframe src="//player.bilibili.com/player.html?aid=254031533&bvid=BV1nY411V7np&cid=509770367&page=1" scrolling="no" width="960px" height="540px" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
-</div>
-
-<div class="card">
-    <h5>TO BE CONTINUED...</h5>
-</div>
-
-<div class="footer">
-  <h5>Made by orsonkrennlc with ❤️</h5>
-    <a href="www.w3school.com.cn">感谢w3school提供教程</a>
-</div>
-
+    <main>
+        <section class="featured-posts">
+            <h2>最新文章</h2>
+            <div class="blog-grid">
+                <!-- 动态生成文章卡片 -->
+                <article class="blog-card">
+                    <h3><a href="#">WebAssembly 入门指南</a></h3>
+                    <div class="post-meta">
+                        <i class="fas fa-user"></i> 张三
+                        <i class="fas fa-calendar-alt"></i> 2025-05-25
+                        <i class="fas fa-tags"></i> <span>#Web开发 #前端</span>
+                    </div>
+                    <img src="https://via.placeholder.com/800x400" alt="示例图片" class="blog-image">
+                    <div class="blog-content">
+                        <p>WebAssembly 是下一代网页技术，允许在浏览器中运行高性能代码...</p>
+                       <pre><code>// 示例代码
+function helloWasm() {
+    console.log("Hello from WebAssembly!");
+}</code></pre>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
 </body>
 </html>

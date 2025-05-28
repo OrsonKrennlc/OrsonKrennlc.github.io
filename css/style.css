@@ -1,0 +1,134 @@
+/* 基础重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* 全局样式 */
+body {
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+    padding-top: 80px;
+}
+
+/* 头部样式 */
+header {
+    background: #2c3e50;
+    color: white;
+    padding: 1.5rem 0;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+nav a:hover {
+    color: #e74c3c;
+}
+
+/* 博客卡片样式 */
+.blog-card {
+    background: white;
+    border-radius: 12px;
+    margin: 2rem auto;
+    padding: 2rem;
+    max-width: 800px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    transition: transform 0.3s ease;
+}
+
+.blog-card:hover {
+    transform: translateY(-5px);
+}
+
+.blog-content {
+    margin-top: 1rem;
+    line-height: 1.8;
+    color: #444;
+}
+
+/* 文章元数据 */
+.post-meta {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+.post-meta i {
+    margin-right: 0.5rem;
+}
+
+/* 响应式图片 */
+.blog-image {
+    width: 100%;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* 代码块样式 */
+pre {
+    background: #2d2d2d;
+    color: #ecf0f1;
+    padding: 1rem;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+
+code {
+    font-family: 'Fira Code', monospace;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    background: #f8f8f8;
+}
+
+/* 表格样式 */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background: #2c3e50;
+    color: white;
+}
+
+tr:hover {
+    background: #f5f6fa;
+}
