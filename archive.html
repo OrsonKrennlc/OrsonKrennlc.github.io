@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文章归档 | 技术漫游指南</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/github.min.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">首页</a></li>
+                <li><a href="/archive">归档</a></li>
+                <li><a href="/about">关于</a></li>
+                <li><a href="/admin" class="admin-btn">管理</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="featured-posts">
+            <h2>文章归档</h2>
+            <div class="archive-container">
+                <div id="archive-list"></div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml/dist/js-yaml.min.js"></script>
+    <script>
+        // 博客文章文件列表
+        const blogFiles = [
+            'articles/sample.md',
+            'articles/sample copy.md'
+            // 添加更多文章路径
+        ];
+
+        // 按日期排序并归档文章
+        async function renderArchive() {
+            const container = document.getElementById('archive-list');
+            const posts = [];
+
+            // 获取所有文章数据
+            for (const file of blogFiles) {
+                try {
+                    const response = await fetch(file);
+                    const markdown = await response.text();
+                    const [frontmatter] = markdown.split('---').slice(1);
+                    const postData = jsyaml.load(frontmatter);
+                    posts.push({ ...postData, file });
+                } catch (error) {
+                    console.error(`加载文章 ${file} 失败:`, error);
+                }
+            }
+
+            // 按日期排序（最新在前）
+            posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            // 按年份分组
+            const groupedPosts = {};
+            posts.forEach(post => {
+                const year = new Date(post.date).getFullYear();
+                if (!groupedPosts[year]) groupedPosts[year] = [];
+                groupedPosts[year].push(post);
+            });
+
+            // 渲染归档列表
+            container.innerHTML = Object.entries(groupedPosts).map(([year, posts]) => `
+                <div class="archive-year">
+                    <h3>${year}年 (${posts.length}篇)</h3>
+                    <ul class="post-list">
+                        ${posts.map(post => `
+                            <li>
+                                <a href="javascript:loadPost('${post.file}')">${post.title}</a>
+                                <span class="post-date">${post.date}</span>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `).join('');
+        }
+
+        // 加载文章详情
+        async function loadPost(filePath) {
+            window.location.href = `/?post=${encodeURIComponent(filePath)}`;
+        }
+
+        // 初始化页面
+        document.addEventListener('DOMContentLoaded', renderArchive);
+    </script>
+</body>
+</html>

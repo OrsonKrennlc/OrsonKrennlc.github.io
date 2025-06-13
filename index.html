@@ -6,14 +6,13 @@
     <title>技术漫游指南</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/github.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
 </head>
 <body>
     <header>
         <nav>
-            <div class="logo">
-                <i class="fas fa-laptop-code"></i>
-                <span>DevNotes</span>
-            </div>
             <ul>
                 <li><a href="/">首页</a></li>
                 <li><a href="/archive">归档</a></li>
@@ -28,22 +27,86 @@
             <h2>最新文章</h2>
             <div class="blog-grid">
                 <!-- 动态生成文章卡片 -->
-                <article class="blog-card">
-                    <h3><a href="#">WebAssembly 入门指南</a></h3>
-                    <div class="post-meta">
-                        <i class="fas fa-user"></i> 张三
-                        <i class="fas fa-calendar-alt"></i> 2025-05-25
-                        <i class="fas fa-tags"></i> <span>#Web开发 #前端</span>
-                    </div>
-                    <img src="https://via.placeholder.com/800x400" alt="示例图片" class="blog-image">
-                    <div class="blog-content">
-                        <p>WebAssembly 是下一代网页技术，允许在浏览器中运行高性能代码...</p>
-                       <pre><code>// 示例代码
-function helloWasm() {
-    console.log("Hello from WebAssembly!");
-}</code></pre>
-                    </div>
-                </article>
+                <div id="blog-container"></div>
+
+                <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/js-yaml/dist/js-yaml.min.js"></script>
+                <script>
+                    // 博客文章文件列表 - 添加新文章时在此处添加文件路径
+                    const blogFiles = [
+                        'articles/sample.md',
+                        'articles/sample copy.md'
+                        // 可以添加更多文章路径
+                    ];
+
+                    // 渲染博客列表
+                    async function renderBlogPosts() {
+                        const container = document.getElementById('blog-container');
+                        container.innerHTML = '';
+
+                        for (const file of blogFiles) {
+                            try {
+                                // 获取并解析Markdown文件的frontmatter
+                                const response = await fetch(file);
+                                const markdown = await response.text();
+                                const [frontmatter, content] = markdown.split('---').slice(1);
+                                const postData = jsyaml.load(frontmatter);
+
+                                // 创建博客卡片
+                                const card = document.createElement('article');
+                                card.className = 'blog-card';
+
+                                // 卡片内容
+                                card.innerHTML = `
+                                    <h3><a href="#${file}">${postData.title}</a></h3>
+                                    <div class="post-meta">
+                                        <i class="fas fa-user"></i> ${postData.author || '未知作者'}
+                                        <i class="fas fa-calendar-alt"></i> ${postData.date}
+                                        <i class="fas fa-tags"></i> <span>${postData.tags.join(' ')}</span>
+                                    </div>
+                                    <div class="blog-content">
+                                        <p>${postData.excerpt || content.substring(0, 150)}...</p>
+                                        <button onclick="loadFullPost('${file}')">阅读全文</button>
+                                    </div>
+                                `;
+
+                                container.appendChild(card);
+                            } catch (error) {
+                                console.error(`加载文章 ${file} 失败:`, error);
+                            }
+                        }
+                    }
+
+                    // 加载完整文章
+                    async function loadFullPost(filePath) {
+                        try {
+                            const response = await fetch(filePath);
+                            const markdown = await response.text();
+                            const [frontmatter, content] = markdown.split('---').slice(1);
+                            const postData = jsyaml.load(frontmatter);
+
+                            // 显示完整文章
+                            document.querySelector('.featured-posts h2').textContent = postData.title;
+                            document.getElementById('blog-container').innerHTML = `
+                                <article class="blog-card full-post">
+                                    <div class="post-meta">
+                                        <i class="fas fa-user"></i> ${postData.author || '未知作者'}
+                                        <i class="fas fa-calendar-alt"></i> ${postData.date}
+                                        <i class="fas fa-tags"></i> <span>${postData.tags.join(' ')}</span>
+                                    </div>
+                                    <div class="blog-content">${marked.parse(content)}</div>
+                                    <button onclick="renderBlogPosts()">返回列表</button>
+                                </article>
+                            `;
+                        } catch (error) {
+                            console.error('加载文章失败:', error);
+                            alert('加载文章时出错，请重试');
+                        }
+                    }
+
+                    // 初始化页面
+                    document.addEventListener('DOMContentLoaded', renderBlogPosts);
+                </script>
             </div>
         </section>
     </main>

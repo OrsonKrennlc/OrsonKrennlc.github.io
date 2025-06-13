@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于 | 技术漫游指南</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/styles/github.min.css">
+    <style>
+        .about-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 2rem;
+            display: block;
+            object-fit: cover;
+            border: 3px solid var(--light);
+            box-shadow: var(--shadow);
+        }
+        .about-content h3 {
+            margin: 1.5rem 0 1rem;
+            color: var(--primary);
+        }
+        .about-content p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            justify-content: center;
+        }
+        .social-links a {
+            color: var(--secondary);
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+        .social-links a:hover {
+            color: var(--accent);
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="/">首页</a></li>
+                <li><a href="/archive">归档</a></li>
+                <li><a href="/about">关于</a></li>
+                <li><a href="/admin" class="admin-btn">管理</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="featured-posts">
+            <h2>关于</h2>
+            <div class="about-content">
+                <img src="https://via.placeholder.com/150" alt="博主头像" class="profile-pic">
+                <h3>技术漫游指南</h3>
+                <p>欢迎来到技术漫游指南，这里是一个分享前端开发、UI设计和技术思考的个人博客。</p>
+                <p>我是一名热爱技术的开发者，热衷于探索Web前沿技术，分享实用的开发经验和设计理念。本博客记录了我的学习历程、项目实践和技术见解，希望能为同样热爱技术的你提供一些帮助和启发。</p>
+                
+                <h3>博客宗旨</h3>
+                <p>• 分享有价值的技术内容和实践经验</p>
+                <p>• 探索现代Web开发的最佳实践</p>
+                <p>• 促进技术交流与学习</p>
+                
+                <h3>联系我</h3>
+                <div class="social-links">
+                    <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" aria-label="知乎"><i class="fab fa-zhihu"></i></a>
+                    <a href="#" aria-label="邮箱"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.7.0/lib/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</body>
+</html>

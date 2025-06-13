@@ -3,27 +3,40 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-family: 'Inter', 'Segoe UI', 'Microsoft YaHei', system-ui, sans-serif;
+}
+
+/* 全局样式 - 现代主义设计变量 */
+:root {
+    --primary: #1a1a1a;
+    --secondary: #666666;
+    --accent: #3498db;
+    --light: #f8f9fa;
+    --dark: #212529;
+    --shadow: 0 4px 12px rgba(0,0,0,0.08);
+    --radius: 8px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* 全局样式 */
 body {
-    line-height: 1.6;
-    color: #333;
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    line-height: 1.7;
+    color: var(--primary);
+    background-color: var(--light);
     min-height: 100vh;
-    padding-top: 80px;
+      font-size: 16px;
 }
 
-/* 头部样式 */
+/* 头部样式 - 现代简约设计 */
 header {
-    background: #2c3e50;
-    color: white;
-    padding: 1.5rem 0;
+    background: var(--light);
+    color: var(--primary);
+    padding: 1rem 0;
     position: fixed;
     width: 100%;
     z-index: 1000;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
 }
 
 nav {
@@ -35,100 +48,347 @@ nav {
     padding: 0 2rem;
 }
 
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    font-weight: 700;
+    font-size: 1.4rem;
+    letter-spacing: -0.5px;
+}
+
+.logo i {
+    color: var(--accent);
+    font-size: 1.6rem;
+}
+
 nav ul {
     display: flex;
     list-style: none;
-    gap: 2rem;
+    gap: 2.5rem;
 }
 
 nav a {
-    color: white;
+    color: var(--secondary);
     text-decoration: none;
     font-weight: 500;
-    transition: color 0.3s ease;
+    transition: var(--transition);
+    position: relative;
+    padding: 0.5rem 0;
+}
+
+nav a:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--accent);
+    transition: var(--transition);
 }
 
 nav a:hover {
-    color: #e74c3c;
+    color: var(--primary);
 }
 
-/* 博客卡片样式 */
+nav a:hover:after {
+    width: 100%;
+}
+
+.admin-btn {
+    background-color: var(--accent);
+    color: white !important;
+    padding: 0.5rem 1.2rem;
+    border-radius: var(--radius);
+}
+
+.admin-btn:after {
+    display: none;
+}
+
+.admin-btn:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+/* 主容器样式 */
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    padding-top: 90px;
+}
+
+/* 博客卡片样式 - 现代网格布局 */
+.featured-posts h2 {
+    font-size: 2.2rem;
+    margin-bottom: 2.5rem;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.8px;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.featured-posts h2:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background-color: var(--accent);
+    border-radius: 2px;
+}
+
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2.5rem;
+    margin-top: 3rem;
+}
+
 .blog-card {
     background: white;
-    border-radius: 12px;
-    margin: 2rem auto;
-    padding: 2rem;
-    max-width: 800px;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-    transition: transform 0.3s ease;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    border: none;
+    margin: 0;
+    padding: 0;
 }
 
 .blog-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.1);
 }
 
-.blog-content {
-    margin-top: 1rem;
-    line-height: 1.8;
-    color: #444;
+.blog-card h3 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+}
+
+.blog-card h3 a {
+    color: var(--primary);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.blog-card h3 a:hover {
+    color: var(--accent);
 }
 
 /* 文章元数据 */
 .post-meta {
     display: flex;
-    gap: 1rem;
-    margin: 1rem 0;
-    color: #7f8c8d;
+    gap: 1.2rem;
+    margin: 0 0 1.5rem 0;
+    color: var(--secondary);
     font-size: 0.9rem;
+    flex-wrap: wrap;
 }
 
 .post-meta i {
-    margin-right: 0.5rem;
+    margin-right: 0.4rem;
+    font-size: 0.9rem;
+}
+
+/* 博客内容区域 */
+.blog-card > div {
+    padding: 1.8rem;
+}
+
+.blog-content {
+    margin-top: 1rem;
+    line-height: 1.7;
+    color: var(--secondary);
+    font-size: 0.95rem;
+}
+
+.blog-content p {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 /* 响应式图片 */
 .blog-image {
     width: 100%;
-    border-radius: 8px;
-    margin: 1.5rem 0;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    height: 200px;
+    object-fit: cover;
+    border-radius: 0;
+    margin: 0;
+    box-shadow: none;
 }
 
-/* 代码块样式 */
+/* 按钮样式 */
+button {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-weight: 500;
+    transition: var(--transition);
+    font-size: 0.9rem;
+}
+
+button:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+/* 代码块样式 - 现代深色主题 */
 pre {
-    background: #2d2d2d;
-    color: #ecf0f1;
-    padding: 1rem;
-    border-radius: 6px;
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 1.5rem;
+    border-radius: var(--radius);
     overflow-x: auto;
+    font-size: 0.9rem;
+    line-height: 1.5;
 }
 
 code {
     font-family: 'Fira Code', monospace;
-    padding: 0.2rem 0.5rem;
+    padding: 0.2rem 0.4rem;
     border-radius: 4px;
-    background: #f8f8f8;
+    background: rgba(0,0,0,0.04);
+    color: #e74c3c;
 }
 
 /* 表格样式 */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin: 1.5rem 0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin: 2rem 0;
+    box-shadow: none;
+    border: 1px solid rgba(0,0,0,0.08);
 }
 
 th, td {
-    padding: 12px;
+    padding: 14px 18px;
     text-align: left;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid rgba(0,0,0,0.08);
 }
 
 th {
-    background: #2c3e50;
-    color: white;
+    background: var(--light);
+    color: var(--primary);
+    font-weight: 600;
 }
 
 tr:hover {
-    background: #f5f6fa;
+    background: rgba(52, 152, 219, 0.03);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .blog-grid {
+        grid-template-columns: 1fr;
+    }
+    nav ul {
+        gap: 1.5rem;
+    }
+    .featured-posts h2 {
+        font-size: 1.8rem;
+    }
+    main {
+        padding: 1.5rem;
+    }
+}
+
+/* 管理员界面样式 */
+.login-container {
+    max-width: 400px;
+    margin: 5rem auto;
+    background: white;
+    padding: 2.5rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.login-container h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--primary);
+}
+
+input[type="text"],
+input[type="password"],
+textarea {
+    width: 100%;
+    padding: 0.9rem;
+    margin-bottom: 1.2rem;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: var(--radius);
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.editor-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    background: white;
+    padding: 2rem;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+#editor-toolbar {
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+#editor-toolbar button {
+    background-color: var(--light);
+    color: var(--primary);
+}
+
+#editor-toolbar button:hover {
+    background-color: #e9ecef;
+}
+
+.CodeMirror {
+    height: 400px !important;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.blog-card {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.blog-grid > article:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.blog-grid > article:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.blog-grid > article:nth-child(4) {
+    animation-delay: 0.3s;
 }
