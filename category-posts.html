@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的华丽博客 - 仿Apple风格</title>
+    <title>分类文章 - 我的华丽博客</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
@@ -14,9 +14,7 @@
     <script src="firebase-config.js"></script>
 
 </head>
-<body class="page-home">
-
-    <header>
+<body class="page-categories"> <header>
         <div class="container navbar">
             <a href="index.html" class="logo">我的博客</a>
             <nav>
@@ -34,28 +32,27 @@
         </div>
     </header>
 
-    <main>
-        <section id="hero" class="hero">
-            <div class="hero-content">
-                <h1>创造与分享，我的数字足迹</h1>
-                <p>探索思想的深度，捕捉灵感的瞬间。在这里，文字与创意碰撞。</p>
-                <a href="#blog-posts-section" class="btn">开始阅读</a>
+    <main class="main-content">
+
+        <section class="category-header" id="category-posts-header">
+            <div class="container">
+                <h1 id="category-title-container">正在加载分类...</h1>
+                <p id="category-description-container" style="min-height: 1.2rem;"></p>
             </div>
         </section>
 
-        <section id="blog-posts-section" class="blog-posts">
+        <section class="category-section">
             <div class="container">
-                <h2>最新文章</h2>
-
                 <div class="post-grid" id="post-grid-container">
 
                     <p id="posts-loading" style="text-align: center; font-size: 1.2rem; color: var(--secondary-text-color); grid-column: 1 / -1;">
-                        正在从数据库加载最新文章...
+                        正在加载文章...
                     </p>
 
                 </div>
             </div>
         </section>
+
     </main>
 
     <footer>
@@ -67,57 +64,85 @@
     <script>
         // --- 页面加载逻辑 ---
         document.addEventListener('DOMContentLoaded', () => {
-            // [正确] 首页调用 loadAllPosts
-            loadAllPosts();
+            loadCategoryPosts();
         });
 
-        // --- 核心函数：加载所有文章 ---
-        async function loadAllPosts() {
-            // [正确] 获取ID，此时 id="posts-loading" 应该存在
+        // --- 核心函数：加载特定分类的文章 ---
+        async function loadCategoryPosts() {
             const gridContainer = document.getElementById('post-grid-container');
             const loadingIndicator = document.getElementById('posts-loading');
-
-            // 检查 loadingIndicator 是否真的存在 (安全防护)
-            if (!loadingIndicator) {
-                console.error("致命错误: 找不到 ID 为 'posts-loading' 的元素!");
-                return;
-            }
+            const titleContainer = document.getElementById('category-title-container');
+            const descContainer = document.getElementById('category-description-container');
 
             try {
-                // db 变量来自 firebase-config.js
-                const postsCollection = db.collection('posts').orderBy("date", "desc");
-                const snapshot = await postsCollection.get();
+                // 1. 从 URL 获取分类 ID (例如 'tech')
+                const urlParams = new URLSearchParams(window.location.search);
+                const categoryId = urlParams.get('id');
 
-                if (snapshot.empty) {
-                    loadingIndicator.innerText = "目前还没有文章。";
+                if (!categoryId) {
+                    titleContainer.innerText = "错误";
+                    loadingIndicator.innerText = "未指定分类 ID。";
+                    loadingIndicator.style.color = "#D9001B";
                     return;
                 }
 
+                // 2. [第1次查询]
+                // 我们需要先获取分类的 *名称* (例如 "技术分享")
+                const categoryRef = db.collection('categories').doc(categoryId);
+                const categoryDoc = await categoryRef.get();
+
+                if (!categoryDoc.exists) {
+                    titleContainer.innerText = "错误";
+                    loadingIndicator.innerText = "所选分类不存在。";
+                    loadingIndicator.style.color = "#D9001B";
+                    return;
+                }
+
+                const categoryData = categoryDoc.data();
+                const categoryName = categoryData.name; // [关键] 得到 "技术分享"
+
+                // 更新页面标题
+                titleContainer.innerText = categoryName;
+                descContainer.innerText = categoryData.description || '';
+                document.title = categoryName + " - 我的华丽博客";
+
+                // 3. [第2次查询]
+                // 现在使用这个 *名称* 去 'posts' 集合中查询
+                // [假设] 您的 posts 文档中有一个 'category' 字段，其值为 "技术分享"
+                const postsQuery = db.collection('posts')
+                                     .where('category', '==', categoryName)
+                                     .orderBy('date', 'desc');
+
+                const snapshot = await postsQuery.get();
+
+                if (snapshot.empty) {
+                    loadingIndicator.innerText = `“${categoryName}” 分类下目前还没有文章。`;
+                    return;
+                }
+
+                // 4. 渲染文章卡片 (复用 index.html 的逻辑)
                 let postsHtml = '';
                 snapshot.forEach(doc => {
                     const postData = doc.data();
                     const postId = doc.id;
-                    postsHtml += createPostCard(postData, postId);
+                    postsHtml += createPostCard(postData, postId); // 复用函数
                 });
 
-                // [正确] 移除加载指示器
                 loadingIndicator.remove();
                 gridContainer.innerHTML = postsHtml;
 
             } catch (error) {
-                console.error("加载文章列表时出错 (请确保 firebase-config.js 已正确配置):", error);
-                // [正确] 错误处理
-                loadingIndicator.innerText = "加载文章时发生网络错误。";
-                loadingIndicator.style.color = "#D93025";
+                console.error("加载分类文章时出错:", error);
+                titleContainer.innerText = "加载错误";
+                loadingIndicator.innerText = "加载文章时发生网络错误。 (详情请看F12控制台)";
+                loadingIndicator.style.color = "#D9001B";
             }
         }
 
-        // --- 辅助函数：创建文章卡片HTML ---
+        // --- 辅助函数：创建文章卡片HTML (与 index.html 完全一致) ---
         function createPostCard(data, id) {
             const summary = data.summary || (data.content ? data.content.substring(0, 50) + '...' : '点击阅读...');
             const imageUrl = data.imageUrl || `https://via.placeholder.com/600x400/E0E5EC/9099A4?text=${data.title || 'Image'}`;
-
-            // [正确] 链接到 post.html 并带上 id
             return `
                 <article class="post-card">
                     <a href="post.html?id=${id}">
@@ -137,16 +162,6 @@
             `;
         }
 
-        // --- 首页专属JS：Header滚动效果 ---
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-        });
-
         // --- 全局汉堡包菜单JS ---
         const hamburgerMenu = document.querySelector('.hamburger-menu');
         const navLinks = document.querySelector('.nav-links');
@@ -155,7 +170,6 @@
             hamburgerMenu.classList.toggle('active');
             navLinks.classList.toggle('active');
         });
-
     </script>
 </body>
 </html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正在加载... - 我的华丽博客</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=1.1">
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+
+    <script src="firebase-config.js"></script>
+
+</head>
+<body class="page-post">
+
+    <header>
+        <div class="container navbar">
+            <a href="index.html" class="logo">我的博客</a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="categories.html">分类</a></li>
+                    <li><a href="dashboard.html">控制台</a></li>
+                </ul>
+            </nav>
+            <div class="hamburger-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <article class="post-container" id="post-article-container">
+            <div id="post-loading">
+                <p style="text-align: center; font-size: 1.2rem; color: var(--secondary-text-color); padding: 80px 0;">
+                    正在从数据库加载文章...
+                </p>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 我的华丽博客. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- 3. 页面加载逻辑 ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPost();
+        });
+
+        // --- 4. 核心函数：加载文章 ---
+        async function loadPost() {
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const postId = urlParams.get('id');
+
+                const articleContainer = document.getElementById('post-article-container');
+                const loadingIndicator = document.getElementById('post-loading');
+
+                if (!postId) {
+                    showError(articleContainer, "错误：未找到文章 ID。");
+                    return;
+                }
+
+                const postRef = db.collection('posts').doc(postId);
+                const doc = await postRef.get();
+
+                if (!doc.exists) {
+                    showError(articleContainer, "错误：文章不存在或已被删除。");
+                    return;
+                }
+
+                const postData = doc.data();
+                renderPost(articleContainer, loadingIndicator, postData);
+
+            } catch (error) {
+                console.error("加载文章时出错:", error);
+                const articleContainer = document.getElementById('post-article-container');
+                showError(articleContainer, "加载文章时发生网络错误。");
+            }
+        }
+
+        // --- 5. 核心函数：渲染页面 (已修正) ---
+        function renderPost(container, loadingIndicator, data) {
+            const contentHtml = marked.parse(data.content || "");
+            const postDate = data.date || "未知日期";
+            const postCategory = data.category || "未分类";
+
+            document.title = data.title + " - 我的华丽博客";
+
+            // [已修正] 确保这里使用的是 data.imageUrl
+            const featuredImageHtml = data.imageUrl
+                ? `<figure class="post-featured-image">
+                       <img src="${data.imageUrl}" alt="${data.title}">
+                   </figure>`
+                : "";
+
+            const finalHtml = `
+                <header class="post-header">
+                    <h1 class="post-title">${data.title}</h1>
+                    <div class="post-meta">
+                        <span class="meta-date">${postDate}</span>
+                        <span class="meta-divider">|</span>
+                        <span class="meta-category"><a href="#">${postCategory}</a></span>
+                    </div>
+                </header>
+                ${featuredImageHtml}
+                <section class="post-content">
+                    ${contentHtml}
+                </section>
+            `;
+
+            container.innerHTML = finalHtml;
+        }
+
+        // --- 6. 错误处理函数 ---
+        function showError(container, message) {
+            container.innerHTML = `
+                <p style="text-align: center; font-size: 1.2rem; color: #D93025; padding: 80px 0;">
+                    ${message}
+                </p>
+            `;
+        }
+
+        // --- 7. 全局汉堡包菜单JS ---
+        const hamburgerMenu = document.querySelector('.hamburger-menu');
+        const navLinks = document.querySelector('.nav-links');
+
+        hamburgerMenu.addEventListener('click', () => {
+            hamburgerMenu.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>控制台 - 我的华丽博客</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="page-dashboard"> <header>
+        <div class="container navbar">
+            <a href="index.html" class="logo">我的博客</a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="categories.html">分类</a></li>
+                    <li><a href="dashboard.html">控制台</a></li> </ul>
+            </nav>
+            <div class="hamburger-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="dashboard-container">
+            <div class="login-box">
+                <div class="login-header">
+                    <h1 class="login-title">欢迎回来</h1>
+                    <p class="login-subtitle">请输入您的凭据以管理博客</p>
+                </div>
+
+                <form class="login-form" onsubmit="alert('这是一个静态模拟页面！'); return false;">
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <input type="text" id="username" name="username" placeholder="输入用户名" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" id="password" name="password" placeholder="输入密码" required>
+                    </div>
+                    <div class="form-actions">
+                        <a href="#" class="forgot-password">忘记密码?</a>
+                        <button type="submit" class="btn login-btn">登 录</button>
+                    </div>
+                </form>
+
+                <div class="login-footer">
+                    <p>这是一个静态模拟页面。真正的Typecho后台需要服务器和数据库支持。</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 我的华丽博客. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const hamburgerMenu = document.querySelector('.hamburger-menu');
+        const navLinks = document.querySelector('.nav-links');
+
+        hamburgerMenu.addEventListener('click', () => {
+            hamburgerMenu.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>
