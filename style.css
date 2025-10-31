@@ -691,3 +691,212 @@ footer {
     margin-left: auto;
     margin-right: auto;
 }
+
+/* --- 8. [新增] 登录页面错误提示 --- */
+.login-error-message {
+    color: #D9001B; /* 醒目的红色 */
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: center;
+    margin-top: 10px;
+    min-height: 1.2rem; /* 即使没错误也占据空间，防止跳动 */
+}
+
+/* --- 9. [新增] Admin 管理后台样式 --- */
+
+.admin-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--background-color);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 30px;
+}
+
+.admin-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+/* "新建文章" 按钮复用 .btn 样式 */
+
+.admin-post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.admin-post-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #fcfcfc;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    transition: box-shadow 0.3s ease;
+}
+
+.admin-post-item:hover {
+    box-shadow: var(--card-shadow);
+}
+
+.admin-post-info h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 5px;
+}
+.admin-post-info span {
+    font-size: 0.85rem;
+    color: var(--secondary-text-color);
+    font-family: 'Menlo', 'Courier New', monospace;
+}
+
+.admin-post-actions {
+    display: flex;
+    gap: 15px;
+}
+
+/* 编辑和删除按钮的样式 */
+.btn-edit, .btn-delete {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+/* 编辑按钮 (绿色) */
+.btn-edit {
+    background-color: #28a745;
+    color: white;
+}
+.btn-edit:hover {
+    background-color: #218838;
+}
+
+/* 删除按钮 (红色) */
+.btn-delete {
+    background-color: #dc3545;
+    color: white;
+}
+.btn-delete:hover {
+    background-color: #c82333;
+}
+
+/* --- 10. [美化版] Admin 编辑器样式 (editor.html) --- */
+
+.editor-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 50px; /* 增加内边距 */
+    background-color: var(--background-color);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+}
+
+.editor-container h1 {
+    font-size: 2.8rem; /* 增大标题 */
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 40px; /* 增大间距 */
+    color: var(--text-color);
+}
+
+.editor-form .form-group {
+    margin-bottom: 30px; /* 增大表单组间距 */
+}
+
+.editor-form .form-group label {
+    display: block;
+    font-size: 1.1rem; /* 增大label */
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 12px; /* 增大label和input间距 */
+}
+
+/* 通用输入框和文本域样式 */
+.editor-form input[type="text"],
+.editor-form input[type="email"],
+.editor-form textarea {
+    width: 100%;
+    padding: 15px 18px; /* 增大输入框内边距 (更高) */
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: #fcfcfc; /* 浅色背景 */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.editor-form input[type="text"]:focus,
+.editor-form input[type="email"]:focus,
+.editor-form textarea:focus {
+    outline: none;
+    border-color: var(--primary-button-bg);
+    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.15); /* 更明显的光晕 */
+}
+
+/* Markdown 文本域使用等宽字体 */
+.editor-form textarea#post-content {
+    font-family: 'Menlo', 'Courier New', monospace;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    background-color: #f6f8fa; /* 给代码区一个不同背景 */
+}
+
+/* 一行两列的表单组 */
+.form-group-row {
+    display: flex;
+    gap: 30px;
+}
+.form-group-row .form-group {
+    flex: 1; /* 两列平分 */
+}
+
+/* 消息提示 */
+.editor-form #editor-message {
+    text-align: center;
+    font-weight: 500;
+    margin: 15px 0;
+    min-height: 1.2rem;
+    font-size: 1.1rem; /* 增大提示文字 */
+}
+.message-success {
+    color: #28a745;
+}
+.message-error {
+    color: #dc3545;
+}
+
+/* 按钮居中 */
+.editor-form .form-actions {
+    text-align: center;
+    margin-top: 40px; /* 增大间距 */
+    border-top: 1px solid var(--border-color); /* 加一条分割线 */
+    padding-top: 40px;
+}
+.editor-form .form-actions .btn {
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 16px 45px; /* 更大的按钮 */
+    border-radius: 999px; /* 苹果风格 */
+}
+.editor-form .form-actions .btn:disabled {
+    background-color: var(--secondary-text-color);
+    cursor: not-allowed;
+    box-shadow: none;
+}

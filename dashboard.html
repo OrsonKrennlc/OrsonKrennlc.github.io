@@ -3,19 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>控制台 - 我的华丽博客</title>
+    <title>控制台 - orsonkrenlc's blog</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+
+    <script src="firebase-config.js"></script>
+
 </head>
-<body class="page-dashboard"> <header>
+<body class="page-dashboard">
+
+    <header>
         <div class="container navbar">
-            <a href="index.html" class="logo">我的博客</a>
+            <a href="index.html" class="logo">ShArch</a>
             <nav>
                 <ul class="nav-links">
                     <li><a href="index.html">首页</a></li>
                     <li><a href="categories.html">分类</a></li>
-                    <li><a href="dashboard.html">控制台</a></li> </ul>
+                    <li><a href="dashboard.html">控制台</a></li>
+                </ul>
             </nav>
             <div class="hamburger-menu">
                 <span></span>
@@ -33,35 +43,77 @@
                     <p class="login-subtitle">请输入您的凭据以管理博客</p>
                 </div>
 
-                <form class="login-form" onsubmit="alert('这是一个静态模拟页面！'); return false;">
+                <form class="login-form" id="login-form">
                     <div class="form-group">
-                        <label for="username">用户名</label>
-                        <input type="text" id="username" name="username" placeholder="输入用户名" required>
+                        <label for="login-email">邮箱</label>
+                        <input type="email" id="login-email" name="email" placeholder="输入邮箱" required>
                     </div>
                     <div class="form-group">
-                        <label for="password">密码</label>
-                        <input type="password" id="password" name="password" placeholder="输入密码" required>
+                        <label for="login-password">密码</label>
+                        <input type="password" id="login-password" name="password" placeholder="输入密码" required>
                     </div>
+
+                    <p id="login-error" class="login-error-message"></p>
+
                     <div class="form-actions">
                         <a href="#" class="forgot-password">忘记密码?</a>
                         <button type="submit" class="btn login-btn">登 录</button>
                     </div>
                 </form>
 
-                <div class="login-footer">
-                    <p>这是一个静态模拟页面。真正的Typecho后台需要服务器和数据库支持。</p>
-                </div>
             </div>
         </div>
     </main>
 
     <footer>
         <div class="container">
-            <p>&copy; 2024 我的华丽博客. All rights reserved.</p>
+            <p>&copy; 2025 orsonkrennlc. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
+        // --- 1. 获取表单元素 ---
+        const loginForm = document.getElementById('login-form');
+        const loginEmail = document.getElementById('login-email');
+        const loginPassword = document.getElementById('login-password');
+        const loginError = document.getElementById('login-error');
+
+        // --- 2. 监听表单提交 ---
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // 阻止表单默认的刷新行为
+
+            const email = loginEmail.value;
+            const password = loginPassword.value;
+
+            // 清除之前的错误
+            loginError.textContent = '';
+
+            try {
+                // --- 3. [关键] 使用 Firebase Auth 登录 ---
+                // auth 实例来自 firebase-config.js (如果它在那里初始化了)
+                // 为确保安全，我们在这里获取 auth 实例
+                const auth = firebase.auth();
+
+                console.log("正在尝试登录...");
+                await auth.signInWithEmailAndPassword(email, password);
+
+                // --- 4. 登录成功 ---
+                console.log("登录成功!");
+                // [关键] 跳转到真正的管理页面
+                window.location.href = 'admin.html';
+
+            } catch (error) {
+                // --- 5. 登录失败 ---
+                console.error("登录失败:", error.message);
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+                    loginError.textContent = '邮箱或密码不正确。';
+                } else {
+                    loginError.textContent = '登录时发生错误，请稍后再试。';
+                }
+            }
+        });
+
+        // --- 全局汉堡包菜单JS ---
         const hamburgerMenu = document.querySelector('.hamburger-menu');
         const navLinks = document.querySelector('.nav-links');
 

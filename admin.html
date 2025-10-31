@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - orsonkrennlc's blog</title>
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+</head>
+<body class="page-dashboard"> <header>
+        <div class="container navbar">
+            <a href="index.html" class="logo">管理后台</a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">返回前台</a></li>
+                    <li><a href="#" id="logout-button">退出登录</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="admin-container"> <div class="admin-header">
+                <h1>文章管理</h1>
+                <a href="editor.html" class="btn">新建文章</a>
+            </div>
+
+            <div class="admin-post-list" id="admin-post-list-container">
+
+                <p id="admin-loading">正在加载文章列表...</p>
+
+                </div>
+        </div>
+    </main>
+
+    <script>
+        const auth = firebase.auth();
+        const logoutButton = document.getElementById('logout-button');
+        const postListContainer = document.getElementById('admin-post-list-container');
+        const loadingIndicator = document.getElementById('admin-loading');
+
+        // 1. 检查登录状态
+        auth.onAuthStateChanged(user => {
+            if (!user) {
+                // 如果用户未登录，强行T回登录页
+                window.location.href = 'dashboard.html';
+            } else {
+                // [新增] 用户已登录, 加载文章
+                loadAdminPosts();
+            }
+        });
+
+        // 2. 退出登录
+        logoutButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => {
+                window.location.href = 'index.html';
+            });
+        });
+
+        // 3. [新增] 核心函数：加载所有文章
+        async function loadAdminPosts() {
+            try {
+                const snapshot = await db.collection('posts').orderBy('date', 'desc').get();
+
+                if (snapshot.empty) {
+                    loadingIndicator.innerText = "你还没有发布任何文章。";
+                    return;
+                }
+
+                let postsHtml = '';
+                snapshot.forEach(doc => {
+                    const post = doc.data();
+                    const postId = doc.id;
+                    postsHtml += `
+                        <div class="admin-post-item">
+                            <div class="admin-post-info">
+                                <h3>${post.title || '无标题'}</h3>
+                                <span>${post.date || '未知日期'} | ID: ${postId}</span>
+                            </div>
+                            <div class="admin-post-actions">
+                                <a href="editor.html?id=${postId}" class="btn-edit">编辑</a>
+                                <button class="btn-delete" data-id="${postId}">删除</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                loadingIndicator.remove();
+                postListContainer.innerHTML = postsHtml;
+
+            } catch (error) {
+                console.error("加载管理文章时出错:", error);
+                loadingIndicator.innerText = "加载文章失败。";
+                loadingIndicator.style.color = "#D9001B";
+            }
+        }
+
+        // 4. [新增] 核心功能：处理删除
+        postListContainer.addEventListener('click', async (e) => {
+            // 我们使用了事件委托，只在 'btn-delete' 按钮上触发
+            if (e.target.classList.contains('btn-delete')) {
+                const postId = e.target.dataset.id;
+
+                // 弹出确认框，防止误删
+                if (!confirm(`你确定要删除 ID 为 "${postId}" 的这篇文章吗？此操作无法撤销。`)) {
+                    return; // 用户取消
+                }
+
+                try {
+                    // [关键] 执行删除
+                    await db.collection('posts').doc(postId).delete();
+
+                    // 从UI上移除该条目
+                    e.target.closest('.admin-post-item').remove();
+
+                } catch (error) {
+                    console.error("删除文章时出错:", error);
+                    alert("删除失败，请稍后再试。");
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
