@@ -190,7 +190,7 @@ footer {
 
     /* [已修改] 使用您的背景图, 并添加一个30%的黑色遮罩以确保文字可读性 */
 /* [已修正] 使用 .jpg 的直接链接 */
-    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://s1.imagehub.cc/images/2025/11/01/1c26a5a10d1ba22e5837077076a6e8cb.th.jpg');    background-size: cover;
+    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://s1.imagehub.cc/images/2025/11/01/1c26a5a10d1ba22e5837077076a6e8cb.jpg');    background-size: cover;
     background-position: center;
     position: relative;
     overflow: hidden;
