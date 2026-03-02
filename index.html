@@ -7,6 +7,7 @@
     <title>orsonkrenlc's blog</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=2.0">
 
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
@@ -38,10 +39,26 @@
     </header>
 
     <main>
-        <section class="hero">
-            <div class="container hero-content">
-                <h1>与光同行，筑梦未来</h1>
-                <p>每一次的快门，都是对瞬间的致敬；每一行代码，都是对世界的一次重构。</p>
+        <section class="hero-carousel-section">
+            <div class="container">
+                <div class="carousel-container">
+                    <div id="hero-carousel-inner" class="hero-carousel-inner">
+                        <!-- 轮播内容由JS注入 -->
+                    </div>
+                    <button id="hero-prev" class="carousel-btn prev-btn" aria-label="上一篇">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    <button id="hero-next" class="carousel-btn next-btn" aria-label="下一篇">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                    <div id="hero-carousel-indicators" class="carousel-indicators"></div>
+                </div>
             </div>
         </section>
 
@@ -89,8 +106,12 @@
                     return;
                 }
 
+                const docs = snapshot.docs;
+                const topDocs = docs.slice(0, 3);
+                renderHeroCarousel(topDocs);
+
                 let postsHtml = '';
-                snapshot.forEach(doc => {
+                docs.forEach(doc => {
                     const postData = doc.data();
                     const postId = doc.id;
                     postsHtml += createPostCard(postData, postId);
@@ -127,6 +148,87 @@
             hamburgerMenu.classList.toggle('active');
             navLinks.classList.toggle('active');
         });
+
+        let currentSlide = 0;
+        let totalSlides = 0;
+        let slideInterval;
+
+        function renderHeroCarousel(topDocs) {
+            const carouselInner = document.getElementById('hero-carousel-inner');
+            const indicators = document.getElementById('hero-carousel-indicators');
+            if (!carouselInner || topDocs.length === 0) return;
+
+            totalSlides = topDocs.length;
+            let html = '';
+            let indicatorsHtml = '';
+
+            topDocs.forEach((doc, index) => {
+                const data = doc.data();
+                const title = data.title || '无标题';
+                const summary = data.summary || (data.content ? data.content.substring(0, 60) + '...' : '一段精彩的旅程');
+                const imgUrl = data.coverImage || data.image || data.featuredImage;
+                const bgStyle = imgUrl ? `background-image: url('${imgUrl}');` : `background: linear-gradient(135deg, #1f1c2c 0%, #928DAB 100%);`;
+
+                html += `
+                    <a href="post.html?id=${doc.id}" class="hero-carousel-slide" style="${bgStyle}">
+                        <div class="hero-carousel-overlay"></div>
+                        <div class="hero-carousel-content">
+                            <h2 class="hero-carousel-title">${title}</h2>
+                            <hr class="hero-carousel-divider">
+                            <p class="hero-carousel-summary">${summary}</p>
+                        </div>
+                    </a>
+                `;
+
+                indicatorsHtml += `<div class="carousel-dot ${index === 0 ? 'active' : ''}" onclick="goToSlide(${index})"></div>`;
+            });
+
+            carouselInner.innerHTML = html;
+            if (indicators) indicators.innerHTML = indicatorsHtml;
+
+            const prevBtn = document.getElementById('hero-prev');
+            const nextBtn = document.getElementById('hero-next');
+            if (prevBtn) prevBtn.addEventListener('click', prevSlide);
+            if (nextBtn) nextBtn.addEventListener('click', nextSlide);
+
+            startSlideInterval();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateCarousel();
+            resetSlideInterval();
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateCarousel();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateCarousel();
+        }
+
+        function updateCarousel() {
+            const carouselInner = document.getElementById('hero-carousel-inner');
+            if (carouselInner) {
+                carouselInner.style.transform = `translateX(-${currentSlide * 100}%)`;
+            }
+            const dots = document.querySelectorAll('.carousel-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        function startSlideInterval() {
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        function resetSlideInterval() {
+            clearInterval(slideInterval);
+            startSlideInterval();
+        }
     </script>
 </body>
 
