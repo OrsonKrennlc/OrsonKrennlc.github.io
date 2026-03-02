@@ -1,20 +1,22 @@
 /* ---
-   STYLE.CSS - 博客全局样式表 (最终清理版)
+   STYLE.CSS - Minimalist Rewrite (Apple / Linear Style)
 --- */
 
-/* --- 1. 全局与变量定义 --- */
+/* --- 1. Global & Variables --- */
 :root {
-    --text-color: #1d1d1f;
+    --text-color: #111111;
     --background-color: #ffffff;
-    --primary-button-bg: #007bff;
+    --primary-button-bg: #111111;
     --primary-button-text: #ffffff;
-    --secondary-text-color: #6e6e73;
-    --border-color: #e8e8ed;
-    --header-bg-blur: rgba(255, 255, 255, 0.8);
-    --header-border: 1px solid rgba(0, 0, 0, 0.05);
-    --card-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
-    --card-hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    --section-bg: #f5f5f7; /* 统一的浅灰背景 */
+    --secondary-text-color: #888888;
+    --border-color: #eaeaea;
+    --header-bg-blur: rgba(255, 255, 255, 0.85);
+    --header-border: 1px solid var(--border-color);
+    --section-bg: #fafafa;
+    --error-color: #e02424;
+    --success-color: #059669;
+    --transition-speed: 0.2s;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 /* Reset & Base Styles */
@@ -25,7 +27,7 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-family);
     color: var(--text-color);
     background-color: var(--background-color);
     line-height: 1.6;
@@ -35,62 +37,35 @@ body {
 }
 
 a {
-    color: var(--primary-button-bg);
+    color: inherit;
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: color var(--transition-speed) ease;
 }
 
 a:hover {
-    color: #0056b3;
+    color: var(--secondary-text-color);
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 0 24px;
 }
 
-/* --- 2. 共享组件 (Header & Footer) --- */
-header {
+/* --- 2. Shared Components (Header & Footer) --- */
+body>header {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     z-index: 1000;
-    background-color: transparent;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background-color: var(--header-bg-blur);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: var(--header-border);
-    padding: 15px 0;
+    padding: 16px 0;
     transition: background-color 0.3s ease, border-bottom 0.3s ease;
 }
-
-/* 首页独有的Header滚动效果 */
-.page-home header {
-    background-color: transparent;
-    border-bottom: none;
-}
-.page-home header.scrolled {
-    background-color: var(--header-bg-blur);
-    border-bottom: var(--header-border);
-}
-
-/* 非首页的Header默认就有背景
-   [修正] 确保 header 和 footer 始终显示
-*/
-.page-categories header,
-.page-category-posts header,
-.page-post header,
-.page-dashboard header {
-    background-color: var(--header-bg-blur);
-    border-bottom: var(--header-border);
-    display: block; /* 确保 header 始终显示 */
-}
-
-.page-post footer {
-    display: block; /* 确保 footer 始终显示 */
-}
-
 
 .navbar {
     display: flex;
@@ -99,59 +74,37 @@ header {
 }
 
 .logo {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.2rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
     color: var(--text-color);
 }
 
 .nav-links {
     list-style: none;
     display: flex;
-    gap: 40px;
+    gap: 32px;
 }
 
 .nav-links a {
-    font-weight: 500;
+    font-weight: 400;
     color: var(--secondary-text-color);
-    font-size: 1rem;
-    padding: 5px 0;
-    position: relative;
-    transition: color 0.3s ease;
-}
-
-.nav-links a::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background-color: var(--primary-button-bg);
-    transition: width 0.3s ease;
+    font-size: 0.95rem;
+    padding: 4px 0;
+    transition: color var(--transition-speed) ease;
 }
 
 .nav-links a:hover {
     color: var(--text-color);
 }
-.nav-links a:hover::after {
-    width: 100%;
-}
 
-/* 导航栏高亮当前页 */
 .page-home .nav-links a[href="index.html"],
 .page-categories .nav-links a[href="categories.html"],
 .page-category-posts .nav-links a[href="categories.html"],
 .page-dashboard .nav-links a[href="dashboard.html"] {
     color: var(--text-color);
-    font-weight: 600;
+    font-weight: 500;
 }
-.page-home .nav-links a[href="index.html"]::after,
-.page-categories .nav-links a[href="categories.html"]::after,
-.page-category-posts .nav-links a[href="categories.html"]::after,
-.page-dashboard .nav-links a[href="dashboard.html"]::after {
-    width: 100%;
-}
-
 
 /* Hamburger Menu for Mobile */
 .hamburger-menu {
@@ -162,775 +115,614 @@ header {
 }
 
 .hamburger-menu span {
-    width: 25px;
-    height: 3px;
+    width: 22px;
+    height: 1.5px;
     background-color: var(--text-color);
     transition: all 0.3s ease;
 }
 
-/* Footer (Shared) */
+/* Footer */
 footer {
-    background-color: var(--section-bg);
-    border-top: var(--border-color);
-    padding: 40px 0;
+    background-color: var(--background-color);
+    padding: 64px 0 48px;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--secondary-text-color);
 }
 
-/* --- 3. 页面: 首页 (index.html) --- */
+.social-links {
+    margin-bottom: 24px;
+}
 
-/* Hero Section */
+.social-links a {
+    margin: 0 16px;
+    color: var(--secondary-text-color);
+    font-weight: 400;
+}
+
+.social-links a:hover {
+    color: var(--text-color);
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--primary-button-bg);
+    color: var(--primary-button-text);
+    padding: 12px 24px;
+    border-radius: 9999px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    border: 1px solid var(--primary-button-bg);
+    transition: opacity var(--transition-speed) ease, background-color var(--transition-speed);
+    cursor: pointer;
+}
+
+.btn:hover {
+    opacity: 0.85;
+    color: var(--primary-button-text);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Custom error message coloring globally */
+.message-error,
+.login-error-message {
+    color: var(--error-color);
+    font-size: 0.9rem;
+    min-height: 1.2rem;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.message-success {
+    color: var(--success-color);
+}
+
+/* --- 3. Page: Home (index.html) --- */
+
 .hero {
-    height: 100vh;
+    min-height: 70vh;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
-
-    /* [已修改] 使用您的背景图, 并添加一个30%的黑色遮罩以确保文字可读性 */
-/* [已修正] 使用 .jpg 的直接链接 */
-    background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('https://s1.imagehub.cc/images/2025/11/01/1c26a5a10d1ba22e5837077076a6e8cb.jpg');    background-size: cover;
-    background-position: center;
-    position: relative;
-    overflow: hidden;
-    padding-top: 80px; /* 留出header空间 */
+    background: var(--background-color);
+    padding-top: 80px;
 }
 
-.hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    /* [已修改] 移除旧的 radial-gradient, 因为我们有背景图了 */
-    background: none;
-    pointer-events: none;
-    opacity: 0.7;
-}
-
-/* [请替换这个] */
 .hero-content {
-    max-width: 800px;
-    color: #ffffff;
-    position: relative;
-    z-index: 10;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-
-    /* [新增] 将整个内容块（文字+按钮）向上平移 30 像素 */
-    transform: translateY(-40px);
+    max-width: 640px;
+    margin: 0 auto;
 }
 
 .hero h1 {
-    font-size: 4rem;
-    font-weight: 700;
-    margin-bottom: 20px;
+    font-size: 3.5rem;
+    font-weight: 600;
+    margin-bottom: 24px;
     letter-spacing: -0.04em;
     line-height: 1.1;
-    /* 颜色将从 .hero-content (白色) 继承 */
+    color: var(--text-color);
 }
 
 .hero p {
-    font-size: 1.5rem;
+    font-size: 1.15rem;
     font-weight: 400;
-    margin-bottom: 80px; /* [已修改] 增加了间距, 把按钮推下去 */
-    color: rgba(255, 255, 255, 0.9);
-    line-height: 1.4;
+    margin-bottom: 48px;
+    color: var(--secondary-text-color);
+    line-height: 1.6;
 }
 
-/* .btn 样式保持不变 (它已经是白色文字配蓝色背景) */
-.btn {
-    display: inline-block;
-    background-color: var(--primary-button-bg);
-    color: var(--primary-button-text);
-    padding: 15px 30px;
-    border-radius: 999px;
-    font-size: 1.1rem;
-    font-weight: 500;
-    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.2);
-}
-/* [请在 .btn { ... } 后面新增这个] */
-
-/* 专门为 Hero 区的按钮增加上外边距，把它推下去 */
-.hero .btn {
-    margin-top: 280px; /* 增加 40px 的顶部间距 */
-}
-
-.btn:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 123, 255, 0.3);
-}
-
-/* Blog Section (Homepage & Category Posts) - 保持不变 */
 .blog-posts {
-    padding: 80px 0;
-    background-color: var(--section-bg);
+    padding: 40px 0 120px 0;
+    background-color: var(--background-color);
 }
 
-.blog-posts h2 {
-    text-align: center;
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 60px;
-    letter-spacing: -0.03em;
+.blog-posts h2,
+.category-header h1 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 40px;
+    letter-spacing: -0.02em;
     color: var(--text-color);
+    text-align: left;
 }
 
 .post-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 40px;
+    display: flex;
+    flex-direction: column;
 }
 
 .post-card {
-    background-color: var(--background-color);
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: var(--card-shadow);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    gap: 40px;
+    align-items: baseline;
+    padding: 32px 0;
+    border-top: 1px solid var(--border-color);
+    transition: opacity var(--transition-speed) ease;
+}
+
+.post-grid .post-card:last-child {
+    border-bottom: 1px solid var(--border-color);
 }
 
 .post-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--card-hover-shadow);
+    opacity: 0.6;
 }
 
-.post-card-image {
-    width: 100%;
-    height: 220px;
-    overflow: hidden;
-    position: relative;
-}
-
-.post-card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-}
-
-.post-card:hover .post-card-image img {
-    transform: scale(1.05);
+.post-card-date {
+    width: 100px;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+    color: var(--secondary-text-color);
 }
 
 .post-card-content {
-    padding: 25px;
     flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
 }
 
 .post-card-content h3 {
-    font-size: 1.7rem;
-    font-weight: 600;
-    margin-bottom: 10px;
-    line-height: 1.3;
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    letter-spacing: -0.01em;
     color: var(--text-color);
-}
-.post-card-content h3 a {
-    color: var(--text-color);
-}
-.post-card-content h3 a:hover {
-    color: var(--primary-button-bg);
-}
-
-.post-card-content .date {
-    font-size: 0.9rem;
-    color: var(--secondary-text-color);
-    margin-bottom: 15px;
-    display: block;
 }
 
 .post-card-content p {
     font-size: 1rem;
     color: var(--secondary-text-color);
-    margin-bottom: 20px;
-    line-height: 1.5;
-    flex-grow: 1;
+    line-height: 1.6;
 }
 
-.post-card-content .read-more {
-    font-weight: 500;
-    display: inline-block;
-    margin-top: auto;
-}
+/* --- 4. Page: Categories (categories.html & category-posts.html) --- */
 
-/* --- 4. 页面: 分类页 (categories.html & category-posts.html) --- */
 .main-content {
-    padding-top: 100px; /* 留出固定的header空间 */
+    padding-top: 100px;
     min-height: calc(100vh - 100px);
 }
+
 .category-header {
-    text-align: center;
-    padding: 60px 20px;
+    padding: 60px 0 40px;
     background-color: var(--background-color);
+    text-align: left;
 }
-.category-header h1 {
-    font-size: 3.5rem;
-    font-weight: 700;
-    color: var(--text-color);
-    letter-spacing: -0.03em;
-    margin-bottom: 10px;
-}
+
 .category-header p {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: var(--secondary-text-color);
     max-width: 600px;
-    margin: 0 auto;
 }
+
 .category-section {
-    padding: 60px 0;
-    background-color: var(--section-bg);
+    padding: 40px 0;
 }
+
 .category-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 30px;
+    gap: 24px;
 }
+
 .category-card {
-    background-color: var(--background-color);
+    background-color: var(--section-bg);
+    border: 1px solid var(--border-color);
     border-radius: 12px;
-    padding: 30px;
-    box-shadow: var(--card-shadow);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    text-decoration: none;
+    padding: 32px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    min-height: 150px;
+    justify-content: flex-start;
+    transition: border-color var(--transition-speed) ease;
 }
+
 .category-card:hover {
-    transform: translateY(-8px);
-    box-shadow: var(--card-hover-shadow);
+    border-color: var(--text-color);
 }
+
 .category-card h2 {
-    font-size: 1.8rem;
-    font-weight: 600;
+    font-size: 1.25rem;
+    font-weight: 500;
     color: var(--text-color);
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
+
 .category-card p {
     font-size: 0.95rem;
     color: var(--secondary-text-color);
     line-height: 1.5;
-    margin-bottom: 20px;
 }
 
 
-/* --- 5. 响应式设计 (全局) --- */
-@media (max-width: 992px) {
-    .hero h1 { font-size: 3rem; }
-    .hero p { font-size: 1.2rem; }
-    .blog-posts h2 { font-size: 2.5rem; }
-    .post-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+/* --- 5. Page: Post Detail (post.html) --- */
+.page-post .main-content {
+    padding-top: 100px;
 }
 
-@media (max-width: 768px) {
-    .nav-links {
-        display: none;
-        flex-direction: column;
-        position: absolute;
-        top: 70px;
-        left: 0;
-        width: 100%;
-        background-color: var(--background-color);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-        border-bottom-left-radius: 8px;
-        border-bottom-right-radius: 8px;
-        padding: 20px;
-        gap: 15px;
-        text-align: center;
-        opacity: 0;
-        transform: translateY(-10px);
-        pointer-events: none;
-        transition: opacity 0.3s ease, transform 0.3s ease;
-    }
-    .nav-links.active {
-        display: flex;
-        opacity: 1;
-        transform: translateY(0);
-        pointer-events: auto;
-    }
-    .nav-links a {
-        font-size: 1.1rem;
-        padding: 10px 0;
-        color: var(--text-color);
-    }
-    .nav-links a::after { display: none; }
-
-    .page-home .nav-links.active a[href="index.html"],
-    .page-categories .nav-links.active a[href="categories.html"],
-    .page-category-posts .nav-links.active a[href="categories.html"],
-    .page-dashboard .nav-links.active a[href="dashboard.html"] {
-        color: var(--primary-button-bg);
-        font-weight: 700;
-    }
-
-    .hamburger-menu { display: flex; }
-    .hamburger-menu.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
-    .hamburger-menu.active span:nth-child(2) { opacity: 0; }
-    .hamburger-menu.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-
-    .hero { padding-top: 60px; }
-    .hero h1 { font-size: 2.5rem; }
-    .hero p { font-size: 1rem; }
-    .btn { padding: 12px 25px; font-size: 1rem; }
-    .blog-posts h2 { font-size: 2rem; margin-bottom: 40px; }
-    .post-card-content h3 { font-size: 1.4rem; }
-    .category-header h1 { font-size: 2.5rem; }
-    .category-header p { font-size: 1rem; }
-    .category-section { padding: 40px 0; }
-}
-
-@media (max-width: 480px) {
-    .hero h1 { font-size: 2rem; }
-    .hero p { font-size: 0.9rem; }
-    .blog-posts h2 { font-size: 1.8rem; }
-    .post-grid { grid-template-columns: 1fr; }
-    .post-card-image { height: 180px; }
-    .post-card-content h3 { font-size: 1.2rem; }
-}
-
-/* --- 6. 页面: 控制台页 (dashboard.html) --- */
-.page-dashboard header {
-    background-color: var(--header-bg-blur);
-    border-bottom: var(--header-border);
-}
-.dashboard-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: calc(100vh - 100px);
-    background-color: var(--section-bg);
-    padding: 60px 20px;
-}
-.login-box {
-    max-width: 450px;
-    width: 100%;
-    background-color: var(--background-color);
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: var(--card-shadow);
-    animation: fadeIn 0.5s ease-out;
-}
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-.login-header {
-    text-align: center;
-    margin-bottom: 30px;
-}
-.login-title {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: var(--text-color);
-    margin-bottom: 10px;
-}
-.login-subtitle {
-    font-size: 1rem;
-    color: var(--secondary-text-color);
-}
-.login-form .form-group { margin-bottom: 20px; }
-.login-form .form-group label {
-    display: block;
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--secondary-text-color);
-    margin-bottom: 8px;
-}
-.login-form .form-group input {
-    width: 100%;
-    padding: 12px 15px;
-    font-size: 1rem;
-    font-family: 'Inter', sans-serif;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background-color: #fcfcfc;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-.login-form .form-group input:focus {
-    outline: none;
-    border-color: var(--primary-button-bg);
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
-}
-.login-form .form-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 25px;
-}
-.login-form .forgot-password {
-    font-size: 0.9rem;
-    color: var(--secondary-text-color);
-    font-weight: 500;
-}
-.login-form .forgot-password:hover { color: var(--primary-button-bg); }
-.login-form .login-btn { padding: 12px 25px; font-size: 1rem; }
-.login-footer {
-    margin-top: 30px;
-    text-align: center;
-    font-size: 0.85rem;
-    color: var(--secondary-text-color);
-    border-top: 1px solid var(--border-color);
-    padding-top: 20px;
-}
-
-/* --- 7. 页面: 文章详情页 (post.html) --- */
-
-/* [FIX] 修复左右边距Bug */
 .post-container {
-    max-width: 800px; /* 限制内容宽度 */
-    margin: 0 auto;   /* 自动左右边距 (居中) */
-    padding-bottom: 60px;
-    padding-left: 20px;  /* 增加移动端边距 */
-    padding-right: 20px; /* 增加移动端边距 */
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 20px 0 120px;
 }
 
-/* --- [请用这个替换] --- */
 .post-header {
-    text-align: center;
-    /* [修正] 恢复我们最初为它设计的内边距 */
-    padding: 60px 0 40px 0;
-    /* [修正] 移除外边距，防止干扰 */
-    margin: 0;
-    /* [修正] 确保它在正常的文档流中，而不是浮动 */
-    position: static;
-}
-
-.post-title {
-    font-size: 3.5rem;
-    font-weight: 700;
-    line-height: 1.2;
-    letter-spacing: -0.03em;
-    color: var(--text-color);
-    margin-bottom: 20px;
+    text-align: left;
+    margin-bottom: 48px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 24px;
 }
 
 .post-meta {
-    font-size: 1rem;
-    font-weight: 500;
+    font-size: 0.95rem;
     color: var(--secondary-text-color);
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 16px;
+    margin-bottom: 24px;
 }
-.post-meta a {
-    color: var(--secondary-text-color);
-    transition: color 0.3s ease;
+
+.post-title {
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.04em;
+    color: var(--text-color);
+    margin-bottom: 16px;
 }
-.post-meta a:hover { color: var(--primary-button-bg); }
 
 .post-featured-image {
-    margin: 0 0 40px 0;
+    margin: 0 0 48px 0;
     width: 100%;
-    border-radius: 12px;
+    border-radius: 8px;
     overflow: hidden;
-    background-color: var(--section-bg);
 }
+
 .post-featured-image img {
     width: 100%;
     height: auto;
     display: block;
 }
-.post-featured-image figcaption {
-    font-size: 0.85rem;
-    color: var(--secondary-text-color);
-    text-align: center;
-    padding: 10px 15px;
-}
 
-
-/* [核心] 优化 Markdown 内容排版 */
+/* Minimalist Markdown Content */
 .post-content {
-    font-size: 1.125rem;
-    line-height: 1.8;
-    color: #333;
+    font-size: 1.15rem;
+    line-height: 1.75;
+    color: var(--text-color);
 }
-.post-content p {
-    margin-bottom: 1.75em;
-}
+
 .post-content h1,
 .post-content h2,
 .post-content h3,
-.post-content h4,
-.post-content h5,
-.post-content h6 {
+.post-content h4 {
+    color: var(--text-color);
+    font-weight: 600;
+    letter-spacing: -0.01em;
     margin-top: 2.5em;
-    margin-bottom: 1.2em;
-    line-height: 1.4;
-    font-weight: 700;
+    margin-bottom: 1em;
+    line-height: 1.3;
 }
+
 .post-content h2 {
-    font-size: 2rem;
-    padding-bottom: 0.5em;
-    border-bottom: 1px solid var(--border-color);
+    font-size: 1.6rem;
 }
-.post-content h3 { font-size: 1.5rem; }
+
+.post-content h3 {
+    font-size: 1.3rem;
+}
+
+.post-content p {
+    margin-bottom: 1.6em;
+}
+
 .post-content ul,
 .post-content ol {
-    margin-top: 1.5em;
-    margin-bottom: 1.5em;
-    padding-left: 1.75em;
+    margin-bottom: 1.6em;
+    padding-left: 1.5em;
 }
-.post-content li { margin-bottom: 0.8em; }
-.post-content li > ul,
-.post-content li > ol { margin-top: 0.8em; }
+
+.post-content li {
+    margin-bottom: 0.5em;
+}
+
+.post-content a {
+    color: var(--text-color);
+    text-decoration: underline;
+    text-decoration-color: var(--border-color);
+    text-underline-offset: 4px;
+}
+
+.post-content a:hover {
+    text-decoration-color: var(--secondary-text-color);
+}
+
 .post-content blockquote {
-    font-size: 1.2rem;
-    font-style: italic;
+    font-size: 1.1rem;
+    font-weight: 400;
     color: var(--secondary-text-color);
     margin: 2em 0;
-    padding: 0.5em 1.5em;
-    border-left: 4px solid var(--primary-button-bg);
-    background-color: var(--section-bg);
-    border-radius: 0 8px 8px 0;
+    padding-left: 1.2em;
+    border-left: 2px solid var(--border-color);
 }
-.post-content blockquote p { margin-bottom: 0.5em; }
+
 .post-content pre {
-    background-color: #f6f8fa;
+    background-color: var(--section-bg);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 1.5em;
+    padding: 1.2em;
     margin: 2em 0;
     overflow-x: auto;
-    font-size: 0.95rem;
-    line-height: 1.6;
+    font-size: 0.9rem;
 }
+
 .post-content code {
     font-family: 'Menlo', 'Courier New', monospace;
-}
-.post-content p > code,
-.post-content li > code {
-    background-color: #fbe6e6;
-    color: #c7254e;
-    padding: 0.2em 0.4em;
-    border-radius: 4px;
     font-size: 0.9em;
 }
+
+.post-content p code,
+.post-content li code {
+    background-color: var(--section-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+}
+
 .post-content img {
     max-width: 100%;
-    height: auto;
     border-radius: 8px;
     margin: 2em 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     display: block;
-    margin-left: auto;
-    margin-right: auto;
 }
 
-/* --- 8. [新增] 登录页面错误提示 --- */
-.login-error-message {
-    color: #D9001B; /* 醒目的红色 */
-    font-size: 0.9rem;
-    font-weight: 500;
-    text-align: center;
-    margin-top: 10px;
-    min-height: 1.2rem; /* 即使没错误也占据空间，防止跳动 */
-}
+/* --- 6. Form / Admin / Editor Shared Styles --- */
 
-/* --- 9. [新增] Admin 管理后台样式 --- */
-
+.dashboard-container,
+.editor-container,
 .admin-container {
-    max-width: 1000px;
+    padding: 60px 0 120px;
+    max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
-    background-color: var(--background-color);
-    border-radius: 12px;
-    box-shadow: var(--card-shadow);
 }
 
+.login-box {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.login-header,
+.editor-container h1,
+.admin-header h1 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+}
+
+.login-header {
+    text-align: left;
+    margin-bottom: 32px;
+}
+
+.login-title {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.login-subtitle {
+    color: var(--secondary-text-color);
+    font-size: 0.95rem;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--secondary-text-color);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1rem;
+    font-family: var(--font-family);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--background-color);
+    transition: border-color var(--transition-speed);
+}
+
+input:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--text-color);
+}
+
+textarea#post-content {
+    font-family: 'Menlo', 'Courier New', monospace;
+    min-height: 400px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+.form-actions {
+    margin-top: 32px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 16px;
+}
+
+.login-form .forgot-password {
+    font-size: 0.85rem;
+    color: var(--secondary-text-color);
+}
+
+.login-form .forgot-password:hover {
+    color: var(--text-color);
+}
+
+.form-group-row {
+    display: flex;
+    gap: 24px;
+}
+
+.form-group-row .form-group {
+    flex: 1;
+}
+
+/* --- Admin Specific --- */
 .admin-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 30px;
+    margin-bottom: 40px;
 }
-
-.admin-header h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-}
-
-/* "新建文章" 按钮复用 .btn 样式 */
 
 .admin-post-list {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    border-top: 1px solid var(--border-color);
 }
 
 .admin-post-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    background-color: #fcfcfc;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    transition: box-shadow 0.3s ease;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .admin-post-item:hover {
-    box-shadow: var(--card-shadow);
+    opacity: 0.7;
 }
 
 .admin-post-info h3 {
-    font-size: 1.3rem;
-    font-weight: 600;
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 4px;
     color: var(--text-color);
-    margin-bottom: 5px;
 }
+
 .admin-post-info span {
     font-size: 0.85rem;
     color: var(--secondary-text-color);
-    font-family: 'Menlo', 'Courier New', monospace;
 }
 
 .admin-post-actions {
     display: flex;
-    gap: 15px;
+    gap: 12px;
 }
 
-/* 编辑和删除按钮的样式 */
-.btn-edit, .btn-delete {
-    padding: 8px 16px;
-    font-size: 0.9rem;
-    font-weight: 500;
-    border-radius: 6px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
-}
-
-/* 编辑按钮 (绿色) */
-.btn-edit {
-    background-color: #28a745;
-    color: white;
-}
-.btn-edit:hover {
-    background-color: #218838;
-}
-
-/* 删除按钮 (红色) */
+.btn-edit,
 .btn-delete {
-    background-color: #dc3545;
-    color: white;
-}
-.btn-delete:hover {
-    background-color: #c82333;
-}
-
-/* --- 10. [美化版] Admin 编辑器样式 (editor.html) --- */
-
-.editor-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 40px 50px; /* 增加内边距 */
-    background-color: var(--background-color);
-    border-radius: 12px;
-    box-shadow: var(--card-shadow);
-}
-
-.editor-container h1 {
-    font-size: 2.8rem; /* 增大标题 */
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 40px; /* 增大间距 */
-    color: var(--text-color);
-}
-
-.editor-form .form-group {
-    margin-bottom: 30px; /* 增大表单组间距 */
-}
-
-.editor-form .form-group label {
-    display: block;
-    font-size: 1.1rem; /* 增大label */
-    font-weight: 600;
-    color: var(--text-color);
-    margin-bottom: 12px; /* 增大label和input间距 */
-}
-
-/* 通用输入框和文本域样式 */
-.editor-form input[type="text"],
-.editor-form input[type="email"],
-.editor-form textarea {
-    width: 100%;
-    padding: 15px 18px; /* 增大输入框内边距 (更高) */
-    font-size: 1rem;
-    font-family: 'Inter', sans-serif;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    border-radius: 999px;
     border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background-color: #fcfcfc; /* 浅色背景 */
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background: transparent;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    color: var(--text-color);
 }
 
-.editor-form input[type="text"]:focus,
-.editor-form input[type="email"]:focus,
-.editor-form textarea:focus {
-    outline: none;
-    border-color: var(--primary-button-bg);
-    box-shadow: 0 0 0 4px rgba(0, 123, 255, 0.15); /* 更明显的光晕 */
+.btn-edit:hover {
+    background-color: var(--text-color);
+    color: var(--background-color);
+    border-color: var(--text-color);
 }
 
-/* Markdown 文本域使用等宽字体 */
-.editor-form textarea#post-content {
-    font-family: 'Menlo', 'Courier New', monospace;
-    font-size: 0.95rem;
-    line-height: 1.6;
-    background-color: #f6f8fa; /* 给代码区一个不同背景 */
+.btn-delete:hover {
+    background-color: var(--error-color);
+    color: var(--background-color);
+    border-color: var(--error-color);
 }
 
-/* 一行两列的表单组 */
-.form-group-row {
-    display: flex;
-    gap: 30px;
-}
-.form-group-row .form-group {
-    flex: 1; /* 两列平分 */
-}
 
-/* 消息提示 */
-.editor-form #editor-message {
-    text-align: center;
-    font-weight: 500;
-    margin: 15px 0;
-    min-height: 1.2rem;
-    font-size: 1.1rem; /* 增大提示文字 */
-}
-.message-success {
-    color: #28a745;
-}
-.message-error {
-    color: #dc3545;
-}
+/* --- 7. Responsiveness --- */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 56px;
+        left: 0;
+        width: 100%;
+        background-color: var(--header-bg-blur);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: var(--header-border);
+        padding: 24px;
+        text-align: center;
+        gap: 24px;
+    }
 
-/* 按钮居中 */
-.editor-form .form-actions {
-    text-align: center;
-    margin-top: 40px; /* 增大间距 */
-    border-top: 1px solid var(--border-color); /* 加一条分割线 */
-    padding-top: 40px;
-}
-.editor-form .form-actions .btn {
-    font-size: 1.1rem;
-    font-weight: 600;
-    padding: 16px 45px; /* 更大的按钮 */
-    border-radius: 999px; /* 苹果风格 */
-}
-.editor-form .form-actions .btn:disabled {
-    background-color: var(--secondary-text-color);
-    cursor: not-allowed;
-    box-shadow: none;
+    .nav-links.active {
+        display: flex;
+    }
+
+    .hamburger-menu {
+        display: flex;
+    }
+
+    .hamburger-menu.active span:nth-child(1) {
+        transform: translateY(6.5px) rotate(45deg);
+    }
+
+    .hamburger-menu.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger-menu.active span:nth-child(3) {
+        transform: translateY(-6.5px) rotate(-45deg);
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero p {
+        font-size: 1.05rem;
+    }
+
+    .post-card {
+        flex-direction: column;
+        gap: 8px;
+        padding: 24px 0;
+    }
+
+    .post-card-date {
+        margin-top: 0;
+    }
+
+    .post-title {
+        font-size: 2rem;
+    }
+
+    .form-group-row {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .admin-post-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
 }

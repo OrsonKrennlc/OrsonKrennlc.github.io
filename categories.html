@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>分类 - orsonkrenlc's blog</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.0">
 
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -14,6 +15,7 @@
     <script src="firebase-config.js"></script>
 
 </head>
+
 <body class="page-categories">
 
     <header>
@@ -47,8 +49,8 @@
         <section class="category-section">
             <div class="container">
                 <div class="category-grid" id="category-grid-container">
-                    <p id="categories-loading" style="text-align: center; font-size: 1.2rem; color: var(--secondary-text-color); grid-column: 1 / -1;">
-                        正在加载分类... (Debug Mode)
+                    <p id="categories-loading" style="color: var(--secondary-text-color);">
+                        正在加载分类...
                     </p>
                 </div>
             </div>
@@ -62,87 +64,54 @@
     </footer>
 
     <script>
-        console.log("DEBUG: categories.html 脚本启动。");
-
-        // --- 页面加载逻辑 ---
         document.addEventListener('DOMContentLoaded', () => {
-            console.log("DEBUG: DOMContentLoaded 事件触发。");
             loadCategories();
         });
 
-        // --- 核心函数：加载所有分类 ---
         async function loadCategories() {
-            console.log("DEBUG: loadCategories() 函数已调用。");
-
             const gridContainer = document.getElementById('category-grid-container');
             const loadingIndicator = document.getElementById('categories-loading');
 
-            if (!loadingIndicator) {
-                console.error("DEBUG: 致命错误: 找不到 ID 'categories-loading'! 检查HTML。");
-                return;
-            }
-            console.log("DEBUG: 成功找到 'categories-loading' 元素。");
+            if (!loadingIndicator) return;
 
             try {
-                // [重要] 我们暂时移除了 .orderBy("name", "asc") 来简化查询
-                // 这可以排除索引问题
                 const collectionName = 'categories';
-                console.log(`DEBUG: 准备查询 collection: '${collectionName}'...`);
-
-                // [注意] db 来自 firebase-config.js
                 const categoriesCollection = db.collection(collectionName);
                 const snapshot = await categoriesCollection.get();
 
-                // [重要] 如果代码执行到这里，说明查询返回了！
-                console.log("DEBUG: 查询已返回! (Snapshot received)");
-
                 if (snapshot.empty) {
-                    console.log("DEBUG: Snapshot 为空。 (快照为空)");
                     loadingIndicator.innerText = "目前还没有分类。";
                     return;
                 }
-
-                console.log(`DEBUG: Snapshot 包含 ${snapshot.size} 个文档。`);
 
                 let categoriesHtml = '';
                 snapshot.forEach(doc => {
                     const catData = doc.data();
                     const catId = doc.id;
-                    console.log(`DEBUG: 找到文档: ID=${catId}, Name=${catData.name}`);
                     categoriesHtml += createCategoryCard(catData, catId);
                 });
 
                 loadingIndicator.remove();
                 gridContainer.innerHTML = categoriesHtml;
-                console.log("DEBUG: 分类已成功渲染。");
 
             } catch (error) {
-                // 如果出错（例如安全规则拒绝），会进入这里
-                console.error("DEBUG: 查询过程中出现错误!", error);
-                loadingIndicator.innerText = "加载分类时发生网络错误。 (详情请看F12控制台)";
-                loadingIndicator.style.color = "#D9001B";
+                console.error("查询过程中出现错误!", error);
+                loadingIndicator.innerText = "加载分类时发生网络错误。";
+                loadingIndicator.style.color = "var(--error-color)";
             }
         }
 
-        // --- 辅助函数：创建分类卡片HTML ---
-        // --- [请替换这个函数] ---
-        // --- 辅助函数：创建分类卡片HTML ---
         function createCategoryCard(data, id) {
-
-            // [已修改!] 链接现在指向新页面，并传入分类 ID
             const categoryLink = `category-posts.html?id=${id}`;
 
             return `
                 <a href="${categoryLink}" class="category-card">
-                    <div>
-                        <h2>${data.name || '无标题'}</h2>
-                        <p>${data.description || '暂无描述'}</p>
-                    </div>
+                    <h2>${data.name || '无标题'}</h2>
+                    <p>${data.description || '暂无描述'}</p>
                 </a>
             `;
         }
 
-        // --- 全局汉堡包菜单JS ---
         const hamburgerMenu = document.querySelector('.hamburger-menu');
         const navLinks = document.querySelector('.nav-links');
 
@@ -152,4 +121,5 @@
         });
     </script>
 </body>
+
 </html>

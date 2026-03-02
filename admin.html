@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>管理后台 - orsonkrennlc's blog</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.0">
 
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="firebase-config.js"></script>
 </head>
-<body class="page-dashboard"> <header>
+
+<body class="page-dashboard">
+    <header>
         <div class="container navbar">
             <a href="index.html" class="logo">管理后台</a>
             <nav>
@@ -24,7 +27,8 @@
     </header>
 
     <main class="main-content">
-        <div class="admin-container"> <div class="admin-header">
+        <div class="admin-container">
+            <div class="admin-header">
                 <h1>文章管理</h1>
                 <a href="editor.html" class="btn">新建文章</a>
             </div>
@@ -33,7 +37,7 @@
 
                 <p id="admin-loading">正在加载文章列表...</p>
 
-                </div>
+            </div>
         </div>
     </main>
 
@@ -96,7 +100,7 @@
             } catch (error) {
                 console.error("加载管理文章时出错:", error);
                 loadingIndicator.innerText = "加载文章失败。";
-                loadingIndicator.style.color = "#D9001B";
+                loadingIndicator.style.color = "var(--error-color)";
             }
         }
 
@@ -127,4 +131,5 @@
 
     </script>
 </body>
+
 </html>

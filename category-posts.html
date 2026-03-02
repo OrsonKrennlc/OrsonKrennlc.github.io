@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>分类文章 - orsonkrenlc's blog</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2.0">
 
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -14,7 +15,9 @@
     <script src="firebase-config.js"></script>
 
 </head>
-<body class="page-categories"> <header>
+
+<body class="page-category-posts">
+    <header>
         <div class="container navbar">
             <a href="index.html" class="logo">ShArch</a>
             <nav>
@@ -38,18 +41,16 @@
         <section class="category-header" id="category-posts-header">
             <div class="container">
                 <h1 id="category-title-container">正在加载分类...</h1>
-                <p id="category-description-container" style="min-height: 1.2rem;"></p>
+                <p id="category-description-container"></p>
             </div>
         </section>
 
         <section class="category-section">
             <div class="container">
                 <div class="post-grid" id="post-grid-container">
-
-                    <p id="posts-loading" style="text-align: center; font-size: 1.2rem; color: var(--secondary-text-color); grid-column: 1 / -1;">
+                    <p id="posts-loading" style="color: var(--secondary-text-color);">
                         正在加载文章...
                     </p>
-
                 </div>
             </div>
         </section>
@@ -63,12 +64,10 @@
     </footer>
 
     <script>
-        // --- 页面加载逻辑 ---
         document.addEventListener('DOMContentLoaded', () => {
             loadCategoryPosts();
         });
 
-        // --- 核心函数：加载特定分类的文章 ---
         async function loadCategoryPosts() {
             const gridContainer = document.getElementById('post-grid-container');
             const loadingIndicator = document.getElementById('posts-loading');
@@ -76,43 +75,36 @@
             const descContainer = document.getElementById('category-description-container');
 
             try {
-                // 1. 从 URL 获取分类 ID (例如 'tech')
                 const urlParams = new URLSearchParams(window.location.search);
                 const categoryId = urlParams.get('id');
 
                 if (!categoryId) {
                     titleContainer.innerText = "错误";
                     loadingIndicator.innerText = "未指定分类 ID。";
-                    loadingIndicator.style.color = "#D9001B";
+                    loadingIndicator.style.color = "var(--error-color)";
                     return;
                 }
 
-                // 2. [第1次查询]
-                // 我们需要先获取分类的 *名称* (例如 "技术分享")
                 const categoryRef = db.collection('categories').doc(categoryId);
                 const categoryDoc = await categoryRef.get();
 
                 if (!categoryDoc.exists) {
                     titleContainer.innerText = "错误";
                     loadingIndicator.innerText = "所选分类不存在。";
-                    loadingIndicator.style.color = "#D9001B";
+                    loadingIndicator.style.color = "var(--error-color)";
                     return;
                 }
 
                 const categoryData = categoryDoc.data();
-                const categoryName = categoryData.name; // [关键] 得到 "技术分享"
+                const categoryName = categoryData.name;
 
-                // 更新页面标题
                 titleContainer.innerText = categoryName;
                 descContainer.innerText = categoryData.description || '';
                 document.title = categoryName + " - 我的华丽博客";
 
-                // 3. [第2次查询]
-                // 现在使用这个 *名称* 去 'posts' 集合中查询
-                // [假设] 您的 posts 文档中有一个 'category' 字段，其值为 "技术分享"
                 const postsQuery = db.collection('posts')
-                                     .where('category', '==', categoryName)
-                                     .orderBy('date', 'desc');
+                    .where('category', '==', categoryName)
+                    .orderBy('date', 'desc');
 
                 const snapshot = await postsQuery.get();
 
@@ -121,12 +113,11 @@
                     return;
                 }
 
-                // 4. 渲染文章卡片 (复用 index.html 的逻辑)
                 let postsHtml = '';
                 snapshot.forEach(doc => {
                     const postData = doc.data();
                     const postId = doc.id;
-                    postsHtml += createPostCard(postData, postId); // 复用函数
+                    postsHtml += createPostCard(postData, postId);
                 });
 
                 loadingIndicator.remove();
@@ -135,35 +126,25 @@
             } catch (error) {
                 console.error("加载分类文章时出错:", error);
                 titleContainer.innerText = "加载错误";
-                loadingIndicator.innerText = "加载文章时发生网络错误。 (详情请看F12控制台)";
-                loadingIndicator.style.color = "#D9001B";
+                loadingIndicator.innerText = "加载文章时发生网络错误。";
+                loadingIndicator.style.color = "var(--error-color)";
             }
         }
 
-        // --- 辅助函数：创建文章卡片HTML (与 index.html 完全一致) ---
         function createPostCard(data, id) {
-            const summary = data.summary || (data.content ? data.content.substring(0, 50) + '...' : '点击阅读...');
-            const imageUrl = data.imageUrl || `https://via.placeholder.com/600x400/E0E5EC/9099A4?text=${data.title || 'Image'}`;
+            const summary = data.summary || (data.content ? data.content.substring(0, 80) + '...' : '');
+
             return `
-                <article class="post-card">
-                    <a href="post.html?id=${id}">
-                        <div class="post-card-image">
-                            <img src="${imageUrl}" alt="${data.title || ''}">
-                        </div>
-                    </a>
+                <a href="post.html?id=${id}" class="post-card">
+                    <div class="post-card-date">${data.date || '未知日期'}</div>
                     <div class="post-card-content">
-                        <div>
-                            <h3 class="post-title"><a href="post.html?id=${id}">${data.title || '无标题'}</a></h3>
-                            <span class="date">${data.date || '未知日期'}</span>
-                            <p>${summary}</p>
-                        </div>
-                        <a href="post.html?id=${id}" class="read-more">阅读更多 &gt;</a>
+                        <h3>${data.title || '无标题'}</h3>
+                        <p>${summary}</p>
                     </div>
-                </article>
+                </a>
             `;
         }
 
-        // --- 全局汉堡包菜单JS ---
         const hamburgerMenu = document.querySelector('.hamburger-menu');
         const navLinks = document.querySelector('.nav-links');
 
@@ -173,4 +154,5 @@
         });
     </script>
 </body>
+
 </html>

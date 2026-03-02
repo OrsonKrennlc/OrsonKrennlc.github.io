@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>orsonkrenlc's blog</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=1.4">
+    <link rel="stylesheet" href="style.css?v=2.0">
 
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
@@ -14,6 +15,7 @@
     <script src="firebase-config.js"></script>
 
 </head>
+
 <body class="page-home">
 
     <header>
@@ -23,7 +25,7 @@
                 <ul class="nav-links">
                     <li><a href="index.html">首页</a></li>
                     <li><a href="categories.html">分类</a></li>
-                    <li><a href="films">影视</a></li>
+                    <li><a href="films.html">影视</a></li>
                     <li><a href="dashboard.html">控制台</a></li>
                 </ul>
             </nav>
@@ -36,24 +38,21 @@
     </header>
 
     <main>
-        <section id="hero" class="hero">
-            <div class="hero-content">
-                <h1>创造与分享，我的数字足迹</h1>
-                <p>探索思想的深度，捕捉灵感的瞬间。在这里，文字与创意碰撞。</p>
-                <a href="#blog-posts-section" class="btn">开始阅读</a>
+        <section class="hero">
+            <div class="container hero-content">
+                <h1>与光同行，筑梦未来</h1>
+                <p>每一次的快门，都是对瞬间的致敬；每一行代码，都是对世界的一次重构。</p>
             </div>
         </section>
 
-        <section id="blog-posts-section" class="blog-posts">
+        <section class="blog-posts">
             <div class="container">
                 <h2>最新文章</h2>
 
                 <div class="post-grid" id="post-grid-container">
-
-                    <p id="posts-loading" style="text-align: center; font-size: 1.2rem; color: var(--secondary-text-color); grid-column: 1 / -1;">
+                    <p id="posts-loading" style="color: var(--secondary-text-color);">
                         正在从数据库加载最新文章...
                     </p>
-
                 </div>
             </div>
         </section>
@@ -61,31 +60,27 @@
 
     <footer>
         <div class="container">
+            <div class="social-links">
+                <a href="https://github.com/OrsonKrennlc" target="_blank">GitHub</a>
+                <a href="#" target="_blank">LinkedIn</a>
+                <a href="#" target="_blank">Twitter</a>
+            </div>
             <p>&copy; 2025 orsonkrennlc. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
-        // --- 页面加载逻辑 ---
         document.addEventListener('DOMContentLoaded', () => {
-            // [正确] 首页调用 loadAllPosts
             loadAllPosts();
         });
 
-        // --- 核心函数：加载所有文章 ---
         async function loadAllPosts() {
-            // [正确] 获取ID，此时 id="posts-loading" 应该存在
             const gridContainer = document.getElementById('post-grid-container');
             const loadingIndicator = document.getElementById('posts-loading');
 
-            // 检查 loadingIndicator 是否真的存在 (安全防护)
-            if (!loadingIndicator) {
-                console.error("致命错误: 找不到 ID 为 'posts-loading' 的元素!");
-                return;
-            }
+            if (!loadingIndicator) return;
 
             try {
-                // db 变量来自 firebase-config.js
                 const postsCollection = db.collection('posts').orderBy("date", "desc");
                 const snapshot = await postsCollection.get();
 
@@ -101,54 +96,30 @@
                     postsHtml += createPostCard(postData, postId);
                 });
 
-                // [正确] 移除加载指示器
                 loadingIndicator.remove();
                 gridContainer.innerHTML = postsHtml;
 
             } catch (error) {
-                console.error("加载文章列表时出错 (请确保 firebase-config.js 已正确配置):", error);
-                // [正确] 错误处理
+                console.error("加载文章列表出错:", error);
                 loadingIndicator.innerText = "加载文章时发生网络错误。";
-                loadingIndicator.style.color = "#D93025";
+                loadingIndicator.style.color = "var(--error-color)";
             }
         }
 
-        // --- 辅助函数：创建文章卡片HTML ---
         function createPostCard(data, id) {
-            const summary = data.summary || (data.content ? data.content.substring(0, 50) + '...' : '点击阅读...');
-            const imageUrl = data.imageUrl || `https://via.placeholder.com/600x400/E0E5EC/9099A4?text=${data.title || 'Image'}`;
+            const summary = data.summary || (data.content ? data.content.substring(0, 80) + '...' : '');
 
-            // [正确] 链接到 post.html 并带上 id
             return `
-                <article class="post-card">
-                    <a href="post.html?id=${id}">
-                        <div class="post-card-image">
-                            <img src="${imageUrl}" alt="${data.title || ''}">
-                        </div>
-                    </a>
+                <a href="post.html?id=${id}" class="post-card">
+                    <div class="post-card-date">${data.date || '未知日期'}</div>
                     <div class="post-card-content">
-                        <div>
-                            <h3 class="post-title"><a href="post.html?id=${id}">${data.title || '无标题'}</a></h3>
-                            <span class="date">${data.date || '未知日期'}</span>
-                            <p>${summary}</p>
-                        </div>
-                        <a href="post.html?id=${id}" class="read-more">阅读更多 &gt;</a>
+                        <h3>${data.title || '无标题'}</h3>
+                        <p>${summary}</p>
                     </div>
-                </article>
+                </a>
             `;
         }
 
-        // --- 首页专属JS：Header滚动效果 ---
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-        });
-
-        // --- 全局汉堡包菜单JS ---
         const hamburgerMenu = document.querySelector('.hamburger-menu');
         const navLinks = document.querySelector('.nav-links');
 
@@ -156,7 +127,7 @@
             hamburgerMenu.classList.toggle('active');
             navLinks.classList.toggle('active');
         });
-
     </script>
 </body>
+
 </html>
