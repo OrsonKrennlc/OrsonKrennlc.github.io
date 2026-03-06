@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>影视编辑器 - orsonkrenlc's blog</title>
+    <link rel="stylesheet" href="style.css?v=2.0">
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+</head>
+
+<body class="page-dashboard">
+    <header>
+        <div class="container navbar">
+            <a href="admin-films.html" class="logo">影视编辑器</a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="admin-films.html">返回列表</a></li>
+                    <li><a href="#" id="logout-button">退出登录</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="editor-container">
+            <h1 id="editor-title">新建影片</h1>
+
+            <form id="editor-form" class="editor-form">
+
+                <div class="form-group">
+                    <label for="post-title">影片标题</label>
+                    <input type="text" id="post-title" required>
+                </div>
+
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="post-year">年份 (例如: 2024)</label>
+                        <input type="number" id="post-year" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="post-category">分类</label>
+                        <select id="post-category"
+                            style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--background-color);">
+                            <option value="movies">电影</option>
+                            <option value="tv_shows">电视剧</option>
+                            <option value="documentaries">纪录片</option>
+                            <option value="concerts">演唱会</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="post-disk">分盘 (例如: disk1)</label>
+                        <input type="text" id="post-disk" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="post-imdb">IMDb 评分</label>
+                        <input type="number" step="0.1" id="post-imdb">
+                    </div>
+                </div>
+
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="post-resolution">清晰度 (例如: 1080P, 4K)</label>
+                        <input type="text" id="post-resolution" value="NA">
+                    </div>
+                    <div class="form-group">
+                        <label for="post-format">格式 (例如: x264, x265)</label>
+                        <input type="text" id="post-format" value="NA">
+                    </div>
+                </div>
+
+                <div class="form-group-row">
+                    <div class="form-group">
+                        <label for="post-audio-dts">DTS 音轨 (例如: HD, NA)</label>
+                        <input type="text" id="post-audio-dts" value="NA">
+                    </div>
+                    <div class="form-group">
+                        <label for="post-audio-dd">DD 音轨 (例如: 7.1, 5.1, NA)</label>
+                        <input type="text" id="post-audio-dd" value="NA">
+                    </div>
+                    <div class="form-group">
+                        <label for="post-rating">分级 (例如: R, PG-13)</label>
+                        <input type="text" id="post-rating" value="NA">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="post-douban">豆瓣链接 (可选)</label>
+                    <input type="url" id="post-douban">
+                </div>
+
+                <div class="form-group">
+                    <label for="post-notes">备注 (可选)</label>
+                    <textarea id="post-notes" rows="4"></textarea>
+                </div>
+
+                <p id="editor-message"></p>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn" id="save-button">保存影片</button>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // --- 0. 初始化和检查登录状态 ---
+        const filmConfig = {
+            apiKey: "AIzaSyDm7J8PpBr2uMhVUvDdExeTiut1Ogrr0F4",
+            authDomain: "my-film-library-8f972.firebaseapp.com",
+            projectId: "my-film-library-8f972",
+        };
+        const filmApp = firebase.initializeApp(filmConfig, "FilmApp");
+        const filmDb = filmApp.firestore();
+
+        const auth = firebase.auth();
+        auth.onAuthStateChanged(user => {
+            if (!user) {
+                window.location.href = 'dashboard.html';
+            } else {
+                initializeEditor();
+            }
+        });
+
+        // --- 1. 获取元素 ---
+        const editorTitle = document.getElementById('editor-title');
+        const editorForm = document.getElementById('editor-form');
+        const saveButton = document.getElementById('save-button');
+        const editorMessage = document.getElementById('editor-message');
+
+        const eTitle = document.getElementById('post-title');
+        const eYear = document.getElementById('post-year');
+        const eCategory = document.getElementById('post-category');
+        const eDisk = document.getElementById('post-disk');
+        const eImdb = document.getElementById('post-imdb');
+        const eResolution = document.getElementById('post-resolution');
+        const eFormat = document.getElementById('post-format');
+        const eAudioDts = document.getElementById('post-audio-dts');
+        const eAudioDd = document.getElementById('post-audio-dd');
+        const eRating = document.getElementById('post-rating');
+        const eDouban = document.getElementById('post-douban');
+        const eNotes = document.getElementById('post-notes');
+
+        // --- 2. 检查是“新建”还是“编辑”模式 ---
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get('id');
+        let currentCategory = urlParams.get('category'); // e.g., 'movies'
+
+        // If editing a document, you cannot easily move it to a different collection in Firestore
+        // by just updating it. You'd have to delete and recreate.
+        // For simplicity, we disable the category dropdown during edit mode.
+        const isEditMode = !!postId && !!currentCategory;
+
+        // --- 3. 初始化编辑器 ---
+        async function initializeEditor() {
+            if (isEditMode) {
+                editorTitle.textContent = '编辑影片详情';
+                eCategory.value = currentCategory;
+                eCategory.disabled = true; // Prevent changing collection directly
+
+                try {
+                    const doc = await filmDb.collection(currentCategory).doc(postId).get();
+                    if (!doc.exists) {
+                        showMessage('错误：找不到这部影片。', true);
+                        return;
+                    }
+
+                    const data = doc.data();
+                    eTitle.value = data.title || '';
+                    eYear.value = data.year || '';
+                    eDisk.value = data.disk || '';
+                    eImdb.value = data.imdb || '';
+                    eResolution.value = data.resolution || 'NA';
+                    eFormat.value = data.format || 'NA';
+                    eAudioDts.value = data.audio_dts || 'NA';
+                    eAudioDd.value = data.audio_dd || 'NA';
+                    eRating.value = data.rating || 'NA';
+                    eDouban.value = data.doubanLink || '';
+                    eNotes.value = data.notes || '';
+
+                } catch (error) {
+                    showMessage('加载数据失败: ' + error.message, true);
+                }
+
+            } else {
+                editorTitle.textContent = '新建影片';
+            }
+        }
+
+        // --- 4. 处理提交 ---
+        editorForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            saveButton.disabled = true;
+            saveButton.textContent = '保存中...';
+            editorMessage.textContent = '';
+
+            const selectedCat = eCategory.value; // Use the selected value for new items
+
+            const postData = {
+                title: eTitle.value,
+                year: parseInt(eYear.value) || null,
+                disk: eDisk.value || 'disk1',
+                imdb: parseFloat(eImdb.value) || null,
+                resolution: eResolution.value || 'NA',
+                format: eFormat.value || 'NA',
+                audio_dts: eAudioDts.value || 'NA',
+                audio_dd: eAudioDd.value || 'NA',
+                rating: eRating.value || 'NA',
+                doubanLink: eDouban.value || '',
+                notes: eNotes.value || '',
+                category: selectedCat === 'documentaries' ? 'documentary' : selectedCat.slice(0, -1) // e.g., 'movie' inside the collection
+            };
+
+            try {
+                if (isEditMode) {
+                    await filmDb.collection(currentCategory).doc(postId).update(postData);
+                    showMessage('影片更新成功！', false);
+                } else {
+                    const newDoc = await filmDb.collection(selectedCat).add(postData);
+                    showMessage('影片入库成功！', false);
+                    setTimeout(() => {
+                        window.location.href = 'admin-films.html';
+                    }, 1000);
+                }
+            } catch (error) {
+                showMessage('保存失败: ' + error.message, true);
+            } finally {
+                saveButton.disabled = false;
+                saveButton.textContent = '保存影片';
+            }
+        });
+
+        function showMessage(message, isError) {
+            editorMessage.textContent = message;
+            editorMessage.className = isError ? 'message-error' : 'message-success';
+        }
+
+        document.getElementById('logout-button').addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => {
+                window.location.href = 'index.html';
+            });
+        });
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>影视管理 - orsonkrennlc's blog</title>
+    <link rel="stylesheet" href="style.css?v=2.0">
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="firebase-config.js"></script>
+</head>
+
+<body class="page-dashboard">
+    <header>
+        <div class="container navbar">
+            <a href="admin.html" class="logo">管理后台</a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">返回前台</a></li>
+                    <li><a href="admin.html">文章管理</a></li>
+                    <li><a href="admin-films.html" class="active">影视管理</a></li>
+                    <li><a href="#" id="logout-button">退出登录</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h1>影视管理</h1>
+                <a href="editor-film.html" class="btn">添加影片</a>
+            </div>
+
+            <div class="category-filter"
+                style="margin-bottom: 24px; border-bottom: 1px solid var(--border-color); padding-bottom: 16px; display: flex; gap: 16px;">
+                <button class="cat-btn active" data-category="movies">电影</button>
+                <button class="cat-btn" data-category="tv_shows">电视剧</button>
+                <button class="cat-btn" data-category="documentaries">纪录片</button>
+                <button class="cat-btn" data-category="concerts">演唱会</button>
+            </div>
+
+            <div class="admin-post-list" id="admin-film-list-container">
+                <p id="admin-loading">正在加载影视列表...</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 1. 初始化专门用于影视库的第二个 Firebase 实例
+        const filmConfig = {
+            apiKey: "AIzaSyDm7J8PpBr2uMhVUvDdExeTiut1Ogrr0F4",
+            authDomain: "my-film-library-8f972.firebaseapp.com",
+            projectId: "my-film-library-8f972",
+        };
+        const filmApp = firebase.initializeApp(filmConfig, "FilmApp");
+        const filmDb = filmApp.firestore();
+
+        // 2. Auth 依然使用默认的博客系统实例 (firebase-config.js 中初始化的)
+        const auth = firebase.auth();
+        const logoutButton = document.getElementById('logout-button');
+        const listContainer = document.getElementById('admin-film-list-container');
+        const loadingIndicator = document.getElementById('admin-loading');
+        const categoryBtns = document.querySelectorAll('.cat-btn');
+
+        let currentCategory = 'movies';
+
+        // 1. 检查登录状态
+        auth.onAuthStateChanged(user => {
+            if (!user) {
+                window.location.href = 'dashboard.html';
+            } else {
+                loadAdminFilms();
+            }
+        });
+
+        // 2. 退出登录
+        logoutButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            auth.signOut().then(() => {
+                window.location.href = 'index.html';
+            });
+        });
+
+        // 3. 类别切换
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentCategory = e.target.getAttribute('data-category');
+
+                // documentary to documentaries mapping
+                if (currentCategory === 'documentary') {
+                    currentCategory = 'documentaries';
+                }
+
+                loadAdminFilms();
+            });
+        });
+
+        // 4. 加载特定类别的影片
+        async function loadAdminFilms() {
+            loadingIndicator.innerText = "加载中...";
+            listContainer.innerHTML = '';
+            listContainer.appendChild(loadingIndicator);
+
+            try {
+                // Determine the correct collection name
+                const collectionName = currentCategory;
+                const snapshot = await filmDb.collection(collectionName).get();
+
+                if (snapshot.empty) {
+                    loadingIndicator.innerText = "该分类下没有影片。";
+                    return;
+                }
+
+                // Sort purely in memory to avoid missing index errors in Firestore
+                const items = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                items.sort((a, b) => (b.year || 0) - (a.year || 0));
+
+                let html = '';
+                items.forEach(post => {
+                    const postId = post.id;
+                    const meta = [post.year, post.resolution, post.disk].filter(Boolean).join(' | ');
+                    html += `
+                        <div class="admin-post-item">
+                            <div class="admin-post-info">
+                                <h3>${post.title || '无标题'}</h3>
+                                <span>${meta || '-'}</span>
+                            </div>
+                            <div class="admin-post-actions">
+                                <a href="editor-film.html?id=${postId}&category=${collectionName}" class="btn-edit">编辑</a>
+                                <button class="btn-delete" data-id="${postId}" data-category="${collectionName}">删除</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                loadingIndicator.remove();
+                listContainer.innerHTML = html;
+
+            } catch (error) {
+                console.error("加载管理文章时出错:", error);
+                loadingIndicator.innerText = "加载失败，请检查网络或权限。";
+                loadingIndicator.style.color = "var(--error-color)";
+            }
+        }
+
+        // 5. 处理删除
+        listContainer.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('btn-delete')) {
+                const postId = e.target.dataset.id;
+                const category = e.target.dataset.category;
+
+                if (!confirm(`你确定要删除这篇内容吗？此操作无法撤销。`)) {
+                    return;
+                }
+
+                try {
+                    await filmDb.collection(category).doc(postId).delete();
+                    e.target.closest('.admin-post-item').remove();
+                } catch (error) {
+                    console.error("删除文章时出错:", error);
+                    alert("删除失败，请稍后再试。");
+                }
+            }
+        });
+
+    </script>
+</body>
+
+</html>
