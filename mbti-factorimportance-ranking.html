@@ -1,0 +1,855 @@
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI价值观排序 | 个性化分享卡片</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Sortable.js 用于拖拽排序 -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <!-- html2canvas 用于生成分享图片 -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'mbti-istj': '#4A7C59',
+                        'mbti-isfj': '#6A8EAE',
+                        'mbti-intj': '#5C6F68',
+                        'mbti-infj': '#7067CF',
+                        'mbti-istp': '#8C7851',
+                        'mbti-isfp': '#9673A6',
+                        'mbti-intp': '#555B6E',
+                        'mbti-infp': '#9B5DE5',
+                        'mbti-estp': '#D8572A',
+                        'mbti-esfp': '#FF8C42',
+                        'mbti-entp': '#FF5A5F',
+                        'mbti-enfp': '#00BBF9',
+                        'mbti-estj': '#C16200',
+                        'mbti-esfj': '#FFB703',
+                        'mbti-entj': '#0077B6',
+                        'mbti-enfj': '#028090',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 4px 20px rgba(0, 0, 0, 0.08)',
+                        'card-hover': '0 10px 30px rgba(0, 0, 0, 0.12)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer utilities {
+      .transition-all-300 {
+        transition: all 0.3s ease;
+      }
+      .dragging {
+        opacity: 0.5;
+        transform: scale(1.05);
+      }
+      .sortable-ghost {
+        opacity: 0.3;
+        background-color: #f0f0f0;
+      }
+      .mbti-card {
+        transition: all 0.3s ease;
+      }
+      .mbti-card:hover {
+        transform: translateY(-5px);
+      }
+      .value-item {
+        transition: all 0.2s ease;
+      }
+      .value-item:hover {
+        transform: translateX(5px);
+      }
+      .gradient-bg {
+        background: linear-gradient(135deg, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 100%);
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 font-sans">
+    <div class="min-h-screen flex flex-col">
+        <!-- 顶部导航 -->
+        <header class="bg-white shadow-sm py-4">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-2xl font-bold text-gray-800">MBTI价值观排序</h1>
+                    <div class="flex items-center space-x-4">
+                        <button id="helpBtn" class="text-gray-600 hover:text-gray-900 transition-all-300">
+                            <i class="fa fa-question-circle text-xl"></i>
+                        </button>
+                        <button id="themeToggle" class="text-gray-600 hover:text-gray-900 transition-all-300">
+                            <i class="fa fa-moon-o text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 主要内容 -->
+        <main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <!-- 步骤指示器 -->
+            <div class="flex justify-between items-center mb-8 max-w-3xl mx-auto">
+                <div class="step active flex flex-col items-center" data-step="1">
+                    <div class="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center mb-2">1
+                    </div>
+                    <span class="text-sm text-gray-600">选择MBTI</span>
+                </div>
+                <div class="flex-1 h-1 bg-gray-200 mx-4">
+                    <div class="h-full bg-blue-500 transition-all duration-500" style="width: 0%" id="progressBar">
+                    </div>
+                </div>
+                <div class="step flex flex-col items-center" data-step="2">
+                    <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center mb-2">
+                        2</div>
+                    <span class="text-sm text-gray-600">排序价值观</span>
+                </div>
+                <div class="flex-1 h-1 bg-gray-200 mx-4">
+                    <div class="h-full bg-blue-500 transition-all duration-500" style="width: 0%" id="progressBar2">
+                    </div>
+                </div>
+                <div class="step flex flex-col items-center" data-step="3">
+                    <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center mb-2">
+                        3</div>
+                    <span class="text-sm text-gray-600">生成分享图</span>
+                </div>
+            </div>
+
+            <!-- 步骤内容区域 -->
+            <div class="max-w-4xl mx-auto">
+                <!-- 步骤1: 选择MBTI类型 -->
+                <div id="step1" class="step-content active">
+                    <div class="bg-white rounded-xl shadow-card p-6 mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6">选择你的MBTI类型</h2>
+                        <p class="text-gray-600 mb-8">点击下方卡片选择你的MBTI类型，不同类型将对应不同的分享图风格。</p>
+
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                            <!-- MBTI类型卡片 -->
+                            <div class="mbti-card cursor-pointer bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-card-hover"
+                                data-mbti="ISTJ" data-color="mbti-istj">
+                                <div class="text-xl font-bold mb-2">ISTJ</div>
+                                <div class="text-sm text-gray-600">检查员</div>
+                            </div>
+                            <div class="mbti-card cursor-pointer bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-card-hover"
+                                data-mbti="ISFJ" data-color="mbti-isfj">
+                                <div class="text-xl font-bold mb-2">ISFJ</div>
+                                <div class="text-sm text-gray-600">保护者</div>
+                            </div>
+                            <div class="mbti-card cursor-pointer bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-card-hover"
+                                data-mbti="INFJ" data-color="mbti-infj">
+                                <div class="text-xl font-bold mb-2">INFJ</div>
+                                <div class="text-sm text-gray-600">咨询师</div>
+                            </div>
+                            <div class="mbti-card cursor-pointer bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-card-hover"
+                                data-mbti="INTJ" data-color="mbti-intj">
+                                <div class="text-xl font-bold mb-2">INTJ</div>
+                                <div class="text-sm text-gray-600">策划者</div>
+                            </div>
+                            <div class="mbti-card cursor-pointer bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-card-hover"
+                                data-mbti="ISTP" data-color="mbti-istp">
+                                <div class="text-xl font-bold mb-2">ISTP</div>
+                                <div class="text-sm text-gray-600">手艺人</div>
+                            </div>
+                            <div class="mbti-card cursor-pointer bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-card-hover"
+                                data-mbti="ISFP" data-color="mbti-isfp">
+                                <div class="text-xl font-bold mb-2">ISFP</div>
+                                <div class="text-sm text-gray-600">艺术家</div>
+                            </div>
+                            <div class="mbti-card cursor-pointer bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-card-hover"
+                                data-mbti="INFP" data-color="mbti-infp">
+                                <div class="text-xl font-bold mb-2">INFP</div>
+                                <div class="text-sm text-gray-600">治疗师</div>
+                            </div>
+                            <div class="mbti-card cursor-pointer bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-card-hover"
+                                data-mbti="INTP" data-color="mbti-intp">
+                                <div class="text-xl font-bold mb-2">INTP</div>
+                                <div class="text-sm text-gray-600">思想家</div>
+                            </div>
+                            <div class="mbti-card cursor-pointer bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-card-hover"
+                                data-mbti="ESTP" data-color="mbti-estp">
+                                <div class="text-xl font-bold mb-2">ESTP</div>
+                                <div class="text-sm text-gray-600">企业家</div>
+                            </div>
+                            <div class="mbti-card cursor-pointer bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-card-hover"
+                                data-mbti="ESFP" data-color="mbti-esfp">
+                                <div class="text-xl font-bold mb-2">ESFP</div>
+                                <div class="text-sm text-gray-600">表演者</div>
+                            </div>
+                            <div class="mbti-card cursor-pointer bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-card-hover"
+                                data-mbti="ENFP" data-color="mbti-enfp">
+                                <div class="text-xl font-bold mb-2">ENFP</div>
+                                <div class="text-sm text-gray-600">追梦人</div>
+                            </div>
+                            <div class="mbti-card cursor-pointer bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-card-hover"
+                                data-mbti="ENTP" data-color="mbti-entp">
+                                <div class="text-xl font-bold mb-2">ENTP</div>
+                                <div class="text-sm text-gray-600">辩论家</div>
+                            </div>
+                            <div class="mbti-card cursor-pointer bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-card-hover"
+                                data-mbti="ESTJ" data-color="mbti-estj">
+                                <div class="text-xl font-bold mb-2">ESTJ</div>
+                                <div class="text-sm text-gray-600">监督者</div>
+                            </div>
+                            <div class="mbti-card cursor-pointer bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-card-hover"
+                                data-mbti="ESFJ" data-color="mbti-esfj">
+                                <div class="text-xl font-bold mb-2">ESFJ</div>
+                                <div class="text-sm text-gray-600">东道主</div>
+                            </div>
+                            <div class="mbti-card cursor-pointer bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-card-hover"
+                                data-mbti="ENFJ" data-color="mbti-enfj">
+                                <div class="text-xl font-bold mb-2">ENFJ</div>
+                                <div class="text-sm text-gray-600">教导者</div>
+                            </div>
+                            <div class="mbti-card cursor-pointer bg-white border border-gray-200 rounded-lg p-4 text-center hover:shadow-card-hover"
+                                data-mbti="ENTJ" data-color="mbti-entj">
+                                <div class="text-xl font-bold mb-2">ENTJ</div>
+                                <div class="text-sm text-gray-600">指挥官</div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button id="nextToStep2"
+                                class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition-all-300 opacity-50 cursor-not-allowed">
+                                下一步
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 步骤2: 排序价值观 -->
+                <div id="step2" class="step-content hidden">
+                    <div class="bg-white rounded-xl shadow-card p-6 mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6">排序你的价值观</h2>
+                        <p class="text-gray-600 mb-8">拖动下方项目，按照对你来说的重要程度从高到低排序。</p>
+
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <!-- 左侧：可拖拽排序区域 -->
+                            <div class="md:w-1/2">
+                                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                                    <h3 class="text-lg font-semibold text-gray-700 mb-4">拖动排序</h3>
+                                    <div id="valuesList" class="space-y-3">
+                                        <div class="value-item bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-500 cursor-move"
+                                            data-value="欢乐">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-gray-800">欢乐</span>
+                                                <i class="fa fa-arrows text-gray-400"></i>
+                                            </div>
+                                        </div>
+                                        <div class="value-item bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-500 cursor-move"
+                                            data-value="陪伴">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-gray-800">陪伴</span>
+                                                <i class="fa fa-arrows text-gray-400"></i>
+                                            </div>
+                                        </div>
+                                        <div class="value-item bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-500 cursor-move"
+                                            data-value="稳定">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-gray-800">稳定</span>
+                                                <i class="fa fa-arrows text-gray-400"></i>
+                                            </div>
+                                        </div>
+                                        <div class="value-item bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-500 cursor-move"
+                                            data-value="体贴">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-gray-800">体贴</span>
+                                                <i class="fa fa-arrows text-gray-400"></i>
+                                            </div>
+                                        </div>
+                                        <div class="value-item bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-500 cursor-move"
+                                            data-value="浪漫">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-gray-800">浪漫</span>
+                                                <i class="fa fa-arrows text-gray-400"></i>
+                                            </div>
+                                        </div>
+                                        <div class="value-item bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-500 cursor-move"
+                                            data-value="繁衍后代">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-gray-800">繁衍后代</span>
+                                                <i class="fa fa-arrows text-gray-400"></i>
+                                            </div>
+                                        </div>
+                                        <div class="value-item bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-500 cursor-move"
+                                            data-value="志趣相投">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-gray-800">志趣相投</span>
+                                                <i class="fa fa-arrows text-gray-400"></i>
+                                            </div>
+                                        </div>
+                                        <div class="value-item bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-500 cursor-move"
+                                            data-value="帮助">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-gray-800">帮助</span>
+                                                <i class="fa fa-arrows text-gray-400"></i>
+                                            </div>
+                                        </div>
+                                        <div class="value-item bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-500 cursor-move"
+                                            data-value="性">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-gray-800">性</span>
+                                                <i class="fa fa-arrows text-gray-400"></i>
+                                            </div>
+                                        </div>
+                                        <div class="value-item bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-500 cursor-move"
+                                            data-value="物质">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-gray-800">物质</span>
+                                                <i class="fa fa-arrows text-gray-400"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex justify-between">
+                                    <button id="backToStep1"
+                                        class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-6 rounded-lg transition-all-300">
+                                        返回
+                                    </button>
+                                    <button id="nextToStep3"
+                                        class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition-all-300">
+                                        生成分享图
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- 右侧：预览区域 -->
+                            <div class="md:w-1/2">
+                                <div class="bg-gray-50 rounded-lg p-4 h-full">
+                                    <h3 class="text-lg font-semibold text-gray-700 mb-4">排序预览</h3>
+                                    <div id="sortPreview" class="space-y-2">
+                                        <p class="text-gray-500 italic text-center py-8">拖动左侧项目进行排序</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 步骤3: 生成分享图 -->
+                <div id="step3" class="step-content hidden">
+                    <div class="bg-white rounded-xl shadow-card p-6 mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6">你的MBTI价值观卡片</h2>
+                        <p class="text-gray-600 mb-8">下方是根据你的MBTI类型和价值观排序生成的分享卡片，点击下载按钮保存图片。</p>
+
+                        <div class="flex flex-col items-center">
+                            <!-- 分享图预览区域 -->
+                            <div id="shareCard"
+                                class="relative w-full max-w-md mb-8 bg-white rounded-xl shadow-lg overflow-hidden">
+                                <!-- 卡片头部 - MBTI类型 -->
+                                <div id="cardHeader" class="bg-blue-500 text-white p-6 text-center">
+                                    <h3 id="cardMbti" class="text-3xl font-bold mb-2">ISTJ</h3>
+                                    <p id="cardMbtiDesc" class="text-lg opacity-90">检查员</p>
+                                </div>
+
+                                <!-- 卡片内容 - 价值观排序 -->
+                                <div class="p-6">
+                                    <h4 class="text-xl font-semibold text-gray-800 mb-4 text-center">我的价值观排序</h4>
+                                    <div id="cardValues" class="space-y-3">
+                                        <!-- 价值观列表将通过JS动态生成 -->
+                                    </div>
+                                </div>
+
+                                <!-- 卡片底部 -->
+                                <div class="bg-gray-50 p-4 text-center text-gray-500 text-sm">
+                                    <p>MBTI价值观排序 | 生成于2025年</p>
+                                </div>
+                            </div>
+
+                            <!-- 操作按钮 -->
+                            <div class="flex flex-wrap justify-center gap-4">
+                                <button id="downloadBtn"
+                                    class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-8 rounded-lg transition-all-300 flex items-center">
+                                    <i class="fa fa-download mr-2"></i> 下载图片
+                                </button>
+                                <button id="shareBtn"
+                                    class="bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-8 rounded-lg transition-all-300 flex items-center">
+                                    <i class="fa fa-share-alt mr-2"></i> 分享到社交媒体
+                                </button>
+                                <button id="restartBtn"
+                                    class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-3 px-8 rounded-lg transition-all-300 flex items-center">
+                                    <i class="fa fa-refresh mr-2"></i> 重新开始
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 页脚 -->
+        <footer class="bg-white border-t border-gray-200 py-6">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center text-gray-600 text-sm">
+                    <p>© 2025 MBTI价值观排序 | 仅供娱乐参考</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 帮助模态框 -->
+    <div id="helpModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">使用帮助</h3>
+                <button id="closeHelpBtn" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="text-gray-600 space-y-4">
+                <p><strong>步骤1：</strong>选择你的MBTI类型，不同类型对应不同的卡片颜色和风格。</p>
+                <p><strong>步骤2：</strong>拖动价值观项目进行排序，按照对你来说的重要程度从高到低排列。</p>
+                <p><strong>步骤3：</strong>生成个性化的MBTI价值观卡片，点击下载按钮保存图片，或分享到社交媒体。</p>
+                <p class="text-sm text-gray-500 mt-6">注意：本应用仅供娱乐参考，非专业MBTI测试工具。</p>
+            </div>
+            <div class="mt-6 text-center">
+                <button id="confirmHelpBtn"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-lg transition-all-300">
+                    我知道了
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分享模态框 -->
+    <div id="shareModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">分享到社交媒体</h3>
+                <button id="closeShareBtn" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="text-gray-600 mb-6">
+                <p>选择下方平台分享你的MBTI价值观卡片：</p>
+            </div>
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <button
+                    class="social-btn flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-weixin text-2xl text-green-500 mb-2"></i>
+                    <span class="text-sm">微信</span>
+                </button>
+                <button
+                    class="social-btn flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-weibo text-2xl text-red-500 mb-2"></i>
+                    <span class="text-sm">微博</span>
+                </button>
+                <button
+                    class="social-btn flex flex-col items-center justify-center p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-all-300">
+                    <i class="fa fa-qq text-2xl text-blue-500 mb-2"></i>
+                    <span class="text-sm">QQ</span>
+                </button>
+            </div>
+            <div class="text-center">
+                <button id="cancelShareBtn"
+                    class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-6 rounded-lg transition-all-300">
+                    取消
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let selectedMbti = null;
+        let selectedMbtiColor = null;
+        let sortedValues = [];
+
+        // MBTI类型描述映射
+        const mbtiDescriptions = {
+            'ISTJ': '检查员',
+            'ISFJ': '保护者',
+            'INFJ': '咨询师',
+            'INTJ': '策划者',
+            'ISTP': '手艺人',
+            'ISFP': '艺术家',
+            'INFP': '治疗师',
+            'INTP': '思想家',
+            'ESTP': '企业家',
+            'ESFP': '表演者',
+            'ENFP': '追梦人',
+            'ENTP': '辩论家',
+            'ESTJ': '监督者',
+            'ESFJ': '东道主',
+            'ENFJ': '教导者',
+            'ENTJ': '指挥官'
+        };
+
+        // DOM加载完成后执行
+        document.addEventListener('DOMContentLoaded', function () {
+            // 初始化MBTI卡片点击事件
+            initMbtiCards();
+
+            // 初始化步骤切换按钮
+            initStepButtons();
+
+            // 初始化拖拽排序
+            initSortable();
+
+            // 初始化帮助模态框
+            initHelpModal();
+
+            // 初始化分享模态框
+            initShareModal();
+
+            // 初始化下载功能
+            initDownload();
+
+            // 初始化主题切换
+            initThemeToggle();
+        });
+
+        // 初始化MBTI卡片点击事件
+        function initMbtiCards() {
+            const mbtiCards = document.querySelectorAll('.mbti-card');
+            const nextButton = document.getElementById('nextToStep2');
+
+            mbtiCards.forEach(card => {
+                card.addEventListener('click', function () {
+                    // 移除其他卡片的选中状态
+                    mbtiCards.forEach(c => c.classList.remove('ring-2', 'ring-blue-500'));
+
+                    // 添加当前卡片的选中状态
+                    this.classList.add('ring-2', 'ring-blue-500');
+
+                    // 获取选中的MBTI类型和颜色
+                    selectedMbti = this.getAttribute('data-mbti');
+                    selectedMbtiColor = this.getAttribute('data-color');
+
+                    // 启用下一步按钮
+                    nextButton.classList.remove('opacity-50', 'cursor-not-allowed');
+                    nextButton.classList.add('opacity-100', 'cursor-pointer');
+                });
+            });
+        }
+
+        // 初始化步骤切换按钮
+        function initStepButtons() {
+            const nextToStep2 = document.getElementById('nextToStep2');
+            const backToStep1 = document.getElementById('backToStep1');
+            const nextToStep3 = document.getElementById('nextToStep3');
+            const restartBtn = document.getElementById('restartBtn');
+
+            // 步骤1 -> 步骤2
+            nextToStep2.addEventListener('click', function () {
+                if (selectedMbti) {
+                    goToStep(2);
+                }
+            });
+
+            // 步骤2 -> 步骤1
+            backToStep1.addEventListener('click', function () {
+                goToStep(1);
+            });
+
+            // 步骤2 -> 步骤3
+            nextToStep3.addEventListener('click', function () {
+                // 获取排序后的值
+                const valueItems = document.querySelectorAll('#valuesList .value-item');
+                sortedValues = Array.from(valueItems).map(item => item.getAttribute('data-value'));
+
+                // 生成分享卡片
+                generateShareCard();
+
+                goToStep(3);
+            });
+
+            // 重新开始
+            restartBtn.addEventListener('click', function () {
+                // 重置选中的MBTI
+                selectedMbti = null;
+                selectedMbtiColor = null;
+
+                // 重置排序
+                sortedValues = [];
+
+                // 移除MBTI卡片的选中状态
+                const mbtiCards = document.querySelectorAll('.mbti-card');
+                mbtiCards.forEach(c => c.classList.remove('ring-2', 'ring-blue-500'));
+
+                // 禁用下一步按钮
+                const nextButton = document.getElementById('nextToStep2');
+                nextButton.classList.add('opacity-50', 'cursor-not-allowed');
+                nextButton.classList.remove('opacity-100', 'cursor-pointer');
+
+                // 返回步骤1
+                goToStep(1);
+            });
+        }
+
+        // 切换步骤
+        function goToStep(stepNumber) {
+            // 隐藏所有步骤内容
+            const stepContents = document.querySelectorAll('.step-content');
+            stepContents.forEach(content => content.classList.add('hidden'));
+
+            // 显示目标步骤内容
+            const targetStep = document.getElementById(`step${stepNumber}`);
+            targetStep.classList.remove('hidden');
+
+            // 更新步骤指示器
+            const steps = document.querySelectorAll('.step');
+            const progressBars = [document.getElementById('progressBar'), document.getElementById('progressBar2')];
+
+            steps.forEach((step, index) => {
+                const stepNum = index + 1;
+
+                if (stepNum < stepNumber) {
+                    // 已完成的步骤
+                    step.classList.add('active');
+                    step.querySelector('div').classList.remove('bg-gray-200', 'text-gray-600');
+                    step.querySelector('div').classList.add('bg-green-500', 'text-white');
+                } else if (stepNum === stepNumber) {
+                    // 当前步骤
+                    step.classList.add('active');
+                    step.querySelector('div').classList.remove('bg-gray-200', 'text-gray-600', 'bg-green-500');
+                    step.querySelector('div').classList.add('bg-blue-500', 'text-white');
+                } else {
+                    // 未完成的步骤
+                    step.classList.remove('active');
+                    step.querySelector('div').classList.remove('bg-blue-500', 'bg-green-500', 'text-white');
+                    step.querySelector('div').classList.add('bg-gray-200', 'text-gray-600');
+                }
+            });
+
+            // 更新进度条
+            if (stepNumber > 1) {
+                progressBars[0].style.width = '100%';
+            } else {
+                progressBars[0].style.width = '0%';
+            }
+
+            if (stepNumber > 2) {
+                progressBars[1].style.width = '100%';
+            } else {
+                progressBars[1].style.width = '0%';
+            }
+
+            // 滚动到顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 初始化拖拽排序
+        function initSortable() {
+            const valuesList = document.getElementById('valuesList');
+            const sortPreview = document.getElementById('sortPreview');
+
+            new Sortable(valuesList, {
+                animation: 150,
+                ghostClass: 'sortable-ghost',
+                chosenClass: 'dragging',
+                onEnd: function () {
+                    updateSortPreview();
+                }
+            });
+
+            // 更新排序预览
+            function updateSortPreview() {
+                const valueItems = document.querySelectorAll('#valuesList .value-item');
+                const sortedValues = Array.from(valueItems).map(item => item.getAttribute('data-value'));
+
+                // 清空预览区域
+                sortPreview.innerHTML = '';
+
+                if (sortedValues.length > 0) {
+                    // 创建排序预览列表
+                    sortedValues.forEach((value, index) => {
+                        const rank = index + 1;
+                        const rankElement = document.createElement('div');
+                        rankElement.className = 'flex items-center justify-between bg-white p-3 rounded-lg shadow-sm';
+
+                        // 排名标记
+                        let rankBadge = '';
+                        if (rank === 1) {
+                            rankBadge = '<span class="w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center font-bold">1</span>';
+                        } else if (rank === 2) {
+                            rankBadge = '<span class="w-6 h-6 bg-gray-300 text-white rounded-full flex items-center justify-center font-bold">2</span>';
+                        } else if (rank === 3) {
+                            rankBadge = '<span class="w-6 h-6 bg-amber-700 text-white rounded-full flex items-center justify-center font-bold">3</span>';
+                        } else {
+                            rankBadge = `<span class="w-6 h-6 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center">${rank}</span>`;
+                        }
+
+                        rankElement.innerHTML = `
+              <div class="flex items-center">
+                ${rankBadge}
+                <span class="ml-3 text-gray-800">${value}</span>
+              </div>
+              <div class="text-sm text-gray-500">第${rank}位</div>
+            `;
+
+                        sortPreview.appendChild(rankElement);
+                    });
+                } else {
+                    sortPreview.innerHTML = '<p class="text-gray-500 italic text-center py-8">拖动左侧项目进行排序</p>';
+                }
+            }
+        }
+
+        // 生成分享卡片
+        function generateShareCard() {
+            const cardHeader = document.getElementById('cardHeader');
+            const cardMbti = document.getElementById('cardMbti');
+            const cardMbtiDesc = document.getElementById('cardMbtiDesc');
+            const cardValues = document.getElementById('cardValues');
+
+            // 设置卡片头部
+            cardHeader.className = `p-6 text-center bg-${selectedMbtiColor}`;
+            cardMbti.textContent = selectedMbti;
+            cardMbtiDesc.textContent = mbtiDescriptions[selectedMbti];
+
+            // 清空卡片内容
+            cardValues.innerHTML = '';
+
+            // 添加排序后的值
+            sortedValues.forEach((value, index) => {
+                const rank = index + 1;
+                const valueElement = document.createElement('div');
+                valueElement.className = 'flex items-center justify-between bg-gray-50 p-3 rounded-lg';
+
+                // 排名标记
+                let rankBadge = '';
+                if (rank === 1) {
+                    rankBadge = '<span class="w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center font-bold">1</span>';
+                } else if (rank === 2) {
+                    rankBadge = '<span class="w-6 h-6 bg-gray-300 text-white rounded-full flex items-center justify-center font-bold">2</span>';
+                } else if (rank === 3) {
+                    rankBadge = '<span class="w-6 h-6 bg-amber-700 text-white rounded-full flex items-center justify-center font-bold">3</span>';
+                } else {
+                    rankBadge = `<span class="w-6 h-6 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center">${rank}</span>`;
+                }
+
+                valueElement.innerHTML = `
+          <div class="flex items-center">
+            ${rankBadge}
+            <span class="ml-3 text-gray-800">${value}</span>
+          </div>
+        `;
+
+                cardValues.appendChild(valueElement);
+            });
+        }
+
+        // 初始化帮助模态框
+        function initHelpModal() {
+            const helpBtn = document.getElementById('helpBtn');
+            const helpModal = document.getElementById('helpModal');
+            const closeHelpBtn = document.getElementById('closeHelpBtn');
+            const confirmHelpBtn = document.getElementById('confirmHelpBtn');
+
+            helpBtn.addEventListener('click', function () {
+                helpModal.classList.remove('hidden');
+            });
+
+            closeHelpBtn.addEventListener('click', function () {
+                helpModal.classList.add('hidden');
+            });
+
+            confirmHelpBtn.addEventListener('click', function () {
+                helpModal.classList.add('hidden');
+            });
+
+            // 点击模态框外部关闭
+            helpModal.addEventListener('click', function (e) {
+                if (e.target === helpModal) {
+                    helpModal.classList.add('hidden');
+                }
+            });
+        }
+
+        // 初始化分享模态框
+        function initShareModal() {
+            const shareBtn = document.getElementById('shareBtn');
+            const shareModal = document.getElementById('shareModal');
+            const closeShareBtn = document.getElementById('closeShareBtn');
+            const cancelShareBtn = document.getElementById('cancelShareBtn');
+            const socialBtns = document.querySelectorAll('.social-btn');
+
+            shareBtn.addEventListener('click', function () {
+                shareModal.classList.remove('hidden');
+            });
+
+            closeShareBtn.addEventListener('click', function () {
+                shareModal.classList.add('hidden');
+            });
+
+            cancelShareBtn.addEventListener('click', function () {
+                shareModal.classList.add('hidden');
+            });
+
+            // 社交媒体分享按钮
+            socialBtns.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const platform = this.querySelector('span').textContent;
+                    alert(`分享到${platform}功能即将上线，敬请期待！`);
+                    shareModal.classList.add('hidden');
+                });
+            });
+
+            // 点击模态框外部关闭
+            shareModal.addEventListener('click', function (e) {
+                if (e.target === shareModal) {
+                    shareModal.classList.add('hidden');
+                }
+            });
+        }
+
+        // 初始化下载功能
+        function initDownload() {
+            const downloadBtn = document.getElementById('downloadBtn');
+
+            downloadBtn.addEventListener('click', function () {
+                const shareCard = document.getElementById('shareCard');
+
+                // 使用html2canvas生成图片
+                html2canvas(shareCard, {
+                    backgroundColor: null,
+                    scale: 2, // 提高图片质量
+                    logging: false
+                }).then(canvas => {
+                    // 创建下载链接
+                    const link = document.createElement('a');
+                    link.download = `MBTI-${selectedMbti}-价值观排序.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            });
+        }
+
+        // 初始化主题切换
+        function initThemeToggle() {
+            const themeToggle = document.getElementById('themeToggle');
+            const body = document.body;
+            const icon = themeToggle.querySelector('i');
+
+            themeToggle.addEventListener('click', function () {
+                body.classList.toggle('dark-mode');
+
+                if (body.classList.contains('dark-mode')) {
+                    icon.classList.remove('fa-moon-o');
+                    icon.classList.add('fa-sun-o');
+                    // 这里可以添加更多深色模式的样式切换
+                } else {
+                    icon.classList.remove('fa-sun-o');
+                    icon.classList.add('fa-moon-o');
+                    // 这里可以添加更多浅色模式的样式切换
+                }
+            });
+        }
+    </script>
+
+</body>
+
+</html>
