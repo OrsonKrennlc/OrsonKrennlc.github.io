@@ -26,7 +26,7 @@
                 <ul class="nav-links">
                     <li><a href="index.html">首页</a></li>
                     <li><a href="categories.html">分类</a></li>
-                    <li><a href="films.html">影视</a></li>
+                    <li><a href="film-archieve.html">影视</a></li>
                     <li><a href="dashboard.html">控制台</a></li>
                 </ul>
             </nav>
@@ -166,7 +166,7 @@
                 const data = doc.data();
                 const title = data.title || '无标题';
                 const summary = data.summary || (data.content ? data.content.substring(0, 60) + '...' : '一段精彩的旅程');
-                const imgUrl = data.coverImage || data.image || data.featuredImage;
+                const imgUrl = data.imageUrl || data.coverImage || data.image || data.featuredImage;
                 const bgStyle = imgUrl ? `background-image: url('${imgUrl}');` : `background: linear-gradient(135deg, #1f1c2c 0%, #928DAB 100%);`;
 
                 html += `

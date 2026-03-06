@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+</head>
+
+<body>
+    <script>
+        async function test() {
+            try {
+                const snapshot = await db.collection('movies').get();
+                console.log("movies size:", snapshot.size);
+            } catch (e) {
+                console.error("movies error:", e);
+            }
+            try {
+                const snapshot2 = await db.collection('films').get();
+                console.log("films size:", snapshot2.size);
+            } catch (e) {
+                console.error("films error:", e);
+            }
+        }
+        test();
+    </script>
+</body>
+
+</html>

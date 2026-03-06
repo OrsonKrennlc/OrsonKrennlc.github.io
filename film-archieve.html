@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的个人片库 - ShArch</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css?v=2.0">
+
+    <style>
+        .page-films .main-content {
+            padding-top: 100px;
+            min-height: calc(100vh - 100px);
+            background-color: var(--background-color);
+        }
+
+        .archive-header {
+            padding: 20px 0 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 40px;
+        }
+
+        .archive-header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            color: var(--text-color);
+            margin-bottom: 32px;
+        }
+
+        .category-filter {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 16px;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+        }
+
+        .cat-btn {
+            background: none;
+            border: none;
+            font-size: 1.05rem;
+            font-weight: 500;
+            color: var(--secondary-text-color);
+            cursor: pointer;
+            padding: 4px 8px;
+            transition: color 0.2s ease;
+            position: relative;
+        }
+
+        .cat-btn.active {
+            color: var(--text-color);
+        }
+
+        .cat-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -17px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--text-color);
+        }
+
+        .cat-btn:hover {
+            color: var(--text-color);
+        }
+
+        .disk-filter {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .disk-btn {
+            background-color: var(--section-bg);
+            border: 1px solid var(--border-color);
+            color: var(--secondary-text-color);
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .disk-btn:hover {
+            border-color: var(--secondary-text-color);
+            color: var(--text-color);
+        }
+
+        .disk-btn.active {
+            background-color: var(--text-color);
+            color: var(--background-color);
+            border-color: var(--text-color);
+        }
+
+        .archive-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            padding-bottom: 80px;
+        }
+
+        .archive-card {
+            background-color: var(--section-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: border-color var(--transition-speed) ease, opacity var(--transition-speed) ease;
+        }
+
+        .archive-card:hover {
+            border-color: var(--text-color);
+        }
+
+        .archive-top {
+            margin-bottom: 24px;
+        }
+
+        .archive-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 12px;
+            line-height: 1.4;
+            letter-spacing: -0.01em;
+        }
+
+        .archive-meta {
+            font-size: 0.85rem;
+            color: var(--secondary-text-color);
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .meta-tag {
+            background: var(--background-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            color: var(--secondary-text-color);
+        }
+
+        .archive-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+        }
+
+        .archive-douban {
+            color: var(--secondary-text-color);
+            font-size: 0.85rem;
+            font-weight: 400;
+            text-decoration: none;
+            transition: color var(--transition-speed);
+        }
+
+        .archive-douban:hover {
+            color: var(--text-color);
+            text-decoration: underline;
+        }
+
+        .archive-rating {
+            font-weight: 500;
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .loading-text {
+            color: var(--secondary-text-color);
+            padding: 40px 0;
+            grid-column: 1 / -1;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+
+<body class="page-films">
+    <header>
+        <div class="container navbar">
+            <a href="index.html" class="logo">ShArch</a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html">首页</a></li>
+                    <li><a href="categories.html">分类</a></li>
+                    <li><a href="film-archieve.html" class="active">影视</a></li>
+                    <li><a href="dashboard.html">控制台</a></li>
+                </ul>
+            </nav>
+            <div class="hamburger-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="archive-header">
+                <h1>我的个人片库</h1>
+
+                <div class="category-filter" id="category-filters">
+                    <button class="cat-btn active" data-category="movies">电影</button>
+                    <button class="cat-btn" data-category="tv_shows">电视剧</button>
+                    <button class="cat-btn" data-category="documentaries">纪录片</button>
+                    <button class="cat-btn" data-category="concerts">演唱会</button>
+                </div>
+
+                <div class="disk-filter" id="disk-filters">
+                    <!-- Disk filters are dynamic -->
+                </div>
+            </div>
+
+            <div class="archive-grid" id="archive-grid">
+                <div class="loading-text">正在加载片库数据...</div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="social-links">
+                <a href="https://github.com/OrsonKrennlc" target="_blank">GitHub</a>
+                <a href="#" target="_blank">LinkedIn</a>
+                <a href="#" target="_blank">Twitter</a>
+            </div>
+            <p>&copy; 2025 orsonkrennlc. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDm7J8PpBr2uMhVUvDdExeTiut1Ogrr0F4",
+            authDomain: "my-film-library-8f972.firebaseapp.com",
+            projectId: "my-film-library-8f972",
+        };
+
+        let db;
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            console.log("Firebase initialized.");
+        } catch (error) {
+            console.error("Firebase init failed:", error);
+        }
+
+        // Nav Menu
+        const hamburgerMenu = document.querySelector('.hamburger-menu');
+        const navLinks = document.querySelector('.nav-links');
+        if (hamburgerMenu && navLinks) {
+            hamburgerMenu.addEventListener('click', () => {
+                hamburgerMenu.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            });
+        }
+
+        // States
+        let fullDatabase = {};
+        let currentCategory = 'movies';
+        let currentDisk = 'all';
+
+        const archiveGrid = document.getElementById('archive-grid');
+        const categoryBtns = document.querySelectorAll('.cat-btn');
+        const diskFiltersContainer = document.getElementById('disk-filters');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (db) {
+                fetchData();
+            } else {
+                archiveGrid.innerHTML = '<div class="loading-text" style="color:var(--error-color);">Firebase configuration error.</div>';
+            }
+        });
+
+        async function fetchData() {
+            try {
+                let loadedFromFirebase = false;
+                try {
+                    if (!db) throw new Error("Firebase DB not initialized.");
+                    const categories = ['movies', 'documentaries', 'tv_shows', 'concerts'];
+                    const promises = categories.map(category => getDocs(collection(db, category)));
+                    const results = await Promise.all(promises);
+
+                    fullDatabase = {};
+                    results.forEach((snapshot, index) => {
+                        const categoryName = categories[index];
+                        fullDatabase[categoryName] = snapshot.docs.map(doc => {
+                            return {
+                                id: doc.id,
+                                category: categoryName,
+                                ...doc.data()
+                            };
+                        });
+                    });
+                    loadedFromFirebase = true;
+                } catch (error) {
+                    console.warn('Firebase loading failed (may be permission/CORS), falling back to local JSON...', error);
+                    try {
+                        const res = await fetch('reference.json');
+                        if (!res.ok) throw new Error('Local JSON fetch failed');
+                        const data = await res.json();
+                        fullDatabase = {
+                            movies: data.movies || [],
+                            documentaries: data.documentaries || [],
+                            tv_shows: data.tv_shows || [],
+                            concerts: data.concerts || []
+                        };
+                    } catch (fallbackErr) {
+                        console.error('Both Firebase and local fallback failed.', fallbackErr);
+                        archiveGrid.innerHTML = '<div class="loading-text" style="color:var(--error-color);">加载数据失败，请检查网络或配置。</div>';
+                        return;
+                    }
+                }
+
+                setupCategoryListeners();
+                renderDiskFilters();
+                renderGrid();
+            } catch (error) {
+                console.error('Fetch error:', error);
+                archiveGrid.innerHTML = '<div class="loading-text" style="color:var(--error-color);">加载数据失败，请检查网络或配置。</div>';
+            }
+        }
+
+        function setupCategoryListeners() {
+            categoryBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    categoryBtns.forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentCategory = e.target.getAttribute('data-category');
+
+                    // documentary is mapped to documentaries in Firebase collection structure
+                    if (currentCategory === 'documentary') {
+                        currentCategory = 'documentaries';
+                    }
+
+                    currentDisk = 'all';
+                    renderDiskFilters();
+                    renderGrid();
+                });
+            });
+        }
+
+        function renderDiskFilters() {
+            if (!fullDatabase || !fullDatabase[currentCategory]) {
+                diskFiltersContainer.innerHTML = '';
+                return;
+            }
+
+            const items = fullDatabase[currentCategory];
+            const disks = new Set();
+            items.forEach(item => {
+                if (item.disk) disks.add(item.disk);
+            });
+
+            const sortedDisks = Array.from(disks).sort();
+
+            let html = '<button class="disk-btn active" data-disk="all">全部</button>';
+            sortedDisks.forEach(disk => {
+                // Parse "disk1" into "Disk 1"
+                const diskLabel = disk.replace(/([a-zA-Z]+)(\d+)/, '$1 $2').replace(/^d/, 'D');
+                html += `<button class="disk-btn" data-disk="${disk}">${diskLabel}</button>`;
+            });
+
+            diskFiltersContainer.innerHTML = html;
+
+            const diskBtns = diskFiltersContainer.querySelectorAll('.disk-btn');
+            diskBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    diskBtns.forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentDisk = e.target.getAttribute('data-disk');
+                    renderGrid();
+                });
+            });
+        }
+
+        function renderGrid() {
+            if (!fullDatabase || !fullDatabase[currentCategory]) {
+                archiveGrid.innerHTML = '<div class="loading-text">该分类下尚未收录内容</div>';
+                return;
+            }
+
+            let items = fullDatabase[currentCategory];
+
+            if (currentDisk !== 'all') {
+                items = items.filter(item => item.disk === currentDisk);
+            }
+
+            items.sort((a, b) => (b.year || 0) - (a.year || 0));
+
+            if (items.length === 0) {
+                archiveGrid.innerHTML = '<div class="loading-text">该分类或分盘下尚无内容</div>';
+                return;
+            }
+
+            let html = '';
+            items.forEach(item => {
+                const title = item.title || '未知名称';
+                const year = item.year || '';
+                const resolution = item.resolution || '';
+                const format = item.format || '';
+                const rating = item.rating && item.rating !== 'NA' ? item.rating : '';
+                const audioDdd = item.audio_dd && item.audio_dd !== 'NA' ? item.audio_dd : '';
+                const audioDts = item.audio_dts && item.audio_dts !== 'NA' ? item.audio_dts : '';
+                const imdb = item.imdb && item.imdb !== '-' ? item.imdb : '-';
+                const doubanLink = item.doubanLink && item.doubanLink !== '#' ? item.doubanLink : null;
+
+                // Show title and year
+                const titleDisplay = year ? `${title} <span style="color:var(--secondary-text-color); font-weight:400; font-size:0.95rem">(${year})</span>` : title;
+
+                html += `
+                <div class="archive-card">
+                    <div class="archive-top">
+                        <div class="archive-title">${titleDisplay}</div>
+                        <div class="archive-meta">
+                            ${resolution ? `<span class="meta-tag">${resolution}</span>` : ''}
+                            ${format ? `<span class="meta-tag">${format}</span>` : ''}
+                            ${audioDdd ? `<span class="meta-tag">${audioDdd}</span>` : ''}
+                            ${audioDts ? `<span class="meta-tag">${audioDts}</span>` : ''}
+                            ${rating ? `<span class="meta-tag">${rating}</span>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="archive-bottom">
+                        ${doubanLink
+                        ? `<a href="${doubanLink}" target="_blank" class="archive-douban">豆瓣主页 ↗</a>`
+                        : '<span></span>'}
+                        <div class="archive-rating" title="IMDb Score">IMDb ${imdb}</div>
+                    </div>
+                </div>
+                `;
+            });
+
+            archiveGrid.innerHTML = html;
+        }
+    </script>
+</body>
+
+</html>
