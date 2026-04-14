@@ -4,19 +4,20 @@
 
 /* --- 1. Global & Variables --- */
 :root {
-    --text-color: #111111;
+    --text-color: #1C2B33;
     --background-color: #ffffff;
-    --primary-button-bg: #111111;
+    --primary-button-bg: #0064E0;
     --primary-button-text: #ffffff;
-    --secondary-text-color: #888888;
-    --border-color: #eaeaea;
-    --header-bg-blur: rgba(255, 255, 255, 0.85);
-    --header-border: 1px solid var(--border-color);
-    --section-bg: #fafafa;
-    --error-color: #e02424;
-    --success-color: #059669;
+    --secondary-text-color: #5D6C7B;
+    --border-color: #DEE3E9;
+    --header-bg-blur: rgba(241, 244, 247, 0.8);
+    --header-border: 1px solid rgba(0,0,0,0.1);
+    --section-bg: #F1F4F7;
+    --card-bg: #F7F8FA;
+    --error-color: #E41E3F;
+    --success-color: #31A24C;
     --transition-speed: 0.2s;
-    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 /* Reset & Base Styles */
@@ -47,9 +48,9 @@ a:hover {
 }
 
 .container {
-    max-width: 900px;
+    max-width: 1440px;
     margin: 0 auto;
-    padding: 0 24px;
+    padding: 0 40px;
 }
 
 /* --- 2. Shared Components (Header & Footer) --- */
@@ -60,8 +61,8 @@ body>header {
     width: 100%;
     z-index: 1000;
     background-color: var(--header-bg-blur);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border-bottom: var(--header-border);
     padding: 16px 0;
     transition: background-color 0.3s ease, border-bottom 0.3s ease;
@@ -151,24 +152,33 @@ footer {
     align-items: center;
     background-color: var(--primary-button-bg);
     color: var(--primary-button-text);
-    padding: 12px 24px;
-    border-radius: 9999px;
-    font-size: 0.95rem;
+    padding: 10px 22px;
+    border-radius: 100px;
+    font-size: 14px;
     font-weight: 500;
-    letter-spacing: -0.01em;
-    border: 1px solid var(--primary-button-bg);
-    transition: opacity var(--transition-speed) ease, background-color var(--transition-speed);
+    letter-spacing: -0.14px;
+    border: none;
+    transition: background-color 200ms ease, transform 150ms ease;
     cursor: pointer;
 }
 
 .btn:hover {
-    opacity: 0.85;
+    background-color: #0143B5;
+    transform: scale(1.05);
     color: var(--primary-button-text);
 }
 
+.btn:active {
+    background-color: #004BB9;
+    transform: scale(0.95);
+    opacity: 0.8;
+}
+
 .btn:disabled {
-    opacity: 0.5;
+    background-color: #DEE3E9;
+    color: #8595A4;
     cursor: not-allowed;
+    transform: none;
 }
 
 /* Custom error message coloring globally */
@@ -246,14 +256,13 @@ footer {
 }
 
 .hero-carousel-title {
-    font-family: 'Noto Serif SC', serif;
-    font-size: 3.2rem;
-    font-weight: 700;
+    font-family: var(--font-family);
+    font-size: 64px;
+    font-weight: 500;
     margin-bottom: 12px;
     color: #ffffff;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-    letter-spacing: 0.05em;
-    line-height: 1.2;
+    letter-spacing: -0.02em;
+    line-height: 1.16;
 }
 
 .hero-carousel-divider {
@@ -431,18 +440,20 @@ footer {
 }
 
 .category-card {
-    background-color: var(--section-bg);
+    background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 20px;
     padding: 32px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    transition: border-color var(--transition-speed) ease;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,0.1);
+    transition: transform 300ms ease, box-shadow 300ms ease;
 }
 
 .category-card:hover {
-    border-color: var(--text-color);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px 0 rgba(0,0,0,0.2), 0 2px 4px 0 rgba(0,0,0,0.1);
 }
 
 .category-card h2 {
@@ -658,18 +669,19 @@ input[type="password"],
 textarea {
     width: 100%;
     padding: 12px 16px;
-    font-size: 1rem;
+    font-size: 16px;
     font-family: var(--font-family);
-    border: 1px solid var(--border-color);
+    border: 1px solid #CED0D4;
     border-radius: 8px;
     background-color: var(--background-color);
-    transition: border-color var(--transition-speed);
+    transition: border-color 200ms ease, box-shadow 200ms ease;
 }
 
 input:focus,
 textarea:focus {
     outline: none;
-    border-color: var(--text-color);
+    border-color: var(--primary-button-bg);
+    box-shadow: 0 0 0 3px rgba(0, 100, 224, 0.3);
 }
 
 textarea#post-content {
