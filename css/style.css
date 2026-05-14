@@ -1,0 +1,666 @@
+:root {
+    --bg-black: #000000;
+    --text-white: #FFFFFF;
+    --text-primary: #02542D;
+    --text-gray-light: #ECECEC;
+    --text-gray: #CBCBCB;
+    --text-gray-dark: #808080;
+    --text-nav: #B7B7B7;
+    
+    --font-zh: 'Noto Serif SC', serif;
+    --font-en: 'Anonymous Pro', monospace;
+    --font-tibetan: 'Noto Serif Tibetan', serif;
+    --font-hand: 'Caveat', cursive;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: #FFFFFF;
+    color: #000000;
+    font-family: var(--font-en);
+    overflow-x: hidden;
+}
+
+/* Header */
+.site-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 150px;
+    z-index: 1000;
+    border-bottom: 1px solid #EAEAEA;
+}
+
+.logo {
+    font-family: var(--font-hand);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.main-nav {
+    display: flex;
+    gap: 40px;
+}
+
+.main-nav a {
+    font-family: var(--font-zh);
+    font-size: 20px;
+    color: var(--text-nav);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.main-nav a.active, .main-nav a:hover {
+    color: var(--text-primary);
+}
+
+/* Main Wrapper */
+.main-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+/* Dark Section (Mountain Background) */
+.dark-section {
+    position: relative;
+    background-color: #000;
+    background-image: linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(0,0,0,1) 95%), url('../assets/images/hero-bg-uncropped.png');
+    background-size: 100% auto;
+    background-position: center top;
+    background-repeat: no-repeat;
+    color: #FFF;
+    padding-bottom: 150px;
+}
+
+/* Hero Elements within Dark Section */
+.hero {
+    padding-top: 180px;
+    padding-left: 341px;
+    position: relative;
+}
+
+.glitch-wrapper {
+    position: relative;
+    height: 168px;
+    width: 525px;
+    margin-bottom: 40px;
+}
+
+.glitch-text {
+    position: absolute;
+    font-size: 48px;
+    font-family: var(--font-en);
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.glitch-1 { top: 0px; color: #ECECEC; }
+.glitch-2 { top: 30px; color: #CBCBCB; }
+.glitch-3 { top: 60px; color: #000000; z-index: 10; }
+.glitch-4 { top: 90px; color: #CBCBCB; }
+.glitch-5 { top: 120px; color: #ECECEC; }
+
+.hero-location {
+    font-family: var(--font-zh);
+    font-size: 16px;
+    color: #7C7C7C;
+}
+
+.hero-location .eng {
+    font-family: var(--font-en);
+}
+
+.hero-tibetan {
+    position: absolute;
+    right: 341px;
+    top: 550px;
+    text-align: right;
+    color: #000000;
+}
+
+.tibetan-text {
+    font-family: var(--font-tibetan);
+    font-size: 36px;
+    font-weight: 200;
+    margin-bottom: 10px;
+}
+
+.tibetan-zh {
+    font-family: var(--font-zh);
+    font-size: 20px;
+}
+
+/* Arrow Container taking About's old place */
+.scroll-arrow-container {
+    padding-top: 450px;
+    padding-bottom: 250px;
+    text-align: center;
+}
+
+/* About Section */
+.about-section {
+    padding: 0 150px;
+    padding-bottom: 150px;
+    display: flex;
+    justify-content: center;
+    background-color: transparent;
+}
+
+.about-container {
+    display: flex;
+    gap: 60px;
+    align-items: flex-start;
+    max-width: 1200px;
+    width: 100%;
+}
+
+.about-image img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+}
+
+.about-info {
+    flex: 1;
+}
+
+.about-name {
+    font-family: var(--font-zh);
+    font-size: 32px;
+    font-weight: 400;
+    margin-bottom: 15px;
+    color: #FFFFFF;
+}
+
+.about-aka {
+    font-family: var(--font-zh);
+    font-size: 16px;
+    color: #CBCBCB;
+    margin-bottom: 30px;
+}
+
+.about-tags-zh {
+    font-family: var(--font-zh);
+    font-size: 20px;
+    color: #D0D0D0;
+    margin-bottom: 10px;
+    letter-spacing: 0.05em;
+}
+
+.about-tags-en {
+    font-family: var(--font-en);
+    font-size: 20px;
+    color: #D0D0D0;
+    margin-bottom: 30px;
+}
+
+.about-desc {
+    font-family: var(--font-zh);
+    font-size: 20px;
+    color: #D0D0D0;
+    line-height: 1.6;
+}
+
+.about-desc .eng {
+    font-family: var(--font-en);
+}
+
+/* Solid Black Section */
+.solid-black-section {
+    background-color: #000000;
+    color: #FFFFFF;
+    padding: 0 0 100px 0;
+}
+
+/* Quote Section */
+.quote-section {
+    margin-top: -100px;
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+}
+
+.quote-container {
+    text-align: center;
+    max-width: 700px;
+}
+
+.quote-portrait {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-bottom: 30px;
+    object-fit: cover;
+}
+
+.quote-text {
+    font-family: var(--font-en);
+    font-size: 32px;
+    font-weight: 400;
+    margin-bottom: 20px;
+    color: #FFFFFF;
+}
+
+.quote-author {
+    font-family: var(--font-en);
+    font-size: 20px;
+    color: #D0D0D0;
+    line-height: 1.6;
+}
+
+/* Light Section (White Background) */
+.light-section {
+    background-color: #FFFFFF;
+    color: #000000;
+}
+
+/* Resume Section */
+.resume-section {
+    padding: 150px 150px 100px 150px;
+    background-color: transparent;
+}
+
+.resume-container {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1620px;
+    margin: 0 auto;
+    gap: 100px;
+}
+
+.resume-column {
+    flex: 1;
+}
+
+.column-title {
+    font-family: var(--font-zh);
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #000000;
+}
+
+.column-divider {
+    border: none;
+    border-top: 1px solid #EAEAEA;
+    margin-bottom: 40px;
+}
+
+.resume-item {
+    margin-bottom: 40px;
+}
+
+.item-title {
+    font-family: var(--font-zh);
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #000000;
+}
+
+.item-desc {
+    font-family: var(--font-zh);
+    font-size: 20px;
+    font-weight: 300;
+    color: #676767;
+    line-height: 1.5;
+}
+
+.prize-list {
+    list-style: none;
+}
+
+.prize-list li {
+    display: flex;
+    margin-bottom: 20px;
+    font-family: var(--font-zh);
+    font-size: 24px;
+    align-items: flex-start;
+    color: #000000;
+}
+
+.prize-date {
+    width: 120px;
+    flex-shrink: 0;
+    line-height: 1.5;
+    color: #676767;
+}
+
+.prize-name {
+    flex: 1;
+    line-height: 1.5;
+}
+
+.prize-name strong {
+    font-weight: 700;
+    color: #000000;
+}
+
+.prize-level {
+    color: #676767;
+    margin-left: 20px;
+    white-space: nowrap;
+    line-height: 1.5;
+}
+
+/* Project Archives */
+.projects-section {
+    padding: 50px 150px 150px 150px;
+    background-color: transparent;
+}
+
+.section-title {
+    font-family: var(--font-en);
+    font-size: 48px;
+    font-weight: 400;
+    text-align: left;
+    margin-bottom: 80px;
+    color: #000000;
+}
+
+.section-title strong {
+    font-family: var(--font-zh);
+    font-weight: 700;
+}
+
+.projects-grid {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.project-card {
+    position: relative;
+    flex: 1;
+    aspect-ratio: 1 / 1;
+    text-decoration: none;
+    color: #FFF;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.card-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.5s ease;
+    z-index: 1;
+}
+
+.card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s ease;
+    z-index: 2;
+}
+
+.project-card:hover .card-bg {
+    transform: scale(1.05);
+}
+
+.project-card:hover .card-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.card-content {
+    position: relative;
+    z-index: 3;
+}
+
+.card-content h3 {
+    font-family: var(--font-zh);
+    font-size: 36px;
+    font-weight: 400;
+    margin-bottom: 10px;
+    color: #FFF;
+}
+
+.card-content p {
+    font-family: var(--font-en);
+    font-size: 36px;
+    color: #FFF;
+}
+
+/* Footer */
+.site-footer {
+    background-color: #FFFFFF;
+    color: #000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100px;
+    padding: 0 150px;
+    font-family: var(--font-en);
+    font-size: 16px;
+    border-top: 1px solid #EAEAEA;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .site-header, .about-section, .projects-section, .resume-section, .site-footer {
+        padding-left: 50px;
+        padding-right: 50px;
+    }
+    .hero {
+        padding-left: 50px;
+    }
+    .hero-tibetan {
+        right: 50px;
+    }
+    .projects-grid {
+        flex-direction: column;
+    }
+    .project-card {
+        width: 100%;
+        max-width: none;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Header */
+    .site-header {
+        flex-direction: column;
+        height: auto;
+        padding: 15px 50px;
+        gap: 10px;
+        position: relative;
+    }
+    .main-nav {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+    }
+    .main-nav a {
+        font-size: 16px;
+    }
+    .logo {
+        font-size: 28px;
+    }
+
+    /* Dark Section Background */
+    .dark-section {
+        background-size: 150% auto;
+    }
+
+    /* Hero */
+    .hero {
+        padding-top: 80px;
+        padding-left: 50px;
+        padding-right: 50px;
+    }
+    .glitch-wrapper {
+        width: 100%;
+        height: 80px;
+        margin-bottom: 20px;
+    }
+    .glitch-text {
+        font-size: 20px;
+        white-space: nowrap;
+    }
+    .glitch-1 { top: 0px; }
+    .glitch-2 { top: 15px; }
+    .glitch-3 { top: 30px; }
+    .glitch-4 { top: 45px; }
+    .glitch-5 { top: 60px; }
+
+    .hero-location {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .hero-tibetan {
+        position: relative;
+        right: auto;
+        top: auto;
+        text-align: right;
+        padding: 40px 50px 0 50px;
+        color: #000000;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    }
+    .tibetan-text {
+        font-size: 24px;
+    }
+    .tibetan-zh {
+        font-size: 16px;
+    }
+
+    /* Arrow */
+    .scroll-arrow-container {
+        padding-top: 100px;
+        padding-bottom: 80px;
+    }
+
+    /* About Section */
+    .about-section {
+        padding: 0 50px 80px 50px;
+    }
+    .about-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 30px;
+    }
+    .about-image img {
+        width: 150px;
+        height: 150px;
+    }
+    .about-name {
+        font-size: 24px;
+    }
+    .about-aka {
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+    .about-tags-zh, .about-tags-en, .about-desc {
+        font-size: 16px;
+    }
+
+    /* Solid Black Section */
+    .solid-black-section {
+        padding: 0 0 60px 0;
+    }
+
+    /* Quote Section */
+    .quote-section {
+        margin-top: -60px;
+    }
+    .quote-portrait {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 20px;
+    }
+    .quote-text {
+        font-size: 24px;
+    }
+    .quote-author {
+        font-size: 16px;
+    }
+
+    /* Resume Section */
+    .resume-section {
+        padding: 60px 50px 40px 50px;
+    }
+    .resume-container {
+        flex-direction: column;
+        gap: 50px;
+    }
+    .column-title {
+        font-size: 28px;
+    }
+    .item-title {
+        font-size: 24px;
+    }
+    .item-desc {
+        font-size: 16px;
+    }
+    .prize-list li {
+        flex-direction: column;
+        align-items: flex-start;
+        font-size: 16px;
+    }
+    .prize-level {
+        margin-left: 0;
+        margin-top: 5px;
+    }
+
+    /* Projects Section */
+    .projects-section {
+        padding: 20px 50px 60px 50px;
+    }
+    .section-title {
+        font-size: 32px;
+        margin-bottom: 40px;
+        text-align: center;
+    }
+    .card-content h3 {
+        font-size: 28px;
+    }
+    .card-content p {
+        font-size: 24px;
+    }
+
+    /* Footer */
+    .site-footer {
+        flex-direction: column;
+        justify-content: center;
+        gap: 10px;
+        height: auto;
+        padding: 30px 50px;
+        text-align: center;
+        font-size: 14px;
+    }
+}

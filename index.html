@@ -1,234 +1,165 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>orsonkrenlc's blog</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.0">
-
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-
-    <script src="firebase-config.js"></script>
-
+    <title>Jerry Shen - Portfolio</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Caveat:wght@700&family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Serif+Tibetan:wght@200;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
 </head>
+<body>
 
-<body class="page-home">
-
-    <header>
-        <div class="container navbar">
-            <a href="index.html" class="logo">ShArch</a>
-            <nav>
-                <ul class="nav-links">
-                    <li><a href="index.html">首页</a></li>
-                    <li><a href="categories.html">分类</a></li>
-                    <li><a href="film-archieve.html">影视</a></li>
-                    <li><a href="dashboard.html">控制台</a></li>
-                </ul>
-            </nav>
-            <div class="hamburger-menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
+    <header class="site-header">
+        <div class="logo">Jerry Shen</div>
+        <nav class="main-nav">
+            <a href="#home" class="active">主页/Portfolio</a>
+            <a href="#projects">建筑/Architect</a>
+            <a href="#projects">摄影/Photographer</a>
+            <a href="#projects">行者/Traveller</a>
+            <a href="#about">关于/About</a>
+        </nav>
     </header>
 
-    <main>
-        <section class="hero-carousel-section">
-            <div class="container">
-                <div class="carousel-container">
-                    <div id="hero-carousel-inner" class="hero-carousel-inner">
-                        <!-- 轮播内容由JS注入 -->
+    <main class="main-wrapper">
+        
+        <!-- Dark Section with Mountain Background -->
+        <div class="dark-section" id="home">
+            <div class="hero">
+                <div class="glitch-wrapper">
+                    <!-- Layered Text Effect -->
+                    <h1 class="glitch-text glitch-1">Per Aspera ad astra.</h1>
+                    <h1 class="glitch-text glitch-2">Per Aspera ad astra.</h1>
+                    <h1 class="glitch-text glitch-3">Per Aspera ad astra.</h1>
+                    <h1 class="glitch-text glitch-4">Per Aspera ad astra.</h1>
+                    <h1 class="glitch-text glitch-5">Per Aspera ad astra.</h1>
+                </div>
+                <p class="hero-location">阿坝 · 四川 · 中国 ｜ <span class="eng">Ngawa, Sichuan, China</span></p>
+            </div>
+            
+            <div class="hero-tibetan">
+                <p class="tibetan-text">རི་མཐོན་ཆུ་རྒྱང་། ཡོན་ཏན་ཟིལ་རྒྱང་།</p>
+                <p class="tibetan-zh">山高水自长，德厚声自远</p>
+            </div>
+
+            <!-- Arrow occupying the original About position -->
+            <div class="scroll-arrow-container">
+                <div class="scroll-down">
+                    <img src="assets/images/vector.svg" alt="Scroll Down">
+                </div>
+            </div>
+
+            <!-- About Section moved to bottom of mountain -->
+            <section class="about-section" id="about">
+                <div class="about-container">
+                    <div class="about-image">
+                        <img src="assets/images/about-654249.png" alt="Shen Junyang">
                     </div>
-                    <button id="hero-prev" class="carousel-btn prev-btn" aria-label="上一篇">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="15 18 9 12 15 6"></polyline>
-                        </svg>
-                    </button>
-                    <button id="hero-next" class="carousel-btn next-btn" aria-label="下一篇">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="9 18 15 12 9 6"></polyline>
-                        </svg>
-                    </button>
-                    <div id="hero-carousel-indicators" class="carousel-indicators"></div>
+                    <div class="about-info">
+                        <h2 class="about-name">沈俊阳｜Shen Junyang</h2>
+                        <p class="about-aka">aka. 忘了猫叔｜Orson Krennic</p>
+                        <p class="about-tags-zh">零零后 / 建筑设计 / 交互设计 / 摄影 / 电影 / 水瓶座 / ENFJ</p>
+                        <p class="about-tags-en">Gen Z / Architect / Interaction Designer / Photographer / Filmer / Aquarius / ENFJ</p>
+                        <p class="about-desc">
+                            <span>于方寸之间，见万千气象。</span><br>
+                            <span class="eng">Design is the art of distilling the most profound narrative into its simplest form.</span>
+                        </p>
+                    </div>
                 </div>
-            </div>
-        </section>
-
-        <section class="blog-posts">
-            <div class="container">
-                <h2>最新文章</h2>
-
-                <div class="post-grid" id="post-grid-container">
-                    <p id="posts-loading" style="color: var(--secondary-text-color);">
-                        正在从数据库加载最新文章...
-                    </p>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <footer>
-        <div class="container">
-            <div class="social-links">
-                <a href="https://github.com/OrsonKrennlc" target="_blank">GitHub</a>
-                <a href="#" target="_blank">LinkedIn</a>
-                <a href="#" target="_blank">Twitter</a>
-            </div>
-            <p>&copy; 2025 orsonkrennlc. All rights reserved.</p>
+            </section>
         </div>
-    </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            loadAllPosts();
-        });
+        <!-- Solid Black Section for Quote -->
+        <div class="solid-black-section">
+            <!-- Quote Section -->
+            <section class="quote-section">
+                <div class="quote-container">
+                    <img src="assets/images/portrait.png" alt="Le Corbusier Portrait" class="quote-portrait">
+                    <h2 class="quote-text">“Less is more.”</h2>
+                    <p class="quote-author">- Le Corbusier -<br>1887-1965</p>
+                </div>
+            </section>
+        </div>
 
-        async function loadAllPosts() {
-            const gridContainer = document.getElementById('post-grid-container');
-            const loadingIndicator = document.getElementById('posts-loading');
-
-            if (!loadingIndicator) return;
-
-            try {
-                const postsCollection = db.collection('posts').orderBy("date", "desc");
-                const snapshot = await postsCollection.get();
-
-                if (snapshot.empty) {
-                    loadingIndicator.innerText = "目前还没有文章。";
-                    return;
-                }
-
-                const docs = snapshot.docs;
-                const topDocs = docs.slice(0, 3);
-                renderHeroCarousel(topDocs);
-
-                let postsHtml = '';
-                docs.forEach(doc => {
-                    const postData = doc.data();
-                    const postId = doc.id;
-                    postsHtml += createPostCard(postData, postId);
-                });
-
-                loadingIndicator.remove();
-                gridContainer.innerHTML = postsHtml;
-
-            } catch (error) {
-                console.error("加载文章列表出错:", error);
-                loadingIndicator.innerText = "加载文章时发生网络错误。";
-                loadingIndicator.style.color = "var(--error-color)";
-            }
-        }
-
-        function createPostCard(data, id) {
-            const summary = data.summary || (data.content ? data.content.substring(0, 80) + '...' : '');
-
-            return `
-                <a href="post.html?id=${id}" class="post-card">
-                    <div class="post-card-date">${data.date || '未知日期'}</div>
-                    <div class="post-card-content">
-                        <h3>${data.title || '无标题'}</h3>
-                        <p>${summary}</p>
+        <!-- Light Section with White Background -->
+        <div class="light-section">
+            <!-- Resume Section (Education & Prize) -->
+            <section class="resume-section" id="resume">
+                <div class="resume-container">
+                    <!-- Education -->
+                    <div class="resume-column">
+                        <h2 class="column-title">教育经历 / Education</h2>
+                        <hr class="column-divider">
+                        
+                        <div class="resume-item">
+                            <h3 class="item-title">北京大学附属中学</h3>
+                            <p class="item-desc">PKU School<br>2016-2022</p>
+                        </div>
+                        
+                        <div class="resume-item">
+                            <h3 class="item-title">四川大学</h3>
+                            <p class="item-desc">Sichuan University<br>建筑学 学士 2022-2027<br>Bachelor of Architecture 2022-2027</p>
+                        </div>
                     </div>
-                </a>
-            `;
-        }
 
-        const hamburgerMenu = document.querySelector('.hamburger-menu');
-        const navLinks = document.querySelector('.nav-links');
+                    <!-- Prize -->
+                    <div class="resume-column">
+                        <h2 class="column-title">荣誉奖项 / Prize</h2>
+                        <hr class="column-divider">
+                        
+                        <ul class="prize-list">
+                            <li><span class="prize-date">2024.05</span><span class="prize-name"><strong>第九届米兰设计周</strong></span><span class="prize-level">四川省三等奖</span></li>
+                            <li><span class="prize-date">2025.06</span><span class="prize-name"><strong>未来设计师 · 四川省高校设计大赛</strong></span><span class="prize-level">四川省一等奖</span></li>
+                            <li><span class="prize-date">2025.08</span><span class="prize-name"><strong>未来设计师 · 全国高校设计大赛</strong></span><span class="prize-level">全国三等奖</span></li>
+                            <li><span class="prize-date">2025.08</span><span class="prize-name"><strong>未来设计师 · 全国高校设计大赛</strong></span><span class="prize-level">全国三等奖</span></li>
+                            <li><span class="prize-date">2024.06</span><span class="prize-name"><strong>四川大学奖学金</strong></span><span class="prize-level">综合二等奖学金</span></li>
+                            <li><span class="prize-date">2025.12</span><span class="prize-name"><strong>国家奖学金</strong></span><span class="prize-level">本科生国家奖学金</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
 
-        hamburgerMenu.addEventListener('click', () => {
-            hamburgerMenu.classList.toggle('active');
-            navLinks.classList.toggle('active');
-        });
-
-        let currentSlide = 0;
-        let totalSlides = 0;
-        let slideInterval;
-
-        function renderHeroCarousel(topDocs) {
-            const carouselInner = document.getElementById('hero-carousel-inner');
-            const indicators = document.getElementById('hero-carousel-indicators');
-            if (!carouselInner || topDocs.length === 0) return;
-
-            totalSlides = topDocs.length;
-            let html = '';
-            let indicatorsHtml = '';
-
-            topDocs.forEach((doc, index) => {
-                const data = doc.data();
-                const title = data.title || '无标题';
-                const summary = data.summary || (data.content ? data.content.substring(0, 60) + '...' : '一段精彩的旅程');
-                const imgUrl = data.imageUrl || data.coverImage || data.image || data.featuredImage;
-                const bgStyle = imgUrl ? `background-image: url('${imgUrl}');` : `background: linear-gradient(135deg, #1f1c2c 0%, #928DAB 100%);`;
-
-                html += `
-                    <a href="post.html?id=${doc.id}" class="hero-carousel-slide" style="${bgStyle}">
-                        <div class="hero-carousel-overlay"></div>
-                        <div class="hero-carousel-content">
-                            <h2 class="hero-carousel-title">${title}</h2>
-                            <hr class="hero-carousel-divider">
-                            <p class="hero-carousel-summary">${summary}</p>
+            <!-- Project Archives -->
+            <section class="projects-section" id="projects">
+                <h2 class="section-title"><strong>项目存档</strong><strong>｜</strong>Project Archives</h2>
+                <div class="projects-grid">
+                    <a href="#" class="project-card">
+                        <div class="card-bg" style="background-image: url('assets/images/project-1-517cbb.png');"></div>
+                        <div class="card-overlay"></div>
+                        <div class="card-content">
+                            <h3>摄影作品</h3>
+                            <p>Photography</p>
                         </div>
                     </a>
-                `;
+                    <a href="#" class="project-card">
+                        <div class="card-bg" style="background-image: url('assets/images/project-2-7f77be.png');"></div>
+                        <div class="card-overlay"></div>
+                        <div class="card-content">
+                            <h3>建筑设计</h3>
+                            <p>Architecture</p>
+                        </div>
+                    </a>
+                    <a href="#" class="project-card">
+                        <div class="card-bg" style="background-image: url('assets/images/project-3-1c7b55.png');"></div>
+                        <div class="card-overlay"></div>
+                        <div class="card-content">
+                            <h3>旅行随记</h3>
+                            <p>Journals</p>
+                        </div>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
 
-                indicatorsHtml += `<div class="carousel-dot ${index === 0 ? 'active' : ''}" onclick="goToSlide(${index})"></div>`;
-            });
+    <footer class="site-footer">
+        <div class="footer-left">Made by Jerry with ❤️</div>
+        <div class="footer-center">© 2026 orsonkrennlc.All Rights Reserved.</div>
+        <div class="footer-right">Powered by Github Pages</div>
+    </footer>
 
-            carouselInner.innerHTML = html;
-            if (indicators) indicators.innerHTML = indicatorsHtml;
-
-            const prevBtn = document.getElementById('hero-prev');
-            const nextBtn = document.getElementById('hero-next');
-            if (prevBtn) prevBtn.addEventListener('click', prevSlide);
-            if (nextBtn) nextBtn.addEventListener('click', nextSlide);
-
-            startSlideInterval();
-        }
-
-        function goToSlide(index) {
-            currentSlide = index;
-            updateCarousel();
-            resetSlideInterval();
-        }
-
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % totalSlides;
-            updateCarousel();
-        }
-
-        function prevSlide() {
-            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-            updateCarousel();
-        }
-
-        function updateCarousel() {
-            const carouselInner = document.getElementById('hero-carousel-inner');
-            if (carouselInner) {
-                carouselInner.style.transform = `translateX(-${currentSlide * 100}%)`;
-            }
-            const dots = document.querySelectorAll('.carousel-dot');
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('active', index === currentSlide);
-            });
-        }
-
-        function startSlideInterval() {
-            slideInterval = setInterval(nextSlide, 5000);
-        }
-
-        function resetSlideInterval() {
-            clearInterval(slideInterval);
-            startSlideInterval();
-        }
-    </script>
+    <script src="js/main.js"></script>
 </body>
-
 </html>
