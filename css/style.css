@@ -164,6 +164,7 @@ body {
     display: flex;
     justify-content: center;
     background-color: transparent;
+    scroll-margin-top: 100px;
 }
 
 .about-container {

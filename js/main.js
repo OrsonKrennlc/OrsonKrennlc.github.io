@@ -29,11 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const scrollArrow = document.querySelector('.scroll-down');
     if (scrollArrow) {
         scrollArrow.addEventListener('click', () => {
-            const nextSection = document.querySelector('.quote-section');
+            const nextSection = document.querySelector('#about');
             if (nextSection) {
                 nextSection.scrollIntoView({
                     behavior: 'smooth',
-                    block: 'start'
+                    block: 'center'
                 });
             }
         });
