@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jerry Shen - Architect</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anonymous+Pro:wght@400;700&family=Caveat:wght@700&family=Noto+Serif+SC:wght@300;400;500;600;700&family=Noto+Serif+Tibetan:wght@200;400&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/architect.css">
+</head>
+
+<body>
+
+    <header class="site-header">
+        <div class="logo">Jerry Shen</div>
+        <nav class="main-nav">
+            <a href="index.html#home">主页/Portfolio</a>
+            <a href="architect.html" class="active">建筑/Architect</a>
+            <a href="index.html#projects">摄影/Photographer</a>
+            <a href="index.html#projects">行者/Traveller</a>
+            <a href="index.html#about">关于/About</a>
+        </nav>
+    </header>
+
+    <main class="main-wrapper arch-main">
+        
+        <!-- Map Section -->
+        <section class="map-section">
+            <h2 class="map-title"><strong>项目分布</strong><strong>｜</strong>Project Map</h2>
+            <div class="map-container">
+                <div id="project-map"></div>
+            </div>
+            
+            <div class="scroll-arrow-arch">
+                <img src="assets/images/vector.svg" alt="Scroll Down">
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section class="arch-projects-section" id="projects-container">
+            <!-- Dynamic project cards will be inserted here by JS -->
+        </section>
+
+    </main>
+
+    <!-- Modal for Project Details -->
+    <div class="arch-modal-overlay" id="arch-modal-overlay">
+        <div class="arch-modal-content">
+            <button class="modal-close-btn" id="modal-close-btn"></button>
+            
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title"></h2>
+                <p class="modal-subtitle" id="modal-subtitle"></p>
+            </div>
+            
+            <div class="modal-gallery-container">
+                <div class="modal-gallery" id="modal-gallery">
+                    <!-- Images will be inserted here -->
+                </div>
+                <div class="gallery-controls">
+                    <div class="gallery-dots" id="gallery-dots"></div>
+                    <div class="gallery-arrows">
+                        <button id="gallery-prev">&lt;</button>
+                        <button id="gallery-next">&gt;</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-body">
+                <div class="arch-card-grid modal-info-grid" id="modal-info-grid">
+                    <!-- Info items -->
+                </div>
+                <div class="modal-desc" id="modal-desc">
+                    <!-- Description -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-left">Made by Jerry with ❤️</div>
+        <div class="footer-center">© 2026 orsonkrennlc.All Rights Reserved.</div>
+        <div class="footer-right">Powered by Chimi's LOVE💗 and Github Pages</div>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="assets/arch/projectsData.js"></script>
+    <script src="js/architect.js"></script>
+</body>
+
+</html>
