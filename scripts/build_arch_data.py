@@ -6,7 +6,7 @@ def get_files_in_dir(path):
     try:
         files = os.listdir(path)
         # Sort files so images appear in order
-        return sorted([f for f in files if os.path.isfile(os.path.join(path, f))])
+        return sorted([f for f in files if os.path.isfile(os.path.join(path, f)) and not f.startswith('.')])
     except:
         return []
 
@@ -89,7 +89,7 @@ def main():
             elif "功能" in key or "类型" in key: project['type'] = val
             elif "面积" in key: project['area'] = val
             elif "容积率" in key: project['far'] = val
-            elif "绿地" in key: project['greening'] = val
+            elif "绿地" in key or "绿化" in key: project['greening'] = val
             elif "设计" in key or "人员" in key: project['designer'] = val
             elif "文本" in key or "描述" in key or len(desc_lines) > 0 or i > 8:
                 if "文本" in key or "描述" in key:
