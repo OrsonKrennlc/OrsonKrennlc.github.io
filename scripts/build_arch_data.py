@@ -1,7 +1,45 @@
 import os
 import csv
 import json
+import math
 
+# --- Coordinate Conversion Functions (GCJ-02 to WGS-84) ---
+PI = 3.1415926535897932384626
+ee = 0.00669342162296594323
+a = 6378245.0
+
+def _transform_lat(x, y):
+    ret = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y + 0.2 * math.sqrt(abs(x))
+    ret += (20.0 * math.sin(6.0 * x * PI) + 20.0 * math.sin(2.0 * x * PI)) * 2.0 / 3.0
+    ret += (20.0 * math.sin(y * PI) + 40.0 * math.sin(y / 3.0 * PI)) * 2.0 / 3.0
+    ret += (160.0 * math.sin(y / 12.0 * PI) + 320 * math.sin(y * PI / 30.0)) * 2.0 / 3.0
+    return ret
+
+def _transform_lon(x, y):
+    ret = 300.0 + x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1 * math.sqrt(abs(x))
+    ret += (20.0 * math.sin(6.0 * x * PI) + 20.0 * math.sin(2.0 * x * PI)) * 2.0 / 3.0
+    ret += (20.0 * math.sin(x * PI) + 40.0 * math.sin(x / 3.0 * PI)) * 2.0 / 3.0
+    ret += (150.0 * math.sin(x / 12.0 * PI) + 300.0 * math.sin(x / 30.0 * PI)) * 2.0 / 3.0
+    return ret
+
+def out_of_china(lng, lat):
+    return not (lng > 73.66 and lng < 135.05 and lat > 3.86 and lat < 53.55)
+
+def gcj02_to_wgs84(lng, lat):
+    if out_of_china(lng, lat):
+        return lng, lat
+    dlat = _transform_lat(lng - 105.0, lat - 35.0)
+    dlng = _transform_lon(lng - 105.0, lat - 35.0)
+    radlat = lat / 180.0 * PI
+    magic = math.sin(radlat)
+    magic = 1 - ee * magic * magic
+    sqrtmagic = math.sqrt(magic)
+    dlat = (dlat * 180.0) / ((a * (1 - ee)) / (magic * sqrtmagic) * PI)
+    dlng = (dlng * 180.0) / (a / sqrtmagic * math.cos(radlat) * PI)
+    mglat = lat + dlat
+    mglng = lng + dlng
+    return lng * 2 - mglng, lat * 2 - mglat
+# ---------------------------------------------------------
 def get_files_in_dir(path):
     try:
         files = os.listdir(path)
@@ -79,12 +117,18 @@ def main():
             elif "位置" in key or "地点" in key: project['location'] = val
             elif "坐标" in key:
                 if len(row) >= 3:
-                    try: project['coords'] = [float(row[2]), float(row[1])]
+                    try:
+                        lng, lat = float(row[1]), float(row[2])
+                        wgs_lng, wgs_lat = gcj02_to_wgs84(lng, lat)
+                        project['coords'] = [wgs_lat, wgs_lng]
                     except: pass
                 else:
                     parts = val.split(',')
                     if len(parts) >= 2:
-                        try: project['coords'] = [float(parts[1]), float(parts[0])]
+                        try:
+                            lng, lat = float(parts[0]), float(parts[1])
+                            wgs_lng, wgs_lat = gcj02_to_wgs84(lng, lat)
+                            project['coords'] = [wgs_lat, wgs_lng]
                         except: pass
             elif "功能" in key or "类型" in key: project['type'] = val
             elif "面积" in key: project['area'] = val
