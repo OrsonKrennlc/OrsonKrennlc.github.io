@@ -1,12 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
     const i18n = window.SiteI18n;
     const mapContainer = document.getElementById('project-map');
-    const projectsContainer = document.getElementById('projects-container');
+    const projectsContainer = document.getElementById('projects-list');
+    const projectCount = document.getElementById('arch-project-count');
     const modalOverlay = document.getElementById('arch-modal-overlay');
     const modalContent = modalOverlay?.querySelector('.arch-modal-content');
     const closeButton = document.getElementById('modal-close-btn');
     const gallery = document.getElementById('modal-gallery');
     const dotsContainer = document.getElementById('gallery-dots');
+    const galleryCounter = document.getElementById('gallery-counter');
     const previousButton = document.getElementById('gallery-prev');
     const nextButton = document.getElementById('gallery-next');
     const modalTitle = document.getElementById('modal-title');
@@ -16,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const backgroundRegions = Array.from(document.querySelectorAll('body > header, body > main, body > footer'));
 
     if (!i18n || !projectsContainer || !modalOverlay || !modalContent || !closeButton || !gallery ||
-        !dotsContainer || !previousButton || !nextButton || !modalTitle || !modalSubtitle ||
+        !dotsContainer || !galleryCounter || !previousButton || !nextButton || !modalTitle || !modalSubtitle ||
         !modalInfoGrid || !modalDescription) {
         return;
     }
@@ -32,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const projects = Array.isArray(window.ARCH_PROJECTS) ? window.ARCH_PROJECTS : [];
+    if (projectCount) projectCount.textContent = String(projects.length).padStart(2, '0');
     const markerEntries = [];
     let currentGalleryImages = [];
     let currentGalleryIndex = 0;
@@ -96,14 +99,15 @@ document.addEventListener('DOMContentLoaded', () => {
         projects.forEach((projectSource, index) => {
             const project = localizedProject(projectSource);
             const titleText = String(project.title || t('project.unnamed'));
-            const card = createElement('button', 'arch-project-card');
-            card.type = 'button';
+            const card = createElement('article', 'arch-project-card');
             card.id = `project-card-${index}`;
-            card.setAttribute('aria-haspopup', 'dialog');
-            card.setAttribute('aria-controls', 'arch-modal-overlay');
-            card.setAttribute('aria-label', t('project.view', { title: titleText }));
+            const cardTrigger = createElement('button', 'arch-project-trigger');
+            cardTrigger.type = 'button';
+            cardTrigger.setAttribute('aria-haspopup', 'dialog');
+            cardTrigger.setAttribute('aria-controls', 'arch-modal-overlay');
+            cardTrigger.setAttribute('aria-label', t('project.view', { title: titleText }));
 
-            const imageWrapper = createElement('div', 'card-image-wrapper');
+            const imageWrapper = createElement('figure', 'card-image-wrapper');
             const image = document.createElement('img');
             image.src = project.images[0] || '';
             image.alt = t('project.previewAlt', { title: titleText });
@@ -114,16 +118,22 @@ document.addEventListener('DOMContentLoaded', () => {
             imageWrapper.append(image);
 
             const cardInfo = createElement('div', 'card-info');
-            const title = createElement('h2', 'arch-card-title', titleText);
+            const cardHeading = createElement('div', 'arch-card-heading');
+            const cardIndex = createElement('span', 'arch-card-index', String(index + 1).padStart(2, '0'));
+            cardIndex.setAttribute('aria-hidden', 'true');
+            const titleGroup = createElement('div', 'arch-card-title-group');
+            const title = createElement('h3', 'arch-card-title', titleText);
             const subtitle = createElement('p', 'arch-card-subtitle', String(project.subtitle || ''));
             const infoGrid = createElement('div', 'arch-card-grid');
             appendProjectFields(infoGrid, project);
             const moreLabel = createElement('span', 'more-btn', t('project.more'));
             moreLabel.setAttribute('aria-hidden', 'true');
 
-            cardInfo.append(title, subtitle, infoGrid, moreLabel);
-            card.append(imageWrapper, cardInfo);
-            card.addEventListener('click', () => openModal(index, card));
+            titleGroup.append(title, subtitle);
+            cardHeading.append(cardIndex, titleGroup);
+            cardInfo.append(cardHeading, infoGrid, moreLabel);
+            card.append(imageWrapper, cardInfo, cardTrigger);
+            cardTrigger.addEventListener('click', () => openModal(index, cardTrigger));
             fragment.append(card);
         });
 
@@ -191,6 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (currentGalleryImages.length === 0) {
             renderStatus(gallery, 'status.noImages');
+            galleryCounter.textContent = '00 / 00';
             previousButton.disabled = true;
             nextButton.disabled = true;
             return;
@@ -198,6 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         previousButton.disabled = currentGalleryImages.length < 2;
         nextButton.disabled = currentGalleryImages.length < 2;
+        galleryCounter.textContent = `${String(currentGalleryIndex + 1).padStart(2, '0')} / ${String(currentGalleryImages.length).padStart(2, '0')}`;
 
         const image = document.createElement('img');
         image.src = currentGalleryImages[currentGalleryIndex];

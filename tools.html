@@ -20,7 +20,12 @@
 <body>
     <header class="site-header">
         <div class="logo">Jerry Shen</div>
-        <div class="header-controls">
+        <button class="mobile-menu-toggle" type="button" aria-expanded="false"
+            aria-controls="site-header-panel" aria-label="打开导航菜单">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </button>
+        <div class="header-controls" id="site-header-panel">
             <nav class="main-nav" aria-label="主导航" data-i18n-aria-label="nav.main">
                 <a href="index.html#home" data-i18n="nav.home">主页</a>
                 <a href="architect.html" data-i18n="nav.architecture">建筑</a>
@@ -129,6 +134,7 @@
     </footer>
 
     <script src="js/i18n.js" defer></script>
+    <script src="js/site-header.js" defer></script>
 </body>
 
 </html>

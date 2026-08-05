@@ -24,7 +24,12 @@
 
     <header class="site-header">
         <div class="logo">Jerry Shen</div>
-        <div class="header-controls">
+        <button class="mobile-menu-toggle" type="button" aria-expanded="false"
+            aria-controls="site-header-panel" aria-label="打开导航菜单">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </button>
+        <div class="header-controls" id="site-header-panel">
             <nav class="main-nav" aria-label="主导航" data-i18n-aria-label="nav.main">
                 <a href="index.html#home" data-i18n="nav.home">主页</a>
                 <a href="architect.html" class="active" aria-current="page" data-i18n="nav.architecture">建筑</a>
@@ -45,24 +50,56 @@
 
     <main class="main-wrapper arch-main">
         
-        <!-- Map Section -->
-        <section class="map-section">
-            <h1 class="map-title"><strong data-i18n="map.title">项目分布</strong></h1>
-            <div class="map-container">
-                <div id="project-map" role="region" aria-label="建筑项目分布地图"
-                    data-i18n-aria-label="map.region"></div>
+        <!-- Architecture Overview and Map -->
+        <section class="arch-overview-section">
+            <div class="arch-overview-layout">
+                <div class="arch-overview-copy">
+                    <p class="arch-overview-eyebrow" data-i18n="overview.eyebrow">建筑作品选集</p>
+                    <h1 class="arch-overview-title" data-i18n="projects.title">建筑项目</h1>
+                    <p class="arch-overview-intro" data-i18n="overview.intro">
+                        以成都为主要观察场域，收录公共建筑、居住、酒店与文化更新等类型的设计实践。
+                    </p>
+                    <dl class="arch-overview-stats">
+                        <div class="arch-overview-stat">
+                            <dt data-i18n="overview.stats.projects">收录项目</dt>
+                            <dd id="arch-project-count">04</dd>
+                        </div>
+                        <div class="arch-overview-stat">
+                            <dt data-i18n="overview.stats.period">时间跨度</dt>
+                            <dd>2024–2026</dd>
+                        </div>
+                        <div class="arch-overview-stat">
+                            <dt data-i18n="overview.stats.location">主要地点</dt>
+                            <dd data-i18n="overview.stats.chengdu">成都</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <div class="arch-map-panel">
+                    <div class="arch-map-heading">
+                        <h2 class="map-title" data-i18n="map.title">项目分布</h2>
+                    </div>
+                    <div class="map-container">
+                        <div id="project-map" role="region" aria-label="建筑项目分布地图"
+                            data-i18n-aria-label="map.region"></div>
+                    </div>
+                </div>
             </div>
             
-            <div class="scroll-arrow-arch">
+            <a class="scroll-arrow-arch" href="#projects-container" aria-label="浏览建筑项目"
+                data-i18n-aria-label="projects.scroll">
                 <img src="assets/images/vector.svg" width="51" height="17" alt="">
-            </div>
+            </a>
         </section>
 
         <!-- Projects Section -->
-        <section class="arch-projects-section" id="projects-container" aria-label="建筑项目列表" aria-live="polite"
-            data-i18n-aria-label="projects.list">
-            <!-- Dynamic project cards will be inserted here by JS -->
-            <noscript data-i18n="projects.noscript">请启用 JavaScript 以浏览建筑项目。</noscript>
+        <section class="arch-projects-section" id="projects-container">
+            <h2 class="arch-projects-title" data-i18n="projects.indexTitle">项目索引</h2>
+            <div class="arch-project-list" id="projects-list" aria-label="建筑项目列表" aria-live="polite"
+                data-i18n-aria-label="projects.list">
+                <!-- Dynamic project cards will be inserted here by JS -->
+                <noscript data-i18n="projects.noscript">请启用 JavaScript 以浏览建筑项目。</noscript>
+            </div>
         </section>
 
     </main>
@@ -84,12 +121,15 @@
                     <!-- Images will be inserted here -->
                 </div>
                 <div class="gallery-controls">
-                    <div class="gallery-dots" id="gallery-dots"></div>
+                    <div class="gallery-progress">
+                        <span class="gallery-counter" id="gallery-counter" aria-hidden="true">01 / 01</span>
+                        <div class="gallery-dots" id="gallery-dots"></div>
+                    </div>
                     <div class="gallery-arrows">
                         <button id="gallery-prev" type="button" aria-label="上一张项目图片"
-                            data-i18n-aria-label="gallery.previous">&lt;</button>
+                            data-i18n-aria-label="gallery.previous">←</button>
                         <button id="gallery-next" type="button" aria-label="下一张项目图片"
-                            data-i18n-aria-label="gallery.next">&gt;</button>
+                            data-i18n-aria-label="gallery.next">→</button>
                     </div>
                 </div>
             </div>
@@ -114,6 +154,7 @@
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="" defer></script>
     <script src="js/i18n.js" defer></script>
+    <script src="js/site-header.js" defer></script>
     <script src="assets/arch/projectsData.js" defer></script>
     <script src="js/architect.js" defer></script>
 </body>
