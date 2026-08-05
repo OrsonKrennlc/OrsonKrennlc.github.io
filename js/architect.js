@@ -1,165 +1,350 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if map container exists to avoid errors on other pages
-    if (!document.getElementById('project-map')) return;
-
-    const map = L.map('project-map', {
-        scrollWheelZoom: false // Keep it clean while scrolling page
-    }).setView([30.63, 104.09], 10); // Default to Chengdu center
-
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-    }).addTo(map);
-
-    const customIcon = L.divIcon({
-        className: 'custom-div-icon',
-        iconSize: [14, 14],
-        iconAnchor: [7, 7]
-    });
-
+    const i18n = window.SiteI18n;
+    const mapContainer = document.getElementById('project-map');
     const projectsContainer = document.getElementById('projects-container');
     const modalOverlay = document.getElementById('arch-modal-overlay');
-    const closeBtn = document.getElementById('modal-close-btn');
+    const modalContent = modalOverlay?.querySelector('.arch-modal-content');
+    const closeButton = document.getElementById('modal-close-btn');
+    const gallery = document.getElementById('modal-gallery');
+    const dotsContainer = document.getElementById('gallery-dots');
+    const previousButton = document.getElementById('gallery-prev');
+    const nextButton = document.getElementById('gallery-next');
+    const modalTitle = document.getElementById('modal-title');
+    const modalSubtitle = document.getElementById('modal-subtitle');
+    const modalInfoGrid = document.getElementById('modal-info-grid');
+    const modalDescription = document.getElementById('modal-desc');
+    const backgroundRegions = Array.from(document.querySelectorAll('body > header, body > main, body > footer'));
 
-    let allProjectsData = [];
+    if (!i18n || !projectsContainer || !modalOverlay || !modalContent || !closeButton || !gallery ||
+        !dotsContainer || !previousButton || !nextButton || !modalTitle || !modalSubtitle ||
+        !modalInfoGrid || !modalDescription) {
+        return;
+    }
 
-    // Load project data from global variable
-    if (window.ARCH_PROJECTS) {
-        allProjectsData = window.ARCH_PROJECTS;
+    const projectFields = [
+        ['time', 'project.field.time'],
+        ['location', 'project.field.location'],
+        ['type', 'project.field.type'],
+        ['area', 'project.field.area'],
+        ['far', 'project.field.far'],
+        ['greening', 'project.field.greening'],
+        ['designer', 'project.field.designer']
+    ];
+
+    const projects = Array.isArray(window.ARCH_PROJECTS) ? window.ARCH_PROJECTS : [];
+    const markerEntries = [];
+    let currentGalleryImages = [];
+    let currentGalleryIndex = 0;
+    let currentProjectIndex = -1;
+    let currentProjectTitle = '';
+    let lastFocusedElement = null;
+    let previousBodyOverflow = '';
+
+    function t(key, variables) {
+        return i18n.t(key, variables);
+    }
+
+    function localizedProject(project) {
+        const locales = project?.locales || {};
+        const content = locales[i18n.getLocale()] || locales.zh || locales.en || {};
+        return {
+            ...content,
+            id: project?.id || '',
+            coords: project?.coords || [0, 0],
+            images: Array.isArray(project?.images) ? project.images : []
+        };
+    }
+
+    function createElement(tagName, className, text) {
+        const element = document.createElement(tagName);
+        if (className) element.className = className;
+        if (typeof text === 'string') element.textContent = text;
+        return element;
+    }
+
+    function renderStatus(container, messageKey) {
+        container.replaceChildren(createElement('p', 'arch-status', t(messageKey)));
+    }
+
+    function appendProjectFields(container, project) {
+        const fragment = document.createDocumentFragment();
+
+        projectFields.forEach(([field, labelKey]) => {
+            const value = project[field];
+            if (!value) return;
+
+            fragment.append(
+                createElement('div', 'arch-card-label', t(labelKey)),
+                createElement('div', 'arch-card-value', String(value))
+            );
+        });
+
+        container.replaceChildren(fragment);
+    }
+
+    function renderProjects() {
+        projectsContainer.setAttribute('aria-busy', 'true');
+
+        if (projects.length === 0) {
+            renderStatus(projectsContainer, 'status.projectsUnavailable');
+            projectsContainer.removeAttribute('aria-busy');
+            return;
+        }
+
+        const fragment = document.createDocumentFragment();
+
+        projects.forEach((projectSource, index) => {
+            const project = localizedProject(projectSource);
+            const titleText = String(project.title || t('project.unnamed'));
+            const card = createElement('button', 'arch-project-card');
+            card.type = 'button';
+            card.id = `project-card-${index}`;
+            card.setAttribute('aria-haspopup', 'dialog');
+            card.setAttribute('aria-controls', 'arch-modal-overlay');
+            card.setAttribute('aria-label', t('project.view', { title: titleText }));
+
+            const imageWrapper = createElement('div', 'card-image-wrapper');
+            const image = document.createElement('img');
+            image.src = project.images[0] || '';
+            image.alt = t('project.previewAlt', { title: titleText });
+            image.width = 400;
+            image.height = 250;
+            image.loading = 'lazy';
+            image.decoding = 'async';
+            imageWrapper.append(image);
+
+            const cardInfo = createElement('div', 'card-info');
+            const title = createElement('h2', 'arch-card-title', titleText);
+            const subtitle = createElement('p', 'arch-card-subtitle', String(project.subtitle || ''));
+            const infoGrid = createElement('div', 'arch-card-grid');
+            appendProjectFields(infoGrid, project);
+            const moreLabel = createElement('span', 'more-btn', t('project.more'));
+            moreLabel.setAttribute('aria-hidden', 'true');
+
+            cardInfo.append(title, subtitle, infoGrid, moreLabel);
+            card.append(imageWrapper, cardInfo);
+            card.addEventListener('click', () => openModal(index, card));
+            fragment.append(card);
+        });
+
+        projectsContainer.replaceChildren(fragment);
+        projectsContainer.removeAttribute('aria-busy');
+    }
+
+    function tooltipContent(projectIndex) {
+        const project = localizedProject(projects[projectIndex]);
+        return createElement('span', '', String(project.title || t('project.unnamed')));
+    }
+
+    function updateMapTranslations() {
+        markerEntries.forEach(({ marker, projectIndex }) => {
+            marker.setTooltipContent(tooltipContent(projectIndex));
+        });
+    }
+
+    function initializeMap() {
+        if (!mapContainer) return;
+
+        if (!window.L) {
+            renderStatus(mapContainer, 'status.mapUnavailable');
+            return;
+        }
+
+        const map = window.L.map(mapContainer, {
+            scrollWheelZoom: false
+        }).setView([30.63, 104.09], 10);
+
+        window.L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        }).addTo(map);
+
+        const customIcon = window.L.divIcon({
+            className: 'custom-div-icon',
+            iconSize: [14, 14],
+            iconAnchor: [7, 7]
+        });
         const bounds = [];
 
-        window.ARCH_PROJECTS.forEach((project, index) => {
-            // Add Marker to Map
-            if (project.coords && project.coords.length === 2 && project.coords[0] !== 0) {
-                const marker = L.marker(project.coords, { icon: customIcon }).addTo(map);
-                marker.bindTooltip(project.title);
-                marker.on('click', () => {
-                    const cardEl = document.getElementById(`project-card-${index}`);
-                    if (cardEl) {
-                        cardEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    }
-                });
-                bounds.push(project.coords);
-            }
+        projects.forEach((project, index) => {
+            if (!Array.isArray(project.coords) || project.coords.length !== 2 || project.coords[0] === 0) return;
 
-            // Render Project Card
-            const firstImage = project.images.length > 0 ? project.images[0] : '';
-            
-            const card = document.createElement('div');
-            card.className = 'arch-project-card';
-            card.id = `project-card-${index}`;
-            card.onclick = () => openModal(index);
-            
-            card.innerHTML = `
-                <div class="card-image-wrapper">
-                    <img src="${firstImage}" alt="${project.title}">
-                </div>
-                <div class="card-info">
-                    <h3 class="arch-card-title">${project.title}</h3>
-                    <p class="arch-card-subtitle">${project.subtitle}</p>
-                    <div class="arch-card-grid">
-                        ${project.time ? `<div class="arch-card-label">项目时间</div><div class="arch-card-value">${project.time}</div>` : ''}
-                        ${project.location ? `<div class="arch-card-label">位置地点</div><div class="arch-card-value">${project.location}</div>` : ''}
-                        ${project.type ? `<div class="arch-card-label">功能类型</div><div class="arch-card-value">${project.type}</div>` : ''}
-                        ${project.area ? `<div class="arch-card-label">建筑面积</div><div class="arch-card-value">${project.area}</div>` : ''}
-                        ${project.far ? `<div class="arch-card-label">容积率</div><div class="arch-card-value">${project.far}</div>` : ''}
-                        ${project.greening ? `<div class="arch-card-label">绿地率</div><div class="arch-card-value">${project.greening}</div>` : ''}
-                        ${project.designer ? `<div class="arch-card-label">设计人员</div><div class="arch-card-value">${project.designer}</div>` : ''}
-                    </div>
-                    <button class="more-btn">MORE +</button>
-                </div>
-            `;
-            
-            projectsContainer.appendChild(card);
+            const marker = window.L.marker(project.coords, { icon: customIcon }).addTo(map);
+            marker.bindTooltip(tooltipContent(index));
+            marker.on('click', () => {
+                document.getElementById(`project-card-${index}`)?.scrollIntoView({
+                    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
+                    block: 'center'
+                });
+            });
+            markerEntries.push({ marker, projectIndex: index });
+            bounds.push(project.coords);
         });
 
         if (bounds.length > 0) {
             map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
         }
-    } else {
-        console.error("Error loading projects: window.ARCH_PROJECTS is not defined.");
     }
 
-    let currentGalleryImages = [];
-    let currentGalleryIndex = 0;
+    function renderGallery(focusActiveDot = false) {
+        gallery.replaceChildren();
+        dotsContainer.replaceChildren();
 
-    function renderGallery() {
-        const gallery = document.getElementById('modal-gallery');
-        const dotsContainer = document.getElementById('gallery-dots');
-        gallery.innerHTML = '';
-        dotsContainer.innerHTML = '';
+        if (currentGalleryImages.length === 0) {
+            renderStatus(gallery, 'status.noImages');
+            previousButton.disabled = true;
+            nextButton.disabled = true;
+            return;
+        }
 
-        if (currentGalleryImages.length === 0) return;
+        previousButton.disabled = currentGalleryImages.length < 2;
+        nextButton.disabled = currentGalleryImages.length < 2;
 
-        // Image
-        const img = document.createElement('img');
-        img.src = currentGalleryImages[currentGalleryIndex];
-        img.className = 'active';
-        gallery.appendChild(img);
+        const image = document.createElement('img');
+        image.src = currentGalleryImages[currentGalleryIndex];
+        image.className = 'active';
+        image.alt = t('project.galleryAlt', {
+            title: currentProjectTitle,
+            current: currentGalleryIndex + 1,
+            total: currentGalleryImages.length
+        });
+        image.decoding = 'async';
+        gallery.append(image);
 
-        // Dots
-        currentGalleryImages.forEach((_, idx) => {
-            const dot = document.createElement('div');
-            dot.className = `dot ${idx === currentGalleryIndex ? 'active' : ''}`;
-            dot.onclick = () => {
-                currentGalleryIndex = idx;
-                renderGallery();
-            };
-            dotsContainer.appendChild(dot);
+        const dotsFragment = document.createDocumentFragment();
+        currentGalleryImages.forEach((_, index) => {
+            const dot = createElement('button', `dot${index === currentGalleryIndex ? ' active' : ''}`);
+            dot.type = 'button';
+            dot.setAttribute('aria-label', t('project.galleryDot', { index: index + 1 }));
+            dot.setAttribute('aria-pressed', String(index === currentGalleryIndex));
+            dot.addEventListener('click', () => {
+                currentGalleryIndex = index;
+                renderGallery(true);
+            });
+            dotsFragment.append(dot);
+        });
+        dotsContainer.append(dotsFragment);
+
+        if (focusActiveDot) {
+            dotsContainer.querySelector('.dot.active')?.focus();
+        }
+    }
+
+    function showPreviousImage() {
+        if (currentGalleryImages.length < 2) return;
+        currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
+        renderGallery();
+    }
+
+    function showNextImage() {
+        if (currentGalleryImages.length < 2) return;
+        currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
+        renderGallery();
+    }
+
+    function setBackgroundInert(isInert) {
+        backgroundRegions.forEach((region) => {
+            region.inert = isInert;
         });
     }
 
-    document.getElementById('gallery-prev').addEventListener('click', () => {
-        if (currentGalleryImages.length === 0) return;
-        currentGalleryIndex = (currentGalleryIndex - 1 + currentGalleryImages.length) % currentGalleryImages.length;
-        renderGallery();
-    });
+    function populateModal(index, resetGallery = true) {
+        const project = localizedProject(projects[index]);
+        if (!project.id) return false;
 
-    document.getElementById('gallery-next').addEventListener('click', () => {
-        if (currentGalleryImages.length === 0) return;
-        currentGalleryIndex = (currentGalleryIndex + 1) % currentGalleryImages.length;
-        renderGallery();
-    });
+        const titleText = String(project.title || t('project.unnamed'));
+        modalTitle.textContent = titleText;
+        modalSubtitle.textContent = String(project.subtitle || '');
+        modalDescription.textContent = String(project.description || '');
+        appendProjectFields(modalInfoGrid, project);
 
-    // Modal Logic
-    function openModal(index) {
-        const project = allProjectsData[index];
-        if (!project) return;
-
-        document.getElementById('modal-title').innerText = project.title;
-        document.getElementById('modal-subtitle').innerText = project.subtitle;
-        
+        currentProjectIndex = index;
+        currentProjectTitle = titleText;
         currentGalleryImages = project.images;
-        currentGalleryIndex = 0;
+        if (resetGallery) currentGalleryIndex = 0;
+        currentGalleryIndex = Math.min(currentGalleryIndex, Math.max(currentGalleryImages.length - 1, 0));
         renderGallery();
-
-        // Populate info grid
-        const infoGrid = document.getElementById('modal-info-grid');
-        infoGrid.innerHTML = `
-            ${project.time ? `<div class="arch-card-label">项目时间</div><div class="arch-card-value">${project.time}</div>` : ''}
-            ${project.location ? `<div class="arch-card-label">位置地点</div><div class="arch-card-value">${project.location}</div>` : ''}
-            ${project.type ? `<div class="arch-card-label">功能类型</div><div class="arch-card-value">${project.type}</div>` : ''}
-            ${project.area ? `<div class="arch-card-label">建筑面积</div><div class="arch-card-value">${project.area}</div>` : ''}
-            ${project.far ? `<div class="arch-card-label">容积率</div><div class="arch-card-value">${project.far}</div>` : ''}
-            ${project.greening ? `<div class="arch-card-label">绿地率</div><div class="arch-card-value">${project.greening}</div>` : ''}
-            ${project.designer ? `<div class="arch-card-label">设计人员</div><div class="arch-card-value">${project.designer}</div>` : ''}
-        `;
-
-        document.getElementById('modal-desc').innerText = project.description;
-
-        modalOverlay.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        return true;
     }
 
-    closeBtn.addEventListener('click', () => {
+    function openModal(index, trigger) {
+        if (!populateModal(index)) return;
+
+        lastFocusedElement = trigger || document.activeElement;
+        previousBodyOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        setBackgroundInert(true);
+        modalOverlay.classList.add('active');
+        modalOverlay.setAttribute('aria-hidden', 'false');
+        modalContent.focus({ preventScroll: true });
+    }
+
+    function closeModal() {
+        if (!modalOverlay.classList.contains('active')) return;
+
         modalOverlay.classList.remove('active');
-        document.body.style.overflow = '';
+        modalOverlay.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = previousBodyOverflow;
+        setBackgroundInert(false);
+
+        if (lastFocusedElement instanceof HTMLElement) {
+            lastFocusedElement.focus({ preventScroll: true });
+        }
+    }
+
+    function trapFocus(event) {
+        const focusableElements = Array.from(modalContent.querySelectorAll(
+            'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])'
+        ));
+
+        if (focusableElements.length === 0) {
+            event.preventDefault();
+            modalContent.focus();
+            return;
+        }
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (event.shiftKey && (document.activeElement === firstElement || document.activeElement === modalContent)) {
+            event.preventDefault();
+            lastElement.focus();
+        } else if (!event.shiftKey && document.activeElement === lastElement) {
+            event.preventDefault();
+            firstElement.focus();
+        }
+    }
+
+    previousButton.addEventListener('click', showPreviousImage);
+    nextButton.addEventListener('click', showNextImage);
+    closeButton.addEventListener('click', closeModal);
+
+    modalOverlay.addEventListener('click', (event) => {
+        if (event.target === modalOverlay) closeModal();
     });
 
-    // Click outside modal to close
-    modalOverlay.addEventListener('click', (e) => {
-        if (e.target === modalOverlay) {
-            modalOverlay.classList.remove('active');
-            document.body.style.overflow = '';
+    document.addEventListener('keydown', (event) => {
+        if (!modalOverlay.classList.contains('active')) return;
+
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            closeModal();
+        } else if (event.key === 'Tab') {
+            trapFocus(event);
+        } else if (event.key === 'ArrowLeft') {
+            showPreviousImage();
+        } else if (event.key === 'ArrowRight') {
+            showNextImage();
         }
     });
+
+    window.addEventListener('localechange', () => {
+        renderProjects();
+        updateMapTranslations();
+        if (modalOverlay.classList.contains('active') && currentProjectIndex >= 0) {
+            populateModal(currentProjectIndex, false);
+        }
+    });
+
+    renderProjects();
+    initializeMap();
 });

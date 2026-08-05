@@ -4,7 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jerry Shen - Portfolio</title>
+    <meta name="description" content="Jerry Shen 的建筑、摄影、交互设计与旅行作品集。"
+        data-i18n-content="meta.home.description">
+    <title data-i18n="meta.home.title">Jerry Shen - 个人作品集</title>
+    <link rel="preload" href="assets/images/hero-bg-uncropped.jpeg" as="image" fetchpriority="high">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,13 +21,23 @@
 
     <header class="site-header">
         <div class="logo">Jerry Shen</div>
-        <nav class="main-nav">
-            <a href="#home" class="active">主页/Portfolio</a>
-            <a href="architect.html">建筑/Architect</a>
-            <a href="#projects">摄影/Photographer</a>
-            <a href="#projects">行者/Traveller</a>
-            <a href="#about">关于/About</a>
-        </nav>
+        <div class="header-controls">
+            <nav class="main-nav" aria-label="主导航" data-i18n-aria-label="nav.main">
+                <a href="#home" class="active" aria-current="page" data-i18n="nav.home">主页</a>
+                <a href="architect.html" data-i18n="nav.architecture">建筑</a>
+                <a href="#projects" data-i18n="nav.uiux">交互</a>
+                <a href="#projects" data-i18n="nav.photography">摄影</a>
+                <a href="tools.html" data-i18n="nav.tools">小工具集</a>
+            </nav>
+            <div class="language-switcher" role="group" aria-label="语言切换"
+                data-i18n-aria-label="language.switcher">
+                <button type="button" data-locale="zh" aria-pressed="true" aria-label="切换为中文"
+                    data-i18n-aria-label="language.zh">中</button>
+                <span aria-hidden="true">/</span>
+                <button type="button" data-locale="en" aria-pressed="false" aria-label="切换为英文"
+                    data-i18n-aria-label="language.en">EN</button>
+            </div>
+        </div>
     </header>
 
     <main class="main-wrapper">
@@ -34,43 +47,41 @@
             <div class="hero">
                 <div class="glitch-wrapper">
                     <!-- Layered Text Effect -->
-                    <h1 class="glitch-text glitch-1">Per Aspera ad astra.</h1>
-                    <h1 class="glitch-text glitch-2">Per Aspera ad astra.</h1>
-                    <h1 class="glitch-text glitch-3">Per Aspera ad astra.</h1>
-                    <h1 class="glitch-text glitch-4">Per Aspera ad astra.</h1>
-                    <h1 class="glitch-text glitch-5">Per Aspera ad astra.</h1>
+                    <span class="glitch-text glitch-1" aria-hidden="true" data-i18n="hero.motto">Per Aspera ad astra.</span>
+                    <span class="glitch-text glitch-2" aria-hidden="true" data-i18n="hero.motto">Per Aspera ad astra.</span>
+                    <h1 class="glitch-text glitch-3" data-i18n="hero.motto">Per Aspera ad astra.</h1>
+                    <span class="glitch-text glitch-4" aria-hidden="true" data-i18n="hero.motto">Per Aspera ad astra.</span>
+                    <span class="glitch-text glitch-5" aria-hidden="true" data-i18n="hero.motto">Per Aspera ad astra.</span>
                 </div>
-                <p class="hero-location">阿坝 · 四川 · 中国 ｜ <span class="eng">Ngawa, Sichuan, China</span></p>
+                <p class="hero-location" data-i18n="hero.location">中国·四川·阿坝</p>
             </div>
 
             <div class="hero-tibetan">
-                <p class="tibetan-text">རི་མཐོན་ཆུ་རྒྱང་། ཡོན་ཏན་ཟིལ་རྒྱང་།</p>
-                <p class="tibetan-zh">山高水自长，德厚声自远</p>
+                <p class="tibetan-text" data-i18n="hero.tibetan">རི་མཐོན་ཆུ་རྒྱང་། ཡོན་ཏན་ཟིལ་རྒྱང་།</p>
+                <p class="tibetan-zh" data-i18n="hero.tibetanTranslation">山高水自长，德厚声自远</p>
             </div>
 
             <!-- Arrow occupying the original About position -->
             <div class="scroll-arrow-container">
-                <div class="scroll-down">
-                    <img src="assets/images/vector.svg" alt="Scroll Down">
-                </div>
+                <button class="scroll-down" type="button" aria-label="滚动至个人介绍"
+                    data-i18n-aria-label="hero.scrollAbout">
+                    <img src="assets/images/vector.svg" width="51" height="17" alt="">
+                </button>
             </div>
 
             <!-- About Section moved to bottom of mountain -->
             <section class="about-section" id="about">
                 <div class="about-container">
                     <div class="about-image">
-                        <img src="assets/images/about-654249.png" alt="Shen Junyang">
+                        <img src="assets/images/about-654249.png" width="568" height="568" loading="lazy"
+                            decoding="async" alt="沈俊阳站在雪山前举手迎向阳光"
+                            data-i18n-alt="about.imageAlt">
                     </div>
                     <div class="about-info">
-                        <h2 class="about-name">沈俊阳｜Shen Junyang</h2>
-                        <p class="about-aka">aka. 忘了猫叔｜Orson Krennic</p>
-                        <p class="about-tags-zh">零零后 / 建筑设计 / 交互设计 / 摄影 / 电影</p>
-                        <p class="about-tags-en">Gen Z / Architect / Interaction Designer / Photographer / Filmer</p>
-                        <p class="about-desc">
-                            <span>于方寸之间，见万千气象。</span><br>
-                            <span class="eng">Design is the art of distilling the most profound narrative into its
-                                simplest form.</span>
-                        </p>
+                        <h2 class="about-name" data-i18n="about.name">沈俊阳</h2>
+                        <p class="about-aka" data-i18n="about.alias">别名：忘了猫叔</p>
+                        <p class="about-tags-zh" data-i18n="about.tags">零零后 / 建筑设计 / 交互设计 / 摄影 / 电影</p>
+                        <p class="about-desc" data-i18n="about.statement">于方寸之间，见万千气象。</p>
                     </div>
                 </div>
             </section>
@@ -81,9 +92,10 @@
             <!-- Quote Section -->
             <section class="quote-section">
                 <div class="quote-container">
-                    <img src="assets/images/portrait.png" alt="Le Corbusier Portrait" class="quote-portrait">
-                    <h2 class="quote-text">“Less is more.”</h2>
-                    <p class="quote-author">- Le Corbusier -<br>1887-1965</p>
+                    <img src="assets/images/portrait.png" width="500" height="500" loading="lazy" decoding="async"
+                        alt="建筑师勒·柯布西耶肖像" data-i18n-alt="quote.portraitAlt" class="quote-portrait">
+                    <h2 class="quote-text" data-i18n="quote.text">“少即是多。”</h2>
+                    <p class="quote-author">- <span data-i18n="quote.author">勒·柯布西耶</span> -<br>1887–1965</p>
                 </div>
             </section>
         </div>
@@ -95,42 +107,45 @@
                 <div class="resume-container">
                     <!-- Education -->
                     <div class="resume-column">
-                        <h2 class="column-title">教育经历 / Education</h2>
+                        <h2 class="column-title" data-i18n="education.title">教育经历</h2>
                         <hr class="column-divider">
 
                         <div class="resume-item">
-                            <h3 class="item-title">北京大学附属中学</h3>
-                            <p class="item-desc">PKU School<br>2016-2022</p>
+                            <h3 class="item-title" data-i18n="education.pku.name">北京大学附属中学</h3>
+                            <p class="item-desc" data-i18n="education.pku.period">2016–2022</p>
                         </div>
 
                         <div class="resume-item">
-                            <h3 class="item-title">四川大学</h3>
-                            <p class="item-desc">Sichuan University<br>建筑学 学士 2022-2027<br>Bachelor of Architecture
-                                2022-2027</p>
+                            <h3 class="item-title" data-i18n="education.scu.name">四川大学</h3>
+                            <p class="item-desc"><span data-i18n="education.scu.degree">建筑学学士</span><br><span
+                                    data-i18n="education.scu.period">2022–2027</span></p>
                         </div>
                     </div>
 
                     <!-- Prize -->
                     <div class="resume-column">
-                        <h2 class="column-title">荣誉奖项 / Prize</h2>
+                        <h2 class="column-title" data-i18n="awards.title">荣誉奖项</h2>
                         <hr class="column-divider">
 
                         <ul class="prize-list">
                             <li><span class="prize-date">2024.05</span><span
-                                    class="prize-name"><strong>第九届米兰设计周</strong></span><span
-                                    class="prize-level">四川省三等奖</span></li>
-                            <li><span class="prize-date">2025.06</span><span class="prize-name"><strong>未来设计师 ·
-                                        四川省高校设计大赛</strong></span><span class="prize-level">四川省一等奖</span></li>
-                            <li><span class="prize-date">2025.08</span><span class="prize-name"><strong>未来设计师 ·
-                                        全国高校设计大赛</strong></span><span class="prize-level">全国三等奖</span></li>
-                            <li><span class="prize-date">2025.08</span><span class="prize-name"><strong>未来设计师 ·
-                                        全国高校设计大赛</strong></span><span class="prize-level">全国三等奖</span></li>
+                                    class="prize-name"><strong data-i18n="awards.milan.name">第九届米兰设计周</strong></span><span
+                                    class="prize-level" data-i18n="awards.milan.level">四川省三等奖</span></li>
+                            <li><span class="prize-date">2025.06</span><span class="prize-name"><strong
+                                        data-i18n="awards.futureSichuan.name">未来设计师 · 四川省高校设计大赛</strong></span><span
+                                    class="prize-level" data-i18n="awards.futureSichuan.level">四川省一等奖</span></li>
+                            <li><span class="prize-date">2025.08</span><span class="prize-name"><strong
+                                        data-i18n="awards.futureNational.name">未来设计师 · 全国高校设计大赛</strong></span><span
+                                    class="prize-level" data-i18n="awards.futureNational.level">全国三等奖</span></li>
+                            <li><span class="prize-date">2025.08</span><span class="prize-name"><strong
+                                        data-i18n="awards.futureNational.name">未来设计师 · 全国高校设计大赛</strong></span><span
+                                    class="prize-level" data-i18n="awards.futureNational.level">全国三等奖</span></li>
                             <li><span class="prize-date">2024.06</span><span
-                                    class="prize-name"><strong>四川大学奖学金</strong></span><span
-                                    class="prize-level">综合二等奖学金</span></li>
+                                    class="prize-name"><strong data-i18n="awards.scu.name">四川大学奖学金</strong></span><span
+                                    class="prize-level" data-i18n="awards.scu.level">综合二等奖学金</span></li>
                             <li><span class="prize-date">2025.12</span><span
-                                    class="prize-name"><strong>国家奖学金</strong></span><span
-                                    class="prize-level">本科生国家奖学金</span></li>
+                                    class="prize-name"><strong data-i18n="awards.national.name">国家奖学金</strong></span><span
+                                    class="prize-level" data-i18n="awards.national.level">本科生国家奖学金</span></li>
                         </ul>
                     </div>
                 </div>
@@ -138,44 +153,42 @@
 
             <!-- Project Archives -->
             <section class="projects-section" id="projects">
-                <h2 class="section-title"><strong>项目存档</strong><strong>｜</strong>Project Archives</h2>
+                <h2 class="section-title"><strong data-i18n="archives.title">项目存档</strong></h2>
                 <div class="projects-grid">
-                    <a href="#" class="project-card">
-                        <div class="card-bg" style="background-image: url('assets/images/project-1-517cbb.png');"></div>
+                    <article class="project-card project-card--photography">
+                        <div class="card-bg"></div>
                         <div class="card-overlay"></div>
                         <div class="card-content">
-                            <h3>摄影作品</h3>
-                            <p>Photography</p>
+                            <h3 data-i18n="archives.photography.title">摄影作品</h3>
                         </div>
-                    </a>
-                    <a href="architect.html" class="project-card">
-                        <div class="card-bg" style="background-image: url('assets/images/project-2-7f77be.png');"></div>
+                    </article>
+                    <a href="architect.html" class="project-card project-card--architecture">
+                        <div class="card-bg"></div>
                         <div class="card-overlay"></div>
                         <div class="card-content">
-                            <h3>建筑设计</h3>
-                            <p>Architecture</p>
+                            <h3 data-i18n="archives.architecture.title">建筑设计</h3>
                         </div>
                     </a>
-                    <a href="#" class="project-card">
-                        <div class="card-bg" style="background-image: url('assets/images/project-3-1c7b55.png');"></div>
+                    <article class="project-card project-card--uiux">
+                        <div class="card-bg"></div>
                         <div class="card-overlay"></div>
                         <div class="card-content">
-                            <h3>旅行随记</h3>
-                            <p>Journals</p>
+                            <h3 data-i18n="archives.uiux.title">交互设计</h3>
                         </div>
-                    </a>
+                    </article>
                 </div>
             </section>
         </div>
     </main>
 
     <footer class="site-footer">
-        <div class="footer-left">Made by Jerry with ❤️</div>
-        <div class="footer-center">© 2026 orsonkrennlc.All Rights Reserved.</div>
-        <div class="footer-right">Powered by Chimi's LOVE💗 and Github Pages</div>
+        <div class="footer-left" data-i18n="footer.made">Jerry 用 ❤️ 制作</div>
+        <div class="footer-center" data-i18n="footer.copyright">© 2026 Orson Krennic。保留所有权利。</div>
+        <div class="footer-right" data-i18n="footer.powered">由 Chimi 的爱💗 与 GitHub Pages 驱动</div>
     </footer>
 
-    <script src="js/main.js"></script>
+    <script src="js/i18n.js" defer></script>
+    <script src="js/main.js" defer></script>
 </body>
 
 </html>

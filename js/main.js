@@ -1,41 +1,46 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Smooth scrolling for navigation links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            
-            // Remove active class from all links
-            document.querySelectorAll('.main-nav a').forEach(link => {
-                link.classList.remove('active');
-            });
-            
-            // Add active class to clicked link
-            this.classList.add('active');
+    const navLinks = Array.from(document.querySelectorAll('.main-nav a[href^="#"]'));
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-            const targetId = this.getAttribute('href');
-            if (targetId === '#') return;
-            
-            const targetElement = document.querySelector(targetId);
-            if (targetElement) {
-                targetElement.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+    function scrollToElement(element, block = 'start') {
+        element.scrollIntoView({
+            behavior: prefersReducedMotion.matches ? 'auto' : 'smooth',
+            block
+        });
+    }
+
+    function setActiveNavLink(activeLink) {
+        document.querySelectorAll('.main-nav a').forEach((link) => {
+            const isActive = link === activeLink;
+            link.classList.toggle('active', isActive);
+
+            if (isActive) {
+                link.setAttribute('aria-current', 'location');
+            } else {
+                link.removeAttribute('aria-current');
             }
+        });
+    }
+
+    navLinks.forEach((link) => {
+        link.addEventListener('click', (event) => {
+            const targetId = link.getAttribute('href');
+            const target = targetId ? document.querySelector(targetId) : null;
+
+            if (!target) return;
+
+            event.preventDefault();
+            setActiveNavLink(link);
+            scrollToElement(target);
         });
     });
 
-    // Scroll down arrow interaction
     const scrollArrow = document.querySelector('.scroll-down');
-    if (scrollArrow) {
+    const aboutSection = document.querySelector('#about');
+
+    if (scrollArrow && aboutSection) {
         scrollArrow.addEventListener('click', () => {
-            const nextSection = document.querySelector('#about');
-            if (nextSection) {
-                nextSection.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
-            }
+            scrollToElement(aboutSection, 'center');
         });
     }
 });
