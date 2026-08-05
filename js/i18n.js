@@ -1,5 +1,6 @@
 (function initializeI18nRuntime() {
     const STORAGE_KEY = 'jerry-portfolio.locale';
+    const URL_LOCALE_KEY = 'lang';
     const SUPPORTED_LOCALES = ['zh', 'en'];
 
     const messages = {
@@ -66,10 +67,8 @@
             'projects.scroll': '浏览建筑项目',
             'overview.eyebrow': '建筑作品选集',
             'overview.intro': '以成都为主要观察场域，收录公共建筑、居住、酒店与文化更新等类型的设计实践。',
-            'overview.stats.projects': '收录项目',
-            'overview.stats.period': '时间跨度',
-            'overview.stats.location': '主要地点',
-            'overview.stats.chengdu': '成都',
+            'overview.quickNav': '快速浏览项目',
+            'overview.quickNavLabel': '建筑项目快捷列表',
             'projects.noscript': '请启用 JavaScript 以浏览建筑项目。',
             'modal.close': '关闭项目详情',
             'gallery.previous': '上一张项目图片',
@@ -84,6 +83,7 @@
             'project.more': '更多 +',
             'project.unnamed': '未命名项目',
             'project.view': '查看项目：{title}',
+            'project.quickJump': '跳转至项目：{title}',
             'project.previewAlt': '{title}项目预览',
             'project.galleryAlt': '{title}，项目图片 {current} / {total}',
             'project.galleryDot': '查看第 {index} 张项目图片',
@@ -177,10 +177,8 @@
             'projects.scroll': 'Browse architecture projects',
             'overview.eyebrow': 'Selected Architecture',
             'overview.intro': 'A selection of public, residential, hospitality, and cultural-renewal projects developed through Chengdu as the primary field of observation.',
-            'overview.stats.projects': 'Curated Projects',
-            'overview.stats.period': 'Timeline',
-            'overview.stats.location': 'Primary Location',
-            'overview.stats.chengdu': 'Chengdu',
+            'overview.quickNav': 'Browse Projects',
+            'overview.quickNavLabel': 'Quick architecture project list',
             'projects.noscript': 'Enable JavaScript to browse the architecture projects.',
             'modal.close': 'Close project details',
             'gallery.previous': 'Previous project image',
@@ -195,6 +193,7 @@
             'project.more': 'MORE +',
             'project.unnamed': 'Untitled Project',
             'project.view': 'View project: {title}',
+            'project.quickJump': 'Jump to project: {title}',
             'project.previewAlt': 'Preview of {title}',
             'project.galleryAlt': '{title}, project image {current} of {total}',
             'project.galleryDot': 'View project image {index}',
@@ -235,7 +234,18 @@
         }
     }
 
+    function readUrlLocale() {
+        try {
+            return new URL(window.location.href).searchParams.get(URL_LOCALE_KEY);
+        } catch {
+            return null;
+        }
+    }
+
     function detectLocale() {
+        const urlLocale = readUrlLocale();
+        if (SUPPORTED_LOCALES.includes(urlLocale)) return urlLocale;
+
         const storedLocale = readStoredLocale();
         if (SUPPORTED_LOCALES.includes(storedLocale)) return storedLocale;
         return window.navigator.language.toLowerCase().startsWith('zh') ? 'zh' : 'en';
@@ -283,6 +293,57 @@
         });
     }
 
+    function isSameSiteHtmlLink(reference) {
+        if (!reference || reference.startsWith('#')) return false;
+
+        try {
+            const currentUrl = new URL(window.location.href);
+            const targetUrl = new URL(reference, currentUrl);
+            if (!/\.html$/i.test(targetUrl.pathname)) return false;
+
+            if (currentUrl.protocol === 'file:') {
+                const currentDirectory = currentUrl.pathname.slice(0, currentUrl.pathname.lastIndexOf('/') + 1);
+                const targetDirectory = targetUrl.pathname.slice(0, targetUrl.pathname.lastIndexOf('/') + 1);
+                return targetUrl.protocol === 'file:' && targetDirectory === currentDirectory;
+            }
+
+            return targetUrl.origin === currentUrl.origin;
+        } catch {
+            return false;
+        }
+    }
+
+    function addLocaleToReference(reference, locale) {
+        const hashIndex = reference.indexOf('#');
+        const hash = hashIndex >= 0 ? reference.slice(hashIndex) : '';
+        const pathAndQuery = hashIndex >= 0 ? reference.slice(0, hashIndex) : reference;
+        const queryIndex = pathAndQuery.indexOf('?');
+        const path = queryIndex >= 0 ? pathAndQuery.slice(0, queryIndex) : pathAndQuery;
+        const query = queryIndex >= 0 ? pathAndQuery.slice(queryIndex + 1) : '';
+        const parameters = new URLSearchParams(query);
+        parameters.set(URL_LOCALE_KEY, locale);
+        return `${path}?${parameters.toString()}${hash}`;
+    }
+
+    function updateCurrentUrl(locale) {
+        try {
+            const url = new URL(window.location.href);
+            if (url.protocol !== 'file:' && !url.searchParams.has(URL_LOCALE_KEY)) return;
+            url.searchParams.set(URL_LOCALE_KEY, locale);
+            window.history.replaceState(window.history.state, '', url.href);
+        } catch {
+            // URL synchronization is an enhancement; translation can continue without it.
+        }
+    }
+
+    function updatePageLinks(locale) {
+        document.querySelectorAll('a[href]').forEach((link) => {
+            const reference = link.getAttribute('href');
+            if (!isSameSiteHtmlLink(reference)) return;
+            link.setAttribute('href', addLocaleToReference(reference, locale));
+        });
+    }
+
     function persistLocale(locale) {
         try {
             window.localStorage.setItem(STORAGE_KEY, locale);
@@ -297,6 +358,8 @@
         const changed = locale !== currentLocale;
         currentLocale = locale;
         translateDocument();
+        updateCurrentUrl(locale);
+        updatePageLinks(locale);
         if (options.persist !== false) persistLocale(locale);
 
         if (changed || options.emit === true) {
@@ -310,8 +373,13 @@
         document.querySelectorAll('[data-locale]').forEach((button) => {
             button.addEventListener('click', () => setLocale(button.dataset.locale));
         });
-        setLocale(currentLocale, { persist: false, emit: true });
+        setLocale(currentLocale, { emit: true });
     }
+
+    window.addEventListener('storage', (event) => {
+        if (event.key !== STORAGE_KEY || !SUPPORTED_LOCALES.includes(event.newValue)) return;
+        setLocale(event.newValue, { persist: false });
+    });
 
     window.SiteI18n = Object.freeze({
         getLocale: () => currentLocale,

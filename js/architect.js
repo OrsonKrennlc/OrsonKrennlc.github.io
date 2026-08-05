@@ -3,6 +3,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapContainer = document.getElementById('project-map');
     const projectsContainer = document.getElementById('projects-list');
     const projectCount = document.getElementById('arch-project-count');
+    const quickNav = document.getElementById('arch-quick-nav');
+    const quickToggle = document.getElementById('arch-quick-toggle');
+    const quickList = document.getElementById('arch-quick-list');
     const modalOverlay = document.getElementById('arch-modal-overlay');
     const modalContent = modalOverlay?.querySelector('.arch-modal-content');
     const closeButton = document.getElementById('modal-close-btn');
@@ -17,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalDescription = document.getElementById('modal-desc');
     const backgroundRegions = Array.from(document.querySelectorAll('body > header, body > main, body > footer'));
 
-    if (!i18n || !projectsContainer || !modalOverlay || !modalContent || !closeButton || !gallery ||
+    if (!i18n || !projectsContainer || !quickNav || !quickToggle || !quickList || !modalOverlay || !modalContent || !closeButton || !gallery ||
         !dotsContainer || !galleryCounter || !previousButton || !nextButton || !modalTitle || !modalSubtitle ||
         !modalInfoGrid || !modalDescription) {
         return;
@@ -35,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const projects = Array.isArray(window.ARCH_PROJECTS) ? window.ARCH_PROJECTS : [];
     if (projectCount) projectCount.textContent = String(projects.length).padStart(2, '0');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     const markerEntries = [];
     let currentGalleryImages = [];
     let currentGalleryIndex = 0;
@@ -141,9 +145,76 @@ document.addEventListener('DOMContentLoaded', () => {
         projectsContainer.removeAttribute('aria-busy');
     }
 
+    function setQuickNavOpen(open) {
+        quickNav.classList.toggle('is-open', open);
+        quickToggle.setAttribute('aria-expanded', String(open));
+        quickList.setAttribute('aria-hidden', String(!open));
+        quickList.inert = !open;
+        quickList.querySelectorAll('button').forEach((button) => {
+            button.tabIndex = open ? 0 : -1;
+        });
+    }
+
+    function jumpToProject(projectIndex, focusCard = false) {
+        const projectCard = document.getElementById(`project-card-${projectIndex}`);
+        if (!projectCard) return;
+
+        projectCard.scrollIntoView({
+            behavior: reducedMotion.matches ? 'auto' : 'smooth',
+            block: 'center'
+        });
+
+        if (focusCard) {
+            window.requestAnimationFrame(() => {
+                projectCard.querySelector('.arch-project-trigger')?.focus({ preventScroll: true });
+            });
+        }
+    }
+
+    function renderQuickNav() {
+        const fragment = document.createDocumentFragment();
+
+        projects.forEach((projectSource, index) => {
+            const project = localizedProject(projectSource);
+            const titleText = String(project.title || t('project.unnamed'));
+            const button = createElement('button', 'arch-quick-project');
+            button.type = 'button';
+            button.setAttribute('aria-label', t('project.quickJump', { title: titleText }));
+
+            button.append(
+                createElement('span', 'arch-quick-project-index', String(index + 1).padStart(2, '0')),
+                createElement('span', 'arch-quick-project-title', titleText),
+                createElement('span', 'arch-quick-project-time', String(project.time || ''))
+            );
+            button.addEventListener('click', () => {
+                setQuickNavOpen(false);
+                jumpToProject(index, true);
+            });
+            fragment.append(button);
+        });
+
+        quickList.replaceChildren(fragment);
+        setQuickNavOpen(false);
+    }
+
     function tooltipContent(projectIndex) {
         const project = localizedProject(projects[projectIndex]);
-        return createElement('span', '', String(project.title || t('project.unnamed')));
+        const titleText = String(project.title || t('project.unnamed'));
+        const preview = createElement('div', 'map-project-preview');
+
+        if (project.images[0]) {
+            const image = document.createElement('img');
+            image.src = project.images[0];
+            image.alt = '';
+            image.width = 220;
+            image.height = 124;
+            image.loading = 'lazy';
+            image.decoding = 'async';
+            preview.append(image);
+        }
+
+        preview.append(createElement('span', 'map-project-preview-title', titleText));
+        return preview;
     }
 
     function updateMapTranslations() {
@@ -179,13 +250,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!Array.isArray(project.coords) || project.coords.length !== 2 || project.coords[0] === 0) return;
 
             const marker = window.L.marker(project.coords, { icon: customIcon }).addTo(map);
-            marker.bindTooltip(tooltipContent(index));
-            marker.on('click', () => {
-                document.getElementById(`project-card-${index}`)?.scrollIntoView({
-                    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth',
-                    block: 'center'
-                });
+            marker.bindTooltip(tooltipContent(index), {
+                className: 'arch-project-tooltip',
+                direction: 'top',
+                offset: [0, -10],
+                opacity: 1
             });
+            marker.on('click', () => jumpToProject(index));
             markerEntries.push({ marker, projectIndex: index });
             bounds.push(project.coords);
         });
@@ -329,12 +400,22 @@ document.addEventListener('DOMContentLoaded', () => {
     previousButton.addEventListener('click', showPreviousImage);
     nextButton.addEventListener('click', showNextImage);
     closeButton.addEventListener('click', closeModal);
+    quickToggle.addEventListener('click', () => {
+        setQuickNavOpen(quickToggle.getAttribute('aria-expanded') !== 'true');
+    });
 
     modalOverlay.addEventListener('click', (event) => {
         if (event.target === modalOverlay) closeModal();
     });
 
     document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && quickNav.classList.contains('is-open') && quickNav.contains(document.activeElement)) {
+            event.preventDefault();
+            setQuickNavOpen(false);
+            quickToggle.focus();
+            return;
+        }
+
         if (!modalOverlay.classList.contains('active')) return;
 
         if (event.key === 'Escape') {
@@ -351,6 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('localechange', () => {
         renderProjects();
+        renderQuickNav();
         updateMapTranslations();
         if (modalOverlay.classList.contains('active') && currentProjectIndex >= 0) {
             populateModal(currentProjectIndex, false);
@@ -358,5 +440,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     renderProjects();
+    renderQuickNav();
     initializeMap();
 });

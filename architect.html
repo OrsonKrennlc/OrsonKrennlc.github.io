@@ -23,7 +23,7 @@
 <body>
 
     <header class="site-header">
-        <div class="logo">Jerry Shen</div>
+        <div class="logo">Junyang Shen</div>
         <button class="mobile-menu-toggle" type="button" aria-expanded="false"
             aria-controls="site-header-panel" aria-label="打开导航菜单">
             <span aria-hidden="true"></span>
@@ -59,20 +59,18 @@
                     <p class="arch-overview-intro" data-i18n="overview.intro">
                         以成都为主要观察场域，收录公共建筑、居住、酒店与文化更新等类型的设计实践。
                     </p>
-                    <dl class="arch-overview-stats">
-                        <div class="arch-overview-stat">
-                            <dt data-i18n="overview.stats.projects">收录项目</dt>
-                            <dd id="arch-project-count">04</dd>
+                    <div class="arch-quick-nav" id="arch-quick-nav">
+                        <button class="arch-quick-toggle" id="arch-quick-toggle" type="button"
+                            aria-expanded="false" aria-controls="arch-quick-list">
+                            <span data-i18n="overview.quickNav">快速浏览项目</span>
+                            <span class="arch-quick-count" id="arch-project-count">04</span>
+                            <span class="arch-quick-icon" aria-hidden="true"></span>
+                        </button>
+                        <div class="arch-quick-list-shell">
+                            <div class="arch-quick-list" id="arch-quick-list" aria-label="建筑项目快捷列表"
+                                data-i18n-aria-label="overview.quickNavLabel"></div>
                         </div>
-                        <div class="arch-overview-stat">
-                            <dt data-i18n="overview.stats.period">时间跨度</dt>
-                            <dd>2024–2026</dd>
-                        </div>
-                        <div class="arch-overview-stat">
-                            <dt data-i18n="overview.stats.location">主要地点</dt>
-                            <dd data-i18n="overview.stats.chengdu">成都</dd>
-                        </div>
-                    </dl>
+                    </div>
                 </div>
 
                 <div class="arch-map-panel">
