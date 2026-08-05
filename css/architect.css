@@ -60,8 +60,9 @@
 
 .scroll-arrow-arch img {
     width: 40px;
-    height: 40px;
+    height: auto;
     opacity: 0.5;
+    filter: brightness(0);
 }
 
 /* Projects List Section */
@@ -86,6 +87,10 @@
     padding: 40px;
     gap: 50px;
     position: relative;
+    appearance: none;
+    font: inherit;
+    color: inherit;
+    text-align: left;
 }
 
 .arch-project-card:hover {
@@ -311,6 +316,7 @@
     background: transparent;
     cursor: pointer;
     transition: background 0.3s;
+    padding: 0;
 }
 
 .dot.active {
@@ -355,6 +361,28 @@
     line-height: 2; /* double line height */
     color: #000000;
     white-space: pre-wrap; /* Preserve line breaks from description */
+}
+
+html[data-locale="en"] .arch-card-title,
+html[data-locale="en"] .arch-card-subtitle,
+html[data-locale="en"] .arch-card-label,
+html[data-locale="en"] .arch-card-value,
+html[data-locale="en"] .modal-title,
+html[data-locale="en"] .modal-subtitle,
+html[data-locale="en"] .modal-desc,
+html[data-locale="en"] .arch-status {
+    font-family: var(--font-en);
+}
+
+.arch-status {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0;
+    font-family: var(--font-zh);
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-gray-dark);
+    text-align: center;
 }
 
 /* Responsive adjustments */

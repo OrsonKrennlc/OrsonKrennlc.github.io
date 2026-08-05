@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jerry Shen - Architect</title>
+    <meta name="description" content="Jerry Shen 的建筑设计项目地图、项目列表与完整作品档案。"
+        data-i18n-content="meta.arch.description">
+    <title data-i18n="meta.arch.title">Jerry Shen - 建筑作品</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,40 +24,55 @@
 
     <header class="site-header">
         <div class="logo">Jerry Shen</div>
-        <nav class="main-nav">
-            <a href="index.html#home">主页/Portfolio</a>
-            <a href="architect.html" class="active">建筑/Architect</a>
-            <a href="index.html#projects">摄影/Photographer</a>
-            <a href="index.html#projects">行者/Traveller</a>
-            <a href="index.html#about">关于/About</a>
-        </nav>
+        <div class="header-controls">
+            <nav class="main-nav" aria-label="主导航" data-i18n-aria-label="nav.main">
+                <a href="index.html#home" data-i18n="nav.home">主页</a>
+                <a href="architect.html" class="active" aria-current="page" data-i18n="nav.architecture">建筑</a>
+                <a href="index.html#projects" data-i18n="nav.uiux">交互</a>
+                <a href="index.html#projects" data-i18n="nav.photography">摄影</a>
+                <a href="tools.html" data-i18n="nav.tools">小工具集</a>
+            </nav>
+            <div class="language-switcher" role="group" aria-label="语言切换"
+                data-i18n-aria-label="language.switcher">
+                <button type="button" data-locale="zh" aria-pressed="true" aria-label="切换为中文"
+                    data-i18n-aria-label="language.zh">中</button>
+                <span aria-hidden="true">/</span>
+                <button type="button" data-locale="en" aria-pressed="false" aria-label="切换为英文"
+                    data-i18n-aria-label="language.en">EN</button>
+            </div>
+        </div>
     </header>
 
     <main class="main-wrapper arch-main">
         
         <!-- Map Section -->
         <section class="map-section">
-            <h2 class="map-title"><strong>项目分布</strong><strong>｜</strong>Project Map</h2>
+            <h1 class="map-title"><strong data-i18n="map.title">项目分布</strong></h1>
             <div class="map-container">
-                <div id="project-map"></div>
+                <div id="project-map" role="region" aria-label="建筑项目分布地图"
+                    data-i18n-aria-label="map.region"></div>
             </div>
             
             <div class="scroll-arrow-arch">
-                <img src="assets/images/vector.svg" alt="Scroll Down">
+                <img src="assets/images/vector.svg" width="51" height="17" alt="">
             </div>
         </section>
 
         <!-- Projects Section -->
-        <section class="arch-projects-section" id="projects-container">
+        <section class="arch-projects-section" id="projects-container" aria-label="建筑项目列表" aria-live="polite"
+            data-i18n-aria-label="projects.list">
             <!-- Dynamic project cards will be inserted here by JS -->
+            <noscript data-i18n="projects.noscript">请启用 JavaScript 以浏览建筑项目。</noscript>
         </section>
 
     </main>
 
     <!-- Modal for Project Details -->
-    <div class="arch-modal-overlay" id="arch-modal-overlay">
-        <div class="arch-modal-content">
-            <button class="modal-close-btn" id="modal-close-btn"></button>
+    <div class="arch-modal-overlay" id="arch-modal-overlay" aria-hidden="true">
+        <div class="arch-modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title"
+            aria-describedby="modal-desc" tabindex="-1">
+            <button class="modal-close-btn" id="modal-close-btn" type="button" aria-label="关闭项目详情"
+                data-i18n-aria-label="modal.close"></button>
             
             <div class="modal-header">
                 <h2 class="modal-title" id="modal-title"></h2>
@@ -63,14 +80,16 @@
             </div>
             
             <div class="modal-gallery-container">
-                <div class="modal-gallery" id="modal-gallery">
+                <div class="modal-gallery" id="modal-gallery" aria-live="polite">
                     <!-- Images will be inserted here -->
                 </div>
                 <div class="gallery-controls">
                     <div class="gallery-dots" id="gallery-dots"></div>
                     <div class="gallery-arrows">
-                        <button id="gallery-prev">&lt;</button>
-                        <button id="gallery-next">&gt;</button>
+                        <button id="gallery-prev" type="button" aria-label="上一张项目图片"
+                            data-i18n-aria-label="gallery.previous">&lt;</button>
+                        <button id="gallery-next" type="button" aria-label="下一张项目图片"
+                            data-i18n-aria-label="gallery.next">&gt;</button>
                     </div>
                 </div>
             </div>
@@ -87,15 +106,16 @@
     </div>
 
     <footer class="site-footer">
-        <div class="footer-left">Made by Jerry with ❤️</div>
-        <div class="footer-center">© 2026 orsonkrennlc.All Rights Reserved.</div>
-        <div class="footer-right">Powered by Chimi's LOVE💗 and Github Pages</div>
+        <div class="footer-left" data-i18n="footer.made">Jerry 用 ❤️ 制作</div>
+        <div class="footer-center" data-i18n="footer.copyright">© 2026 Orson Krennic。保留所有权利。</div>
+        <div class="footer-right" data-i18n="footer.powered">由 Chimi 的爱💗 与 GitHub Pages 驱动</div>
     </footer>
 
     <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-    <script src="assets/arch/projectsData.js"></script>
-    <script src="js/architect.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="" defer></script>
+    <script src="js/i18n.js" defer></script>
+    <script src="assets/arch/projectsData.js" defer></script>
+    <script src="js/architect.js" defer></script>
 </body>
 
 </html>
