@@ -155,19 +155,42 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function jumpToProject(projectIndex, focusCard = false) {
+    function jumpToProject(projectIndex, focusCard = false, behavior, block = 'center') {
         const projectCard = document.getElementById(`project-card-${projectIndex}`);
         if (!projectCard) return;
 
         projectCard.scrollIntoView({
-            behavior: reducedMotion.matches ? 'auto' : 'smooth',
-            block: 'center'
+            behavior: behavior || (reducedMotion.matches ? 'auto' : 'smooth'),
+            block
         });
 
         if (focusCard) {
             window.requestAnimationFrame(() => {
                 projectCard.querySelector('.arch-project-trigger')?.focus({ preventScroll: true });
             });
+        }
+    }
+
+    function jumpToRequestedProject() {
+        let requestedId = '';
+
+        try {
+            requestedId = new URLSearchParams(window.location.search).get('project') || '';
+        } catch {
+            return;
+        }
+
+        const requestedIndex = projects.findIndex((project) => String(project?.id || '') === requestedId);
+        if (requestedIndex < 0) return;
+
+        const jump = () => {
+            window.requestAnimationFrame(() => jumpToProject(requestedIndex, false, 'auto', 'start'));
+        };
+
+        if (document.readyState === 'complete') {
+            jump();
+        } else {
+            window.addEventListener('load', jump, { once: true });
         }
     }
 
@@ -442,4 +465,5 @@ document.addEventListener('DOMContentLoaded', () => {
     renderProjects();
     renderQuickNav();
     initializeMap();
+    jumpToRequestedProject();
 });
