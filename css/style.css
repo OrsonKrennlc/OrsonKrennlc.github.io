@@ -23,6 +23,7 @@
     --font-tibetan: 'Noto Serif Tibetan', serif;
     --font-hand: 'Caveat', cursive;
 
+    --page-gutter: clamp(20px, 7.8vw, 150px);
     --content-max: 1200px;
     --header-height: 100px;
     --duration-standard: 0.3s;
@@ -97,15 +98,25 @@ body {
 }
 
 .main-nav a {
+    margin: -8px -10px;
+    padding: 8px 10px;
     font-family: var(--font-zh);
     font-size: 20px;
     color: var(--text-nav);
     text-decoration: none;
-    transition: color 0.3s;
+    border-radius: 4px;
+    transition: color var(--duration-standard), background-color var(--duration-standard), box-shadow var(--duration-standard);
 }
 
-.main-nav a.active, .main-nav a:hover {
+.main-nav a:hover {
     color: var(--text-primary);
+    background: rgba(2, 84, 45, 0.04);
+}
+
+.main-nav a.active {
+    color: var(--text-primary);
+    font-weight: 700;
+    background: rgba(2, 84, 45, 0.10);
 }
 
 .language-switcher {
@@ -172,11 +183,21 @@ html[data-locale="zh"] [data-i18n]:not(.glitch-text):not(.tibetan-text) {
     padding-bottom: 150px;
 }
 
-/* Hero Elements within Dark Section */
+/* Viewport-bound opening stage */
+.hero-stage {
+    min-height: 100svh;
+    padding: clamp(124px, 18vh, 180px) var(--page-gutter) clamp(28px, 5vh, 48px);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr) auto;
+    column-gap: clamp(48px, 8vw, 140px);
+}
+
 .hero {
-    padding-top: 180px;
-    padding-left: 341px;
+    width: min(100%, 525px);
     position: relative;
+    align-self: start;
+    transform: translate(clamp(36px, 5vw, 92px), clamp(20px, 3vh, 36px));
 }
 
 .glitch-wrapper {
@@ -211,11 +232,13 @@ html[data-locale="zh"] [data-i18n]:not(.glitch-text):not(.tibetan-text) {
 }
 
 .hero-tibetan {
-    position: absolute;
-    right: 341px;
-    top: 550px;
+    max-width: 580px;
+    padding-bottom: clamp(32px, 8vh, 88px);
+    align-self: end;
+    justify-self: end;
     text-align: right;
     color: #000000;
+    transform: translate(clamp(-72px, -4vw, -36px), clamp(-48px, -4vh, -28px));
 }
 
 .tibetan-text {
@@ -230,26 +253,51 @@ html[data-locale="zh"] [data-i18n]:not(.glitch-text):not(.tibetan-text) {
     font-size: 20px;
 }
 
-/* Arrow Container taking About's old place */
 .scroll-arrow-container {
-    padding-top: 450px;
-    padding-bottom: 250px;
+    grid-column: 1 / -1;
     text-align: center;
 }
 
 .scroll-down {
+    width: 60px;
+    height: 60px;
     display: inline-flex;
-    padding: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
     border: 0;
-    background: none;
+    background: transparent;
     line-height: 0;
     cursor: pointer;
+    transition: transform 150ms var(--ease-standard, cubic-bezier(.2, .8, .2, 1));
+}
+
+.scroll-down:active {
+    transform: scale(0.96);
+}
+
+.scroll-down img {
+    display: block;
+    filter: brightness(0) contrast(1.2);
+    animation: scroll-invite 1.8s cubic-bezier(.2, .8, .2, 1) infinite;
+    will-change: transform, opacity;
+}
+
+@keyframes scroll-invite {
+    0%, 100% {
+        opacity: 0.68;
+        transform: translateY(-3px);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translateY(5px);
+    }
 }
 
 /* About Section */
 .about-section {
-    padding: 0 150px;
-    padding-bottom: 150px;
+    padding: clamp(200px, 20vh, 260px) 150px 150px;
     display: flex;
     justify-content: center;
     background-color: transparent;
@@ -285,14 +333,14 @@ html[data-locale="zh"] [data-i18n]:not(.glitch-text):not(.tibetan-text) {
 .about-aka {
     font-family: var(--font-zh);
     font-size: 16px;
-    color: #CBCBCB;
+    color: var(--color-text-on-dark-muted);
     margin-bottom: 30px;
 }
 
 .about-tags-zh {
     font-family: var(--font-zh);
     font-size: 20px;
-    color: #D0D0D0;
+    color: var(--color-text-on-dark-muted);
     margin-bottom: 10px;
     letter-spacing: 0.05em;
 }
@@ -300,14 +348,14 @@ html[data-locale="zh"] [data-i18n]:not(.glitch-text):not(.tibetan-text) {
 .about-tags-en {
     font-family: var(--font-en);
     font-size: 20px;
-    color: #D0D0D0;
+    color: var(--color-text-on-dark-muted);
     margin-bottom: 30px;
 }
 
 .about-desc {
     font-family: var(--font-zh);
     font-size: 20px;
-    color: #D0D0D0;
+    color: var(--color-text-on-dark-muted);
     line-height: 1.6;
 }
 
@@ -390,7 +438,7 @@ html[data-locale="zh"] [data-i18n]:not(.glitch-text):not(.tibetan-text) {
     font-size: 36px;
     font-weight: 700;
     margin-bottom: 20px;
-    color: #000000;
+    color: var(--color-brand);
 }
 
 .column-divider {
@@ -419,40 +467,115 @@ html[data-locale="zh"] [data-i18n]:not(.glitch-text):not(.tibetan-text) {
     line-height: 1.5;
 }
 
-.prize-list {
+.awards-showcase {
     list-style: none;
 }
 
-.prize-list li {
+.award-entry {
+    padding: 28px 0 32px;
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 24px;
+    border-top: 1px solid var(--color-border);
+}
+
+.award-entry:first-child {
+    padding-top: 0;
+    border-top: 0;
+}
+
+.award-entry:last-child {
+    border-bottom: 1px solid var(--color-border);
+}
+
+.award-meta {
     display: flex;
-    margin-bottom: 20px;
-    font-family: var(--font-zh);
-    font-size: 24px;
-    align-items: flex-start;
-    color: #000000;
+    flex-direction: column;
+    gap: 10px;
+    font-family: var(--font-en);
 }
 
-.prize-date {
-    width: 120px;
-    flex-shrink: 0;
-    line-height: 1.5;
-    color: #676767;
-}
-
-.prize-name {
-    flex: 1;
-    line-height: 1.5;
-}
-
-.prize-name strong {
+.award-number {
+    color: var(--color-brand);
+    font-size: 13px;
     font-weight: 700;
-    color: #000000;
+    letter-spacing: 0.08em;
 }
 
-.prize-level {
-    color: #676767;
-    margin-left: 20px;
-    white-space: nowrap;
+.award-meta time {
+    color: var(--color-text-muted);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.award-kicker {
+    margin-bottom: 8px;
+    color: var(--color-brand);
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.award-title {
+    color: var(--color-text);
+    font-family: var(--font-zh);
+    font-size: clamp(22px, 2vw, 28px);
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.award-title a {
+    color: inherit;
+    text-decoration-color: rgba(2, 84, 45, 0.36);
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.16em;
+    transition: color var(--duration-standard), text-decoration-color var(--duration-standard);
+}
+
+.award-title a:hover,
+.award-title a:focus-visible {
+    color: var(--color-brand);
+    text-decoration-color: currentColor;
+}
+
+.award-description,
+.award-competition {
+    margin-top: 8px;
+    color: var(--color-text-muted);
+    font-size: 15px;
+    line-height: 1.65;
+}
+
+.award-results {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+    list-style: none;
+}
+
+.award-results li {
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    border-top: 1px solid var(--color-border);
+}
+
+.award-results span {
+    color: var(--color-text-muted);
+    font-size: 12px;
+    line-height: 1.5;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.award-results strong {
+    color: var(--color-text);
+    font-size: 16px;
     line-height: 1.5;
 }
 
@@ -468,7 +591,7 @@ html[data-locale="zh"] [data-i18n]:not(.glitch-text):not(.tibetan-text) {
     font-weight: 400;
     text-align: left;
     margin-bottom: 80px;
-    color: #000000;
+    color: var(--color-brand);
 }
 
 .section-title strong {
@@ -598,41 +721,9 @@ html[data-locale="zh"] [data-i18n]:not(.glitch-text):not(.tibetan-text) {
         line-height: 1.65;
     }
 
-    html[data-locale="en"] .prize-list li {
-        margin-bottom: 0;
-        padding: 18px 0;
-        display: grid;
-        grid-template-columns: 92px minmax(0, 1fr);
-        column-gap: 24px;
-        row-gap: 5px;
-        align-items: start;
-        border-bottom: 1px solid var(--color-border);
-        font-size: 17px;
-    }
-
-    html[data-locale="en"] .prize-list li:first-child {
-        padding-top: 0;
-    }
-
-    html[data-locale="en"] .prize-date {
-        width: auto;
-        grid-column: 1;
-        grid-row: 1 / span 2;
-        font-size: 14px;
-        line-height: 1.6;
-    }
-
-    html[data-locale="en"] .prize-name {
-        grid-column: 2;
-        line-height: 1.45;
-    }
-
-    html[data-locale="en"] .prize-level {
-        grid-column: 2;
-        margin: 0;
-        white-space: normal;
-        font-size: 14px;
-        line-height: 1.55;
+    html[data-locale="en"] .award-title {
+        font-size: clamp(22px, 2vw, 27px);
+        letter-spacing: -0.02em;
     }
 }
 
@@ -642,11 +733,9 @@ html[data-locale="zh"] [data-i18n]:not(.glitch-text):not(.tibetan-text) {
         padding-left: 50px;
         padding-right: 50px;
     }
-    .hero {
+    .hero-stage {
         padding-left: 50px;
-    }
-    .hero-tibetan {
-        right: 50px;
+        padding-right: 50px;
     }
     .header-controls {
         gap: 16px;
@@ -760,8 +849,9 @@ html[data-locale="zh"] [data-i18n]:not(.glitch-text):not(.tibetan-text) {
     }
 
     .main-nav a {
+        margin: 0;
         min-height: 52px;
-        padding: 0 4px;
+        padding: 0 8px;
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -792,10 +882,17 @@ html[data-locale="zh"] [data-i18n]:not(.glitch-text):not(.tibetan-text) {
     }
 
     /* Hero */
+    .hero-stage {
+        min-height: calc(100svh - 72px);
+        padding: clamp(28px, 6vh, 52px) 20px clamp(16px, 3.5vh, 28px);
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        row-gap: clamp(12px, 3vh, 24px);
+    }
+
     .hero {
-        padding-top: clamp(48px, 10vh, 80px);
-        padding-left: 20px;
-        padding-right: 20px;
+        width: 100%;
+        transform: none;
     }
 
     .glitch-wrapper {
@@ -823,17 +920,18 @@ html[data-locale="zh"] [data-i18n]:not(.glitch-text):not(.tibetan-text) {
     }
 
     .hero-tibetan {
-        position: relative;
-        right: auto;
-        top: auto;
+        width: min(100%, 480px);
+        max-width: none;
+        padding: 0;
+        align-self: end;
         text-align: right;
-        margin: clamp(140px, 40vw, 210px) 20px 0;
-        padding: 18px 0 16px;
+        margin: 0 0 clamp(4px, 1.5vh, 12px) auto;
         color: var(--color-text-on-dark);
         background: none;
         border: 0;
         text-shadow: none;
         isolation: isolate;
+        transform: none;
     }
 
     .hero-tibetan::before {
@@ -870,8 +968,7 @@ html[data-locale="zh"] [data-i18n]:not(.glitch-text):not(.tibetan-text) {
 
     /* Arrow */
     .scroll-arrow-container {
-        padding-top: 112px;
-        padding-bottom: 104px;
+        padding: 0;
     }
 
     .scroll-down {
@@ -1003,43 +1100,44 @@ html[data-locale="zh"] [data-i18n]:not(.glitch-text):not(.tibetan-text) {
         line-height: 1.65;
     }
 
-    .prize-list li {
-        margin-bottom: 0;
-        padding: 18px 0;
-        display: grid;
-        grid-template-columns: 78px minmax(0, 1fr);
-        column-gap: 16px;
-        row-gap: 4px;
-        align-items: start;
-        border-bottom: 1px solid var(--color-border);
-        font-size: 15px;
+    .award-entry {
+        padding: 24px 0 28px;
+        grid-template-columns: 44px minmax(0, 1fr);
+        gap: 16px;
     }
 
-    .prize-list li:first-child {
-        padding-top: 0;
+    .award-meta {
+        gap: 8px;
     }
 
-    .prize-date {
-        width: auto;
-        grid-column: 1;
-        grid-row: 1 / span 2;
-        font-family: var(--font-en);
-        font-size: 13px;
-        line-height: 1.6;
+    .award-number,
+    .award-meta time {
+        font-size: 11px;
     }
 
-    .prize-name {
-        grid-column: 2;
-        line-height: 1.55;
+    .award-kicker {
+        margin-bottom: 6px;
+        font-size: 11px;
     }
 
-    .prize-level {
-        grid-column: 2;
-        margin-left: 0;
-        margin-top: 0;
-        white-space: normal;
-        font-size: 13px;
-        line-height: 1.55;
+    .award-title,
+    html[data-locale="en"] .award-title {
+        font-size: 21px;
+        line-height: 1.4;
+    }
+
+    .award-description,
+    .award-competition {
+        font-size: 14px;
+    }
+
+    .award-results {
+        margin-top: 20px;
+        gap: 12px;
+    }
+
+    .award-results strong {
+        font-size: 14px;
     }
 
     /* Projects Section */

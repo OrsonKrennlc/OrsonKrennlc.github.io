@@ -314,6 +314,7 @@
 .arch-project-card {
     width: 100%;
     max-width: var(--content-max);
+    scroll-margin-top: calc(var(--header-height) + 24px);
     display: grid;
     grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
     align-items: stretch;
