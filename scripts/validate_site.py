@@ -21,10 +21,19 @@ class PageParser(HTMLParser):
         self.references: list[str] = []
         self.ids: set[str] = set()
         self.h1_count = 0
-        self.translation_keys: set[str] = set()
+        self.html_lang: str | None = None
+        self.in_main_nav = False
+        self.active_nav_links: list[str] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         attributes = dict(attrs)
+
+        if tag == "html":
+            self.html_lang = attributes.get("lang")
+        elif tag == "nav" and "main-nav" in (attributes.get("class") or "").split():
+            self.in_main_nav = True
+        elif tag == "a" and self.in_main_nav and attributes.get("aria-current") == "page":
+            self.active_nav_links.append(attributes.get("href") or "")
 
         element_id = attributes.get("id")
         if element_id:
@@ -46,10 +55,13 @@ class PageParser(HTMLParser):
             if reference:
                 self.references.append(reference)
 
-        for attribute_name, value in attrs:
-            if attribute_name == "data-i18n" or attribute_name.startswith("data-i18n-"):
-                if value:
-                    self.translation_keys.add(value)
+        for attribute_name, _ in attrs:
+            if attribute_name == "data-i18n" or attribute_name.startswith("data-i18n-") or attribute_name == "data-locale":
+                self.errors.append(f"obsolete localization attribute: {attribute_name}")
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag == "nav" and self.in_main_nav:
+            self.in_main_nav = False
 
 
 def local_reference_path(source_file: Path, reference: str) -> Path | None:
@@ -63,13 +75,34 @@ def local_reference_path(source_file: Path, reference: str) -> Path | None:
 
 def validate_html(repository_root: Path) -> list[str]:
     errors: list[str] = []
+    active_pages = {
+        "index.html": "index.html",
+        "about.html": "about.html",
+        "architect.html": "architect.html",
+        "interaction.html": "interaction.html",
+        "photography.html": "photography.html",
+        "project.html": "architect.html",
+        "case-study.html": "interaction.html",
+        "tools.html": None,
+    }
 
     for page in sorted(repository_root.glob("*.html")):
         parser = PageParser(page)
-        parser.feed(page.read_text(encoding="utf-8"))
+        content = page.read_text(encoding="utf-8")
+        parser.feed(content)
 
         if parser.h1_count != 1:
             parser.errors.append(f"expected exactly one h1, found {parser.h1_count}")
+        if parser.html_lang != "en":
+            parser.errors.append(f"expected html lang=en, found {parser.html_lang!r}")
+        if "js/site-motion.js" not in parser.references:
+            parser.errors.append("missing shared page transition script")
+        if page.name in active_pages:
+            expected = [] if active_pages[page.name] is None else [active_pages[page.name]]
+            if parser.active_nav_links != expected:
+                parser.errors.append(f"active navigation mismatch: expected {expected}, found {parser.active_nav_links}")
+        if re.search(r"[\u4e00-\u9fff]", content):
+            parser.errors.append("page still contains Chinese text")
 
         for reference in parser.references:
             path = local_reference_path(page, reference)
@@ -91,50 +124,6 @@ def validate_css(repository_root: Path) -> list[str]:
             path = local_reference_path(stylesheet, reference)
             if path is not None and not path.exists():
                 errors.append(f"{stylesheet.relative_to(repository_root)}: missing asset {reference}")
-
-    return errors
-
-
-def validate_i18n(repository_root: Path) -> list[str]:
-    errors: list[str] = []
-    runtime_path = repository_root / "js" / "i18n.js"
-    content = runtime_path.read_text(encoding="utf-8")
-    key_pattern = re.compile(r"^\s*'([^']+)':", re.MULTILINE)
-
-    try:
-        chinese_start = content.index("        zh: {")
-        english_start = content.index("        en: {")
-        dictionaries_end = content.index("\n        }\n    };", english_start)
-    except ValueError:
-        return ["js/i18n.js: unable to locate zh and en dictionaries"]
-
-    chinese_keys_list = key_pattern.findall(content[chinese_start:english_start])
-    english_keys_list = key_pattern.findall(content[english_start:dictionaries_end])
-    chinese_keys = set(chinese_keys_list)
-    english_keys = set(english_keys_list)
-
-    if len(chinese_keys_list) != len(chinese_keys):
-        errors.append("js/i18n.js: duplicate Chinese translation key")
-    if len(english_keys_list) != len(english_keys):
-        errors.append("js/i18n.js: duplicate English translation key")
-    if chinese_keys != english_keys:
-        errors.append(
-            "js/i18n.js: locale key mismatch: "
-            f"zh-only={sorted(chinese_keys - english_keys)}, "
-            f"en-only={sorted(english_keys - chinese_keys)}"
-        )
-
-    required_keys: set[str] = set()
-    for page in repository_root.glob("*.html"):
-        parser = PageParser(page)
-        parser.feed(page.read_text(encoding="utf-8"))
-        required_keys.update(parser.translation_keys)
-
-    dynamic_content = (repository_root / "js" / "architect.js").read_text(encoding="utf-8")
-    required_keys.update(re.findall(r"\bt\(\s*'([^']+)'", dynamic_content))
-    missing_keys = required_keys - chinese_keys
-    if missing_keys:
-        errors.append(f"i18n keys are used but not defined: {sorted(missing_keys)}")
 
     return errors
 
@@ -169,16 +158,10 @@ def validate_projects(repository_root: Path) -> list[str]:
             errors.append(f"project has a missing or duplicate id: {project_id!r}")
         seen_ids.add(project_id)
 
-        locales = project.get("locales", {})
-        if not isinstance(locales, dict):
-            errors.append(f"project {project_id!r} has no locale data")
-        else:
-            for locale in ("zh", "en"):
-                localized_project = locales.get(locale, {})
-                if not isinstance(localized_project, dict) or not localized_project.get("title"):
-                    errors.append(f"project {project_id!r} has no {locale} title")
-                if not isinstance(localized_project, dict) or not localized_project.get("description"):
-                    errors.append(f"project {project_id!r} has no {locale} description")
+        if not project.get("title") or not project.get("description"):
+            errors.append(f"project {project_id!r} needs an English title and description")
+        if "locales" in project:
+            errors.append(f"project {project_id!r} still contains localized data")
 
         images = project.get("images", [])
         if not isinstance(images, list) or not images:
@@ -200,18 +183,6 @@ def validate_projects(repository_root: Path) -> list[str]:
             f"source={sorted(source_ids)}, generated={sorted(seen_ids)}"
         )
 
-    translation_file = repository_root / "assets" / "arch" / "translations.en.json"
-    try:
-        translations = json.loads(translation_file.read_text(encoding="utf-8"))
-        translation_ids = set(translations) if isinstance(translations, dict) else set()
-    except (OSError, json.JSONDecodeError):
-        translation_ids = set()
-    if seen_ids != translation_ids:
-        errors.append(
-            "project English translation id mismatch: "
-            f"projects={sorted(seen_ids)}, translations={sorted(translation_ids)}"
-        )
-
     return errors
 
 
@@ -220,9 +191,11 @@ def main() -> int:
     errors = [
         *validate_html(repository_root),
         *validate_css(repository_root),
-        *validate_i18n(repository_root),
         *validate_projects(repository_root),
     ]
+    for obsolete in ("js/i18n.js", "assets/arch/translations.en.json"):
+        if (repository_root / obsolete).exists():
+            errors.append(f"obsolete translation file remains: {obsolete}")
 
     if errors:
         print("Site validation failed:", file=sys.stderr)
@@ -230,7 +203,7 @@ def main() -> int:
             print(f"- {error}", file=sys.stderr)
         return 1
 
-    print("Validated HTML, assets, CSS, i18n keys, and localized architecture project data.")
+    print("Validated English HTML, active navigation, assets, CSS, and architecture project data.")
     return 0
 
 

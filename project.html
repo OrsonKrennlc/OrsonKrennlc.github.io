@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Architecture project by Jerry Shen.">
+  <title>Jerry Shen — Architecture project</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="detail-page">
+  <header class="site-header detail-header">
+    <div class="site-header__inner">
+      <a class="detail-header__back" href="architect.html">← All architecture</a>
+      <button class="mobile-menu-toggle" type="button" aria-expanded="false" aria-controls="site-header-panel" aria-label="Open navigation menu"><span aria-hidden="true"></span><span aria-hidden="true"></span></button>
+      <div class="header-controls" id="site-header-panel">
+        <nav class="main-nav" aria-label="Primary navigation">
+          <a href="index.html">Portfolio</a>
+          <a href="interaction.html">Interaction</a>
+          <a href="architect.html" aria-current="page">Architecture</a>
+          <a href="photography.html">Photography</a>
+          <a href="about.html">About</a>
+        </nav>
+
+      </div>
+    </div>
+  </header>
+  <main>
+    <section class="detail-intro shell">
+      <span class="detail-kicker" id="project-kicker">01 / LIBRARY</span>
+      <h1 id="project-title">Paper Verse</h1>
+      <p id="project-subtitle">Science Library Design, Sichuan University</p>
+      <img class="detail-hero" id="project-hero" src="assets/arch/001/pic/01.jpg" width="1280" height="720" alt="Architecture project hero image">
+    </section>
+    <section class="detail-story shell">
+      <div class="detail-info"><span>PROJECT INFORMATION</span><dl id="project-info"></dl></div>
+      <div class="detail-story__content"><h2 id="project-story-heading"></h2><div class="detail-story__body" id="project-story"></div></div>
+    </section>
+    <section class="detail-gallery shell"><h2>Views &amp; details</h2><div class="detail-gallery__columns" id="project-gallery"></div></section>
+    <section class="next-project"><div class="shell"><span class="eyebrow" id="next-project-kicker">NEXT PROJECT / 02</span><p class="next-project__title"><a id="next-project-link" href="project.html?id=002">WEAVING STRATA →</a></p><a href="architect.html">← All architecture</a></div></section>
+  </main>
+  <script src="js/site-header.js" defer></script><script src="js/site-motion.js" defer></script>
+  <script src="js/figma-assets.js" defer></script>
+  <script src="assets/arch/projectsData.js" defer></script>
+  <script src="js/project.js" defer></script>
+</body>
+</html>
