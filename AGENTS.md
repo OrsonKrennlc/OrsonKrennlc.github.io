@@ -1,7 +1,7 @@
 # Project instructions
 
 - This repository is an English-only, native HTML/CSS/JavaScript portfolio deployed with GitHub Pages. Do not introduce a framework, package manager, build runtime, or JavaScript-injected shared navigation for routine changes.
-- Main pages are `index.html`, `about.html`, `architect.html`, `interaction.html`, `photography.html`, and `tools.html`, with project details in `project.html` and `case-study.html`. Keep every visible string, metadata value, alt text, and ARIA label in English. Mark the active main navigation link with `aria-current="page"`; detail pages inherit their parent section.
+- Main pages are `index.html`, `about.html`, `architect.html`, `interaction.html`, and `photography.html`, with project details in `project.html` and `case-study.html`. Vibe Tools lives in `about.html`; `tools.html` redirects old links there. Keep every visible string, metadata value, alt text, and ARIA label in English. Mark the active main navigation link with `aria-current="page"`; detail pages inherit their parent section.
 - Architecture source data lives in English `assets/arch/<id>/context.csv`. `assets/arch/projectsData.js` is generated and must not be edited by hand.
 - Follow `docs/DESIGN_GUIDELINES.md` for visual and responsive decisions. Record intentional design-system changes there instead of accumulating page-specific exceptions.
 - Before delivery, run `python3 scripts/build_arch_data.py --check`, `python3 scripts/validate_site.py`, syntax-check changed JavaScript with `node --check`, and run `git diff --check`.

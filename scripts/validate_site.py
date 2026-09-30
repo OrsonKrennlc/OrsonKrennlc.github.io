@@ -95,8 +95,18 @@ def validate_html(repository_root: Path) -> list[str]:
             parser.errors.append(f"expected exactly one h1, found {parser.h1_count}")
         if parser.html_lang != "en":
             parser.errors.append(f"expected html lang=en, found {parser.html_lang!r}")
-        if "js/site-motion.js" not in parser.references:
+        if page.name != "tools.html" and "js/site-motion.js" not in parser.references:
             parser.errors.append("missing shared page transition script")
+        if page.name == "tools.html" and 'content="0; url=about.html#vibe-tools"' not in content:
+            parser.errors.append("legacy tools page must redirect to the About section")
+        if page.name == "about.html":
+            if "vibe-tools" not in parser.ids:
+                parser.errors.append("missing Vibe Tools section")
+            for app_name in ("AntiMap", "MARD 221 Palette"):
+                if app_name not in content:
+                    parser.errors.append(f"missing Vibe Tools app: {app_name}")
+        if page.name != "tools.html" and 'href="tools.html"' in content:
+            parser.errors.append("obsolete standalone Vibe Tools link")
         if page.name in active_pages:
             expected = [] if active_pages[page.name] is None else [active_pages[page.name]]
             if parser.active_nav_links != expected:
