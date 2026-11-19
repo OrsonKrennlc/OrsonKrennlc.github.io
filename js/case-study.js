@@ -61,6 +61,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function renderResearchCharts() {
+    const charts = element('div', 'case-research-charts');
+    const chartDetails = [
+      {
+        title: 'Most people use planning apps only occasionally.',
+        subtitle: 'Planning-app use frequency · share of survey responses',
+        id: 'roamline-usage-chart',
+        description: 'Never 12.9%; 1–3 times a year 64.5%; 4–6 times a year 12.9%; more than 6 times a year 9.7%.',
+        note: 'One tick ≈ one percentage point. Whole ticks preserve a 100-point total; labels retain the source decimals.'
+      },
+      {
+        title: 'Information overload leads the planning frustrations.',
+        subtitle: 'Trouble in daily itinerary · share selecting each option',
+        id: 'roamline-trouble-chart',
+        description: 'Information overload 91.7%; fragmented information 83.3%; optimization difficulty 83.3%; lack of spatial awareness 50.0%; poor collaboration 25.0%.',
+        note: 'One tick = one percentage point. A lighter tick shows the decimal remainder. Multiple answers were allowed.'
+      }
+    ];
+    chartDetails.forEach((detail) => {
+      const figure = element('figure', 'case-chart');
+      const caption = element('figcaption');
+      caption.append(element('h3', '', detail.title), element('p', 'case-chart__subtitle', detail.subtitle));
+      const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.id = detail.id;
+      svg.setAttribute('viewBox', detail.id === 'roamline-usage-chart' ? '0 0 400 320' : '0 0 400 390');
+      svg.setAttribute('role', 'img');
+      svg.setAttribute('aria-label', detail.description);
+      figure.append(caption, svg, element('p', 'case-chart__note', detail.note));
+      const replay = element('button', 'case-chart__replay', 'Replay animation ↻');
+      replay.type = 'button';
+      replay.setAttribute('aria-label', `Replay ${detail.id === 'roamline-usage-chart' ? 'usage frequency' : 'itinerary trouble'} chart animation`);
+      figure.append(replay, element('p', 'case-chart__source', 'SOURCE / ORIGINAL ROAMLINE QUESTIONNAIRE BOARD · SAMPLE SIZE NOT STATED'));
+      charts.append(figure);
+    });
+    return charts;
+  }
+
   function renderSection(section) {
     const texts = section.texts;
     const shell = element('section', 'case-section');
@@ -70,12 +107,22 @@ document.addEventListener('DOMContentLoaded', () => {
     head.append(element('span', 'detail-kicker', texts[0]), element('h2', '', texts[1]), element('p', 'case-section__intro', texts[2]));
     inner.append(head);
 
+    if (id === 'roamline' && section.slug === 'research') inner.append(renderResearchCharts());
+
     const wide = element('figure', 'case-section__wide');
-    if (section.wide) appendImage(wide, section.wide, texts[1]);
+    if (section.wide && id === 'roamline') {
+      const sourceLink = element('a', 'case-section__source-link');
+      sourceLink.href = assets[section.wide];
+      sourceLink.target = '_blank';
+      sourceLink.rel = 'noopener';
+      sourceLink.setAttribute('aria-label', `Open full image: ${section.wideAlt}`);
+      appendImage(sourceLink, section.wide, section.wideAlt);
+      wide.append(sourceLink, element('figcaption', 'case-section__caption', section.wideCaption));
+    } else if (section.wide) appendImage(wide, section.wide, texts[1]);
     const wideFirst = id !== 'roamline';
     if (section.wide && wideFirst) inner.append(wide);
 
-    const cards = element('div', `case-section__grid${section.groups.length === 2 ? ' case-section__grid--two' : ''}`);
+    const cards = element('div', `case-section__grid${section.groups.length === 2 ? ' case-section__grid--two' : ''}${id === 'roamline' ? ` case-section__grid--${section.slug}` : ''}`);
     let headingAdded = false;
     section.groups.forEach((group, index) => {
       if (section.extraHeading !== undefined && !headingAdded && group[0] > section.extraHeading) {
@@ -86,10 +133,17 @@ document.addEventListener('DOMContentLoaded', () => {
       const content = group.map((textIndex) => texts[textIndex]).join('\n');
       const lines = content.split(/\n+/).map((part) => part.trim()).filter(Boolean);
       const card = element('article', 'case-section__item');
+      if (id === 'roamline' && section.slug === 'research') {
+        card.classList.add(index < 3 ? 'case-section__item--finding' : 'case-section__item--persona');
+      }
       const nodeId = section.images[index];
       if (nodeId && phoneFrames[nodeId]) appendPhone(card, nodeId, phoneFrames[nodeId], lines[0] || texts[1]);
       else if (nodeId) appendImage(card, nodeId, lines[0] || texts[1]);
-      card.append(element('h3', '', lines[0] || ''), element('p', '', lines.slice(1).join('\n')));
+      if (id === 'roamline' && (section.slug === 'journey' || section.slug === 'system')) {
+        card.append(element('span', 'micro case-section__step', lines[0] || ''), element('h3', '', lines[1] || ''), element('p', '', lines.slice(2).join('\n')));
+      } else {
+        card.append(element('h3', '', lines[0] || ''), element('p', '', lines.slice(1).join('\n')));
+      }
       cards.append(card);
     });
     if (section.groups.length) inner.append(cards);

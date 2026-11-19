@@ -10,6 +10,21 @@ window.CASE_STUDIES = {
     ],
     "hero": "",
     "next": "stillhere",
+    "researchData": {
+      "usageFrequency": [
+        ["Never", 12.9],
+        ["1–3 times a year", 64.5],
+        ["4–6 times a year", 12.9],
+        ["More than 6 times", 9.7]
+      ],
+      "itineraryTrouble": [
+        ["Information overload", 91.7],
+        ["Fragmented information", 83.3],
+        ["Optimization difficulty", 83.3],
+        ["Lack of spatial awareness", 50.0],
+        ["Poor collaboration", 25.0]
+      ]
+    },
     "labels": {
       "research": "Research",
       "journey": "Journey",
@@ -41,6 +56,8 @@ window.CASE_STUDIES = {
         "extraHeading": 6,
         "images": [],
         "wide": "64:2859",
+        "wideAlt": "Original Roamline questionnaire results and two traveller personas",
+        "wideCaption": "Original questionnaire and persona board · open the full image",
         "texts": [
           "01 / RESEARCH",
           "The hard part starts before the trip.",
@@ -75,15 +92,17 @@ window.CASE_STUDIES = {
         ],
         "images": [],
         "wide": "65:14",
+        "wideAlt": "Original five-stage traveller journey map and information architecture",
+        "wideCaption": "Original journey map and information architecture · open the full image",
         "texts": [
           "02 / JOURNEY & INFORMATION ARCHITECTURE",
           "Connect decisions across the whole journey.",
           "The project maps five stages, from the first idea to the next trip. Recommendations, trip planning and a personal profile form the main structure.",
-          "01\nFind inspiration",
-          "02\nShape a plan",
-          "03\nConfirm details",
-          "04\nTravel & adjust",
-          "05\nReflect & return",
+          "01\nFind inspiration\nBrowse ideas, travel vlogs and places shared by friends.",
+          "02\nShape a plan\nCompare options and build a rough itinerary.",
+          "03\nConfirm details\nBring booking dates and confirmations into one place.",
+          "04\nTravel & adjust\nFollow the day as plans meet the reality of the trip.",
+          "05\nReflect & return\nKeep photos and notes for what comes next.",
           "View the full journey map & information architecture →"
         ]
       },
